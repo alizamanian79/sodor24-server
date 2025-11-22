@@ -44,6 +44,7 @@ public class UserServiceImpl implements UserService {
         User user = User.builder()
                 .username(req.getUsername())
                 .password(passwordEncoder.encode(req.getPassword()))
+                .fullName(req.getFullName())
                 .phoneNumber(req.getPhoneNumber())
                 .roles(Set.of(Role.USER))
                 .build();

@@ -22,6 +22,8 @@ public class RegisterRequestDto {
 
     private String password;
 
+    private String fullName;
+
     @NotBlank(message = "شماره تماس نمیتواند خالی باشد")
     @Pattern(regexp = "\\d{11}", message = "شماره تماس باید دقیقا 11 رقم باشد (0912xxxxxxx)")
     @UniquePhoneNumber(message = "این شماره تماس قبلاً استفاده شده است")

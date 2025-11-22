@@ -105,14 +105,17 @@ public class SignatureServiceImpl implements SignatureService {
             findSignature.setValid(false);
             signatureRepository.save(findSignature);
             return false;
+        }else {
+            findSignature.setUsageCount(findSignature.getUsageCount() - count);
+            signatureRepository.save(findSignature);
+            res.setMessage(findSignature.getUsageCount()+"با موفقیت امضا تایید شد. مقدار فعلی امضای شما: ");
+            res.setDetails("");
+            res.setTimestamp(PersianDate.now());
+            res.setStatus(HttpStatus.OK.value());
+            return true;
         }
-        findSignature.setUsageCount(findSignature.getUsageCount() - count);
-        signatureRepository.save(findSignature);
-        res.setMessage(findSignature.getUsageCount()+"با موفقیت امضا تایید شد. مقدار فعلی امضای شما: ");
-        res.setDetails("");
-        res.setTimestamp(PersianDate.now());
-        res.setStatus(HttpStatus.OK.value());
-        return true;
+
+
     }
 
 

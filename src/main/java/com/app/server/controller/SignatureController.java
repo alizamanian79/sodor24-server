@@ -63,7 +63,6 @@ public class SignatureController {
     @Transactional
     @PostMapping
     public ResponseEntity<?> generateSignature(
-            @RequestParam String fullName,
             @RequestParam String username,
             @RequestParam String country,
             @RequestParam String reason,
@@ -82,27 +81,11 @@ public class SignatureController {
             User user =userService.findUserByUsername(username);
             String idGenerator="signature-"+user.getUsername()+"-"+UUID.randomUUID().toString();
 
-            // Checking Valid Signature
-//           List<Signature> validSignatures = new LinkedList<>();
-//           for (Signature signature : user.getSignatures()) {
-//               boolean valid = signature.getExpiredAt().isBefore(LocalDateTime.now());
-//               if (valid) {
-//                   validSignatures.add(signature);
-//               }
-//           }
-//           if (validSignatures.size() > 0) {
-//               CustomResponseDto res = CustomResponseDto.builder()
-//                       .message( " دارای اعتبار میباشد"+ "\s"+ validSignatures.get(0).getSignatureId() +"\s"+"امضای")
-//                       .details(validSignatures.get(0).getExpiredAt().toString())
-//                       .timestamp(PersianDate.now())
-//                       .status(HttpStatus.BAD_GATEWAY.value())
-//               .build();
-//               return new ResponseEntity<>(res, HttpStatus.BAD_GATEWAY);
-//           }
+
 
             String url = "http://localhost:8585/api/v1/signature/generate";
             Map<String, Object> requestBody = new HashMap<>();
-            requestBody.put("username", fullName);
+            requestBody.put("username", user.getFullName() !=null ? user.getFullName():"میهمان");
             requestBody.put("country", country);
             requestBody.put("reason", reason);
             requestBody.put("location", location);
@@ -133,11 +116,25 @@ public class SignatureController {
                     .usageCount(5)
                     .price(0L)
                     .build();
-            signatureService.generateSignature(user.getId(),signature);
+           Signature saved = signatureService.generateSignature(user.getId(),signature);
 
-            return ResponseEntity.status(response.getStatusCode()).body(response.getBody());
 
-        }catch (Exception e){
+            Map<String, Object> responseBodySignature = mapper.readValue(response.getBody(), Map.class);
+            String cert = (String) responseBody.get("cert");
+            String private_key = (String) responseBody.get("privateKey");
+            String public_key = (String) responseBody.get("publicKey");
+            String fullName = (String) responseBody.get("username");
+
+            Map<String, Object> customRes = new HashMap<>();
+            customRes.put("signatureInfo", saved);
+            customRes.put("cert", cert);
+            customRes.put("private_key", private_key);
+            customRes.put("public_key", public_key);
+            customRes.put("fullName", fullName);
+
+            return new ResponseEntity<>(customRes, HttpStatus.OK);
+
+  }catch (Exception e){
             throw new AppConflicException("کیلید شما وجود دارد");
         }
 

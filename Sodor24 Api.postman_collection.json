@@ -24,7 +24,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"username\": \"admin\",\r\n    \"password\": \"admin\",\r\n    \"phoneNumber\": \"09917403979\"\r\n}",
+							"raw": "{\r\n    \"username\": \"admin\",\r\n    \"fullName\":\"علی زمانیان\",\r\n    \"password\": \"admin\",\r\n    \"phoneNumber\": \"09917403979\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -46,7 +46,7 @@
 					},
 					"response": [
 						{
-							"name": "mahdi",
+							"name": "Mahdi",
 							"originalRequest": {
 								"method": "POST",
 								"header": [
@@ -59,7 +59,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"username\": \"mahdi\",\r\n    \"password\": \"zamanian\",\r\n    \"phoneNumber\": \"09917403980\"\r\n}",
+									"raw": "{\r\n    \"username\": \"mahdi\",\r\n    \"fullName\":\"مهدی زمانیان\",\r\n    \"password\": \"zamanian\",\r\n    \"phoneNumber\": \"09917403980\"\r\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -85,7 +85,7 @@
 							"body": null
 						},
 						{
-							"name": "ali",
+							"name": "Register",
 							"originalRequest": {
 								"method": "POST",
 								"header": [
@@ -98,7 +98,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"username\": \"ali\",\r\n    \"password\": \"zamanian\",\r\n    \"phoneNumber\": \"09384289604\"\r\n}",
+									"raw": "{\r\n    \"username\": \"ali\",\r\n    \"fullName\":\"علی زمانیان\",\r\n    \"password\": \"zamanian\",\r\n    \"phoneNumber\": \"09384289604\"\r\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -118,10 +118,16 @@
 									]
 								}
 							},
-							"_postman_previewlanguage": null,
-							"header": null,
-							"cookie": [],
-							"body": null
+							"_postman_previewlanguage": "",
+							"header": [],
+							"cookie": [
+								{
+									"expires": "Invalid Date",
+									"domain": "",
+									"path": ""
+								}
+							],
+							"body": ""
 						}
 					]
 				},
@@ -739,11 +745,6 @@
 							"mode": "formdata",
 							"formdata": [
 								{
-									"key": "fullName",
-									"value": "admin zamanian",
-									"type": "text"
-								},
-								{
 									"key": "username",
 									"value": "admin",
 									"type": "text"
@@ -894,7 +895,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{HOST}}/api/v1/signature/find/d276665e-d8dc-4a98-9e9c-46b975042e40",
+							"raw": "{{HOST}}/api/v1/signature/find/9e6a59a8-c052-41f6-9fb2-cae036850dbe",
 							"host": [
 								"{{HOST}}"
 							],
@@ -903,7 +904,7 @@
 								"v1",
 								"signature",
 								"find",
-								"d276665e-d8dc-4a98-9e9c-46b975042e40"
+								"9e6a59a8-c052-41f6-9fb2-cae036850dbe"
 							]
 						}
 					},
@@ -968,7 +969,7 @@
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "{{HOST}}/api/v1/signature/52",
+							"raw": "{{HOST}}/api/v1/signature/2",
 							"host": [
 								"{{HOST}}"
 							],
@@ -976,7 +977,7 @@
 								"api",
 								"v1",
 								"signature",
-								"52"
+								"2"
 							]
 						}
 					},

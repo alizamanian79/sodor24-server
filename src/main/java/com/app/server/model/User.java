@@ -31,6 +31,7 @@ public class User implements UserDetails, Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
+    private String fullName;
 
     private String username;
 

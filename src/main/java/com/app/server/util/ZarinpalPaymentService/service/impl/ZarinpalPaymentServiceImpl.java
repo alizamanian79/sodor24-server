@@ -1,0 +1,146 @@
+package com.app.server.util.ZarinpalPaymentService.service.impl;
+
+import com.app.server.Utils.ZarinpalPaymentService.dto.ZarinpalPaymentResponse;
+import com.app.server.util.ZarinpalPaymentService.service.ZarinpalPaymentService;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
+@Service
+public class ZarinpalPaymentServiceImpl implements ZarinpalPaymentService {
+
+    RestTemplate restTemplate = new RestTemplate();
+
+    // To Generate Link for payment
+    String merchantId = "7007f58a-3ec5-4ea6-a414-5849591ba0a7";
+    String requestUrl = "https://sandbox.zarinpal.com/pg/v4/payment/request.json";
+    String gatewayLink = "https://sandbox.zarinpal.com/pg/StartPay";
+    String verifyUrl = "https://sandbox.zarinpal.com/pg/v4/payment/verify.json";
+    String currency = "IRT"; // IRT is Toman and IRR is Rial
+
+    @Override
+    public ZarinpalPaymentResponse payment(Long amount , String callback ,
+                                           String description , String mobile , String email ) {
+
+        ZarinpalPaymentResponse res = new ZarinpalPaymentResponse();
+
+        try {
+            Map<String, Object> body = new HashMap<>();
+            body.put("merchant_id", merchantId);
+            body.put("amount", amount);
+            body.put("currency",currency);
+            body.put("callback_url", callback);
+            body.put("description", description);
+
+            Map<String, String> metadata = new HashMap<>();
+            metadata.put("mobile", mobile);
+            metadata.put("email", email);
+//            metadata.put("order_id", "1235");
+            body.put("metadata", metadata);
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+
+            HttpEntity<Map<String, Object>> entity = new HttpEntity<>(body, headers);
+
+            ResponseEntity<String> response = restTemplate.postForEntity(requestUrl, entity, String.class);
+
+
+
+            ObjectMapper mapper = new ObjectMapper();
+            Map<String, Object> responseMap = mapper.readValue(response.getBody(), Map.class);
+
+            Object dataObj = responseMap.get("data");
+
+            if (dataObj instanceof Map) {
+                Map<String, Object> dataMap = (Map<String, Object>) dataObj;
+
+                Object codeObj = dataMap.get("code");
+                Object authorityObj = dataMap.get("authority");
+                System.out.println();
+
+                if (codeObj != null && authorityObj != null) {
+                    res.setMessage("لینک پرداخت با موفقیت ساخته شد");
+                    res.setCode(codeObj.toString());
+                    res.setAuthority(authorityObj.toString());
+                    res.setGateway(gatewayLink + "/" + authorityObj.toString());
+                } else {
+                    res.setMessage("اطلاعات ناقص از درگاه پرداخت دریافت شد.");
+                    res.setCode("500");
+                    res.setAuthority(null);
+                    res.setGateway(null);
+                }
+
+            } else {
+                res.setMessage("خطا در ساختار پاسخ دریافتی از زرین‌پال.");
+                res.setCode("500");
+                res.setAuthority(null);
+                res.setGateway(null);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            res.setMessage("خطا در ارتباط با درگاه پرداخت.");
+            res.setCode("500");
+            res.setAuthority(null);
+            res.setGateway(null);
+        }
+
+        return res;
+    }
+
+
+    @Override
+    public boolean verifyPayment(String authority, Long amount) {
+        try {
+
+            Map<String, Object> requestBody = new HashMap<>();
+            requestBody.put("merchant_id", merchantId);
+            requestBody.put("amount", amount);
+            requestBody.put("authority", authority);
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+
+            HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<>(requestBody, headers);
+
+            ResponseEntity<String> response = restTemplate.postForEntity(verifyUrl, requestEntity, String.class);
+
+
+
+            ObjectMapper mapper = new ObjectMapper();
+            Map<String, Object> responseMap = mapper.readValue(response.getBody(), Map.class);
+
+            if (responseMap.get("data") instanceof Map) {
+                Map<String, Object> dataMap = (Map<String, Object>) responseMap.get("data");
+
+                Object codeObj = dataMap.get("code");
+
+                if (codeObj != null && codeObj.toString().equals("100")) {
+
+                    return true;
+                }
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+
+
+
+
+
+}

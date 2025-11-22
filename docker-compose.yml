@@ -1,0 +1,55 @@
+version: "3.9"
+
+services:
+  server-service:
+    container_name: server-service
+    image: alizamanian/server-service:v1.0.0
+#    build:
+#      context: .
+#      dockerfile: Dockerfile
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      SERVER_PORT: 8181
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/serverdb?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: 1234
+      SPRING_REDIS_HOST: redis
+      APP_SERVER_HOST: http://localhost:8181
+      APP_CLIENT_HOST: http://localhost:3000
+      APP_CLIENT_LOGIN_REDIRECT_URL: /login
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    ports:
+      - "8181:8181"
+    restart: unless-stopped
+
+  redis:
+    image: redis:8
+    container_name: redis
+    ports:
+      - "6379:6379"
+    restart: unless-stopped
+
+  db:
+    image: mysql:8.0
+    container_name: mysql-db
+    environment:
+      MYSQL_DATABASE: serverdb
+      MYSQL_ROOT_USER: root
+      MYSQL_ROOT_PASSWORD: 1234
+    ports:
+      - "3307:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+volumes:
+  db_data:

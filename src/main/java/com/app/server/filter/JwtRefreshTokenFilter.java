@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.List;
 
 @Order(2)
 @Component
@@ -62,6 +63,11 @@ public class JwtRefreshTokenFilter extends OncePerRequestFilter {
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
-        return request.getServletPath().equals("/api/v1/auth");
+        List<String> excludePaths = List.of(
+                "/api/v1/auth",
+                "/api/v1/public"
+        );
+
+        return excludePaths.contains(request.getServletPath());
     }
 }

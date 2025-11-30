@@ -1,13 +1,10 @@
 package com.app.server.service;
 
-import com.app.server.dto.request.LoginRequestDto;
 import com.app.server.dto.request.RegisterRequestDto;
 import com.app.server.dto.request.UpdateUserRequestDto;
-import com.app.server.dto.response.CustomResponseDto;
 import com.app.server.dto.response.RegisterResponseDto;
 import com.app.server.model.Role;
 import com.app.server.model.User;
-import org.springframework.data.domain.Page;
 
 import java.util.List;
 import java.util.Set;

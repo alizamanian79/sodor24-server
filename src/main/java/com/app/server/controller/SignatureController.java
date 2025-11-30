@@ -1,17 +1,9 @@
 package com.app.server.controller;
-
-import com.app.server.dto.request.SignatureRequestDto;
-import com.app.server.exception.AppConflicException;
-import com.app.server.exception.AppNotFoundException;
 import com.app.server.model.Signature;
 import com.app.server.service.SignatureService;
-import com.app.server.service.UserService;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.*;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
 import java.util.*;
 
 @RestController
@@ -19,76 +11,38 @@ import java.util.*;
 @RequiredArgsConstructor
 public class SignatureController {
 
-    private final RestTemplate restTemplate;
-    private final UserService userService;
     private final SignatureService signatureService;
 
 
-
     @GetMapping
-    public List<Signature> signatureList(){
-        return signatureService.signatureList();
+    public List<Signature> getAllSignatures() {
+        return signatureService.getSignatures();
     }
 
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getSignatureById(@PathVariable Long id) throws AppNotFoundException {
-        try {
-            Signature signature = signatureService.getSignatureById(id);
-            return new ResponseEntity<>(signature, HttpStatus.OK);
-        } catch (RuntimeException e) {
-            throw new AppNotFoundException("امضای شما پیدا نشد");
-        }
+    public Signature getSignatureById(@PathVariable Long id) {
+        return signatureService.findSignatureById(id);
+    }
 
+    @PostMapping
+    public Signature generateSignature(@RequestBody Signature signature) {
+        return signatureService.generateSignature(signature);
+    }
+
+    @PutMapping
+    public Signature updateSignature(@RequestBody Signature signature) {
+        return signatureService.updateSignature(signature);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteSignatureById(@PathVariable Long id)
-            throws AppNotFoundException {
-       try{
-           Object res = signatureService.deleteSignatureById(id);
-           return new ResponseEntity<>(res, HttpStatus.OK);
-       }catch (RuntimeException e){
-           throw new AppNotFoundException("امضای شما پیدا نشد");
-       }
+    public Object deleteSignature(@PathVariable Long id) {
+       return signatureService.deleteSignature(id);
     }
 
-
-
-    @Transactional
-    @PostMapping
-    public ResponseEntity<?> generateSignature(
-            @ModelAttribute SignatureRequestDto req) {
-        try{
-
-            Object res = signatureService.generateSignature(req);
-            return new ResponseEntity<>(res, HttpStatus.OK);
-
-        } catch (Exception e){
-            throw new AppConflicException("کلید شما وجود دارد");
-        }
+    @PutMapping("/active/set")
+    public Object deleteSignature(@RequestParam Long id, @RequestParam boolean active) {
+        return signatureService.activeSignature(id, active);
     }
 
-
-    @GetMapping("/active/{slug}")
-    public ResponseEntity<?> activeSignature(@PathVariable String slug) throws JsonProcessingException {
-        boolean res = signatureService.activeSignature(slug);
-        return new ResponseEntity<>(res, HttpStatus.OK);
-    }
-
-
-
-
-
-    @GetMapping("/find/{slug}")
-    public Signature findSignatureBySlug(@PathVariable String slug) {
-        return signatureService.findSignatureByIdSlug(slug);
-    }
-
-
-    @GetMapping("/use")
-    public ResponseEntity<?> useSignature(@RequestParam String slug ,@RequestParam int count) {
-        Object res = signatureService.useSignature(slug,count);
-       return new ResponseEntity<>(res, HttpStatus.OK);
-    }
 }

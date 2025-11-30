@@ -5,7 +5,6 @@ import com.app.server.dto.request.RegisterRequestDto;
 import com.app.server.dto.request.UpdateUserRequestDto;
 import com.app.server.dto.response.CustomResponseDto;
 import com.app.server.dto.response.RegisterResponseDto;
-import com.app.server.exception.AppConflicException;
 import com.app.server.exception.AppUnAuthorizedException;
 import com.app.server.model.Role;
 import com.app.server.model.User;

@@ -1,20 +1,10 @@
 package com.app.server.model;
 
-import com.app.server.dto.request.SignatureRequestDto;
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIdentityReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
 import org.hibernate.annotations.UpdateTimestamp;
-
 import java.time.LocalDateTime;
-import java.util.UUID;
-
 
 @Getter
 @Setter
@@ -30,35 +20,22 @@ public class Signature {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
+    private String title;
+    private String description;
+    private Long price;
+    private int usageCount;
+    private int period;
+    private boolean active;
 
-    @ManyToOne
-    @JsonBackReference
-    private User user;
 
 
-    private String signatureId;
+
 
     @CreationTimestamp
-    @Column(updatable = false)
     private LocalDateTime createdAt;
-    private LocalDateTime expiredAt;
-
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
-    private String slug;
-    private Long price;
-    private int usageCount;
-    private boolean isValid;
-    private int totalUsageCount;
 
-
-
-    @PrePersist
-    public void prePersist() {
-
-        if (slug == null) slug = UUID.randomUUID().toString();
-        if (totalUsageCount == 0) totalUsageCount = usageCount;
-    }
 
 }

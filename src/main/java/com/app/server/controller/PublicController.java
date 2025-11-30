@@ -1,11 +1,12 @@
 package com.app.server.controller;
 
+import com.app.server.model.Signature;
+import com.app.server.service.SignatureService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -13,16 +14,17 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/public")
 public class PublicController {
 
+    private final SignatureService signatureService;
 
-
-    @GetMapping("/hello")
-    public ResponseEntity<?> hello() {
-        return new ResponseEntity<>("hi", HttpStatus.OK);
+    @GetMapping("/signatures")
+    public Page<Signature> getSignatures(
+            @RequestParam(required = false) Integer page,
+            @RequestParam(required = false) Integer size,
+            @RequestParam(required = false) String search,
+            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "asc") String sortDir
+    ) {
+        return signatureService.getPageableSignatures(page, size, search, sortBy, sortDir);
     }
 
-
-    @GetMapping("/test")
-    public String test() {
-        return "Hello World";
-    }
 }

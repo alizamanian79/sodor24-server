@@ -1,6 +1,5 @@
 package com.app.server.annotation;
 
-import com.app.server.exception.AppConflicException;
 import com.app.server.repository.UserRepository;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;

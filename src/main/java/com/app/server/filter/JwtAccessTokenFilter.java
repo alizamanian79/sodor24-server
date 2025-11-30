@@ -96,4 +96,14 @@ public class JwtAccessTokenFilter extends OncePerRequestFilter {
 
         filterChain.doFilter(request, response);
     }
+
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+        List<String> excludePaths = List.of(
+                "/api/v1/auth",
+                "/api/v1/public"
+        );
+
+        return excludePaths.contains(request.getServletPath());
+    }
 }

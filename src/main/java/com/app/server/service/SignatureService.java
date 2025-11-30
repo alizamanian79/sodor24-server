@@ -1,24 +1,26 @@
 package com.app.server.service;
 
-import com.app.server.dto.request.SignatureRequestDto;
-import com.app.server.dto.response.CustomResponseDto;
 import com.app.server.model.Signature;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
-import java.util.UUID;
 
 public interface SignatureService {
 
-    Object generateSignature(SignatureRequestDto req) throws JsonProcessingException;
-    List<Signature> signatureList();
-    Signature getSignatureById(Long signatureId);
-    Object deleteSignatureById(Long signatureId);
-    Signature chargeSignature(String slug);
-    boolean useSignature(String signatureSlug , int count);
-    Signature findSignatureByIdSlug(String slug);
+    List<Signature> getSignatures();
+    Signature findSignatureById(Long id);
+    Page<Signature> getPageableSignatures(
+            Integer page,
+            Integer size,
+            String search,
+            String sortBy,
+            String sortDir
+    );
+    Signature generateSignature(Signature signature);
+
+    Object deleteSignature(Long signatureId);
+    Signature updateSignature(Signature signature);
+    Object activeSignature(Long signatureId , boolean active);
 
 
-    boolean activeSignature(String slug) throws JsonProcessingException;
 }

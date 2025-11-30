@@ -5,7 +5,6 @@ import com.app.server.dto.request.RegisterRequestDto;
 import com.app.server.dto.response.LoginResponseDto;
 import com.app.server.dto.response.RegisterResponseDto;
 import com.app.server.exception.AppUnAuthorizedException;
-import com.app.server.model.User;
 import com.app.server.service.UserService;
 import com.app.server.service.JwtService;
 import com.github.mfathi91.time.PersianDate;
@@ -20,7 +19,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Date;
 
 @RestController
 @RequiredArgsConstructor

@@ -1,20 +1,12 @@
 package com.app.server.model;
-
-import com.app.server.annotation.UniquePhoneNumber;
-import com.app.server.annotation.UniqueUserName;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import lombok.*;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.DeleteMapping;
-
 import java.io.Serializable;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -71,14 +63,6 @@ public class User implements UserDetails, Serializable {
 
 
 
-
-    @OneToMany(mappedBy = "user",
-            fetch = FetchType.EAGER,
-            cascade = CascadeType.ALL,
-            orphanRemoval = true)
-    @OnDelete(action = OnDeleteAction.CASCADE)
-    @JsonManagedReference
-    private List<Signature> signatures;
 
 
 

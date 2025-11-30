@@ -38,8 +38,8 @@ public class PaymentController {
         Signature findSignature = signatureService.findSignatureByIdSlug(slug);
         boolean res = zarinpalPaymentService.verifyPayment(Authority,findSignature.getPrice());
         if (res){
-
-            return ResponseEntity.ok("success");
+            Signature resSignature = signatureService.chargeSignature(slug);
+            return ResponseEntity.ok(resSignature);
         }
         return ResponseEntity.ok("fail");
     }

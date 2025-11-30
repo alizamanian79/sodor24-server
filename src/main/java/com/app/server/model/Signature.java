@@ -1,5 +1,6 @@
 package com.app.server.model;
 
+import com.app.server.dto.request.SignatureRequestDto;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -35,7 +36,6 @@ public class Signature {
     private User user;
 
 
-    @Column(nullable = false, unique = true)
     private String signatureId;
 
     @CreationTimestamp
@@ -50,14 +50,14 @@ public class Signature {
     private Long price;
     private int usageCount;
     private boolean isValid;
-
     private int totalUsageCount;
+
+
 
     @PrePersist
     public void prePersist() {
 
         if (slug == null) slug = UUID.randomUUID().toString();
-        if (signatureId == null) signatureId = UUID.randomUUID().toString();
         if (totalUsageCount == 0) totalUsageCount = usageCount;
     }
 

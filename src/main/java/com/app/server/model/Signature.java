@@ -1,10 +1,19 @@
 package com.app.server.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+
+import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -17,7 +26,7 @@ import java.time.LocalDateTime;
 public class Signature {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String title;
@@ -28,6 +37,9 @@ public class Signature {
     private boolean active;
 
 
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JsonIgnore
+    private List<UserSignature> users;
 
 
 

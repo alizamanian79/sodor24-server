@@ -1,5 +1,5 @@
 package com.app.server.model;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -11,6 +11,10 @@ import java.io.Serializable;
 import java.util.*;
 import java.util.stream.Collectors;
 
+@JsonIdentityInfo(
+        generator = ObjectIdGenerators.PropertyGenerator.class,
+        property = "username"
+)
 @Getter
 @Setter
 @Builder
@@ -20,7 +24,7 @@ import java.util.stream.Collectors;
 @Table(name = "users")
 public class User implements UserDetails, Serializable {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String fullName;
@@ -44,6 +48,15 @@ public class User implements UserDetails, Serializable {
     @Enumerated(EnumType.STRING)
     @Column(name = "role")
     private Set<Role> roles = new HashSet<>();
+
+
+
+
+
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL,mappedBy = "user")
+    private List<UserSignature> signatures;
+
+
 
 
 

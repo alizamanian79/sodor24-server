@@ -6,6 +6,8 @@ import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.Random;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -38,6 +40,28 @@ public class UserSignature {
     private int totalUsageCount;
 
 
+    private String keyId;
+    private String otp;
+
+
+
+
+
+    private String country;
+    private String reason;
+    private String location;
+    private String organization;
+    private String department;
+    private String state;
+    private String city;
+    private String email;
+    private String title;
+    private String signatureExpired;
+    private String signaturePassword;
+
+
+
+
     @CreationTimestamp
     private LocalDateTime createdAt;
 
@@ -48,5 +72,7 @@ public class UserSignature {
     @PrePersist
     public void prePersist() {
         this.totalUsageCount=usageCount;
+        this.otp = String.valueOf(1000 + new Random().nextInt(9000));
+
     }
 }

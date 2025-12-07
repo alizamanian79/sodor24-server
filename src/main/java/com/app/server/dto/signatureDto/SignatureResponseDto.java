@@ -1,8 +1,12 @@
-package com.app.server.dto.signatureMicroServiceDto;
+package com.app.server.dto.signatureDto;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class SignatureResponseDto {
     private String message;
     private String cert;

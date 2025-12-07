@@ -1,9 +1,9 @@
 package com.app.server.service.impliment;
 
 import com.app.server.dto.request.SignatureRequest;
-import com.app.server.dto.signatureMicroServiceDto.SignatureRequestDto;
 import com.app.server.dto.response.CustomResponseDto;
-import com.app.server.dto.signatureMicroServiceDto.SignatureResponseDto;
+import com.app.server.dto.signatureDto.SignatureRequestDto;
+import com.app.server.dto.signatureDto.SignatureResponseDto;
 import com.app.server.exception.AppConflicException;
 import com.app.server.exception.AppNotFoundException;
 import com.app.server.model.Signature;
@@ -13,6 +13,7 @@ import com.app.server.repository.UserSignatureRepository;
 import com.app.server.service.SignatureService;
 import com.app.server.service.UserService;
 import com.app.server.service.UserSignatureService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.mfathi91.time.PersianDate;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -23,11 +24,13 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
-
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+
+import static org.apache.kafka.common.utils.Utils.safe;
 
 @Service
 @RequiredArgsConstructor
@@ -66,6 +69,7 @@ public class UserSignatureServiceImpl implements UserSignatureService {
         }
 
         // Generate Signature
+
         UserSignature userSignature = UserSignature.builder()
                 .user(existUser)
                 .signature(existSignature)
@@ -73,21 +77,20 @@ public class UserSignatureServiceImpl implements UserSignatureService {
                 .usageCount(existSignature.getUsageCount())
                 .keyId(null)
 
-
-                .city(req.getCity())
-                .country(req.getCountry())
-                .state(req.getState())
-                .title(req.getTitle())
-                .department(req.getDepartment())
-                .organization(req.getOrganization())
-                .location(req.getLocation())
-                .email(req.getEmail())
-                .title(req.getTitle())
-                .reason(req.getReason())
-
+                //username
+                .country(req.getCountry().toString())
+                .reason(req.getReason().toString())
+                .location(req.getLocation().toString())
+                .organization(req.getOrganization().toString())
+                .department(req.getDepartment().toString())
+                .state(req.getState().toString())
+                .city(req.getCity().toString())
+                .email(req.getEmail().toString())
+                .title(req.getTitle().toString())
                 .signaturePassword(req.getSignaturePassword())
                 .signatureExpired(PersianDate.now().plusDays(existSignature.getPeriod()).toString())
                 .expiredAt(LocalDateTime.now().plusDays(existSignature.getPeriod()))
+
                 .build();
         UserSignature saved = userSignatureRepository.save(userSignature);
         return saved;
@@ -110,15 +113,15 @@ public class UserSignatureServiceImpl implements UserSignatureService {
      return false;
     }
 
+
     @Transactional
     @Override
     public Object verifySignature(String otp) {
 
         CustomResponseDto res = new CustomResponseDto();
-
         Optional<UserSignature> find = userSignatureRepository.findByOtp(otp);
 
-        // بررسی موجودیت OTP
+        // بررسی معتبر بودن OTP
         if (find.isEmpty()) {
             res.setStatus(HttpStatus.NOT_FOUND.value());
             res.setMessage("OTP نامعتبر است");
@@ -137,44 +140,76 @@ public class UserSignatureServiceImpl implements UserSignatureService {
         }
 
         try {
-            // آماده‌سازی درخواست به سرویس امضا
+
+            // لیست هشدار برای فیلدهای خالی
+            List<String> warnings = new ArrayList<>();
+
+            String username = existSignature.getUser().getUsername();
+            if (username == null) warnings.add("username is null");
+
+            String country = existSignature.getCountry();
+            if (country == null) warnings.add("country is null");
+
+            String reason = existSignature.getReason();
+            if (reason == null) warnings.add("reason is null");
+
+            String location = existSignature.getLocation();
+            if (location == null) warnings.add("location is null");
+
+            String organization = existSignature.getOrganization();
+            if (organization == null) warnings.add("organization is null");
+
+            String department = existSignature.getDepartment();
+            if (department == null) warnings.add("department is null");
+
+            String state = existSignature.getState();
+            if (state == null) warnings.add("state is null");
+
+            String city = existSignature.getCity();
+            if (city == null) warnings.add("city is null");
+
+            String email = existSignature.getEmail();
+            if (email == null) warnings.add("email is null");
+
+            String title = existSignature.getTitle();
+            if (title == null) warnings.add("title is null");
+
+            // ساخت DTO بدون مقدار فیک ("خالی")
             SignatureRequestDto req = SignatureRequestDto.builder()
-                    .city(existSignature.getCity())
-                    .country(existSignature.getCountry())
-                    .state(existSignature.getState())
-                    .department(existSignature.getDepartment())
-                    .title(existSignature.getTitle())
-                    .valid(true)
-                    .email(existSignature.getEmail()) // اگر فیلد ایمیل دارید
-                    .location(existSignature.getLocation())
-                    .usageCount(existSignature.getUsageCount())
-                    .reason(existSignature.getReason())
-                    .username(existSignature.getUser().getUsername())
+                    .username(username)
+                    .country(country)
+                    .reason(reason)
+                    .location(location)
+                    .organization(organization)
+                    .department(department)
+                    .state(state)
+                    .city(city)
+                    .email(email)
+                    .title(title)
+                    .userId("")
                     .signatureExpired(existSignature.getSignature().getPeriod())
                     .signaturePassword(existSignature.getSignaturePassword())
-                    .organization(existSignature.getOrganization())
                     .build();
 
-            String url = "http://localhost:8585/api/v1/signature/generate";
-            ResponseEntity<SignatureResponseDto> response =
-                    restTemplate.postForEntity(url, req, SignatureResponseDto.class);
-            SignatureResponseDto result = response.getBody();
+//            // ارسال درخواست به سرویس امضا
+            SignatureResponseDto result = sendSignatureRequest(req);
 
-
-            // بروزرسانی دیتابیس
+            // بروزرسانی دیتا
             existSignature.setKeyId(result.getUserId());
             existSignature.setValid(true);
             existSignature.setOtp(null);
+            existSignature.setUsageCount(existSignature.getUsageCount() - 1);
             userSignatureRepository.save(existSignature);
 
-            // پاسخ موفق
+            // پاسخ نهایی
             res.setStatus(HttpStatus.OK.value());
-            res.setMessage("امضای شما تایید شد");
+            res.setMessage("امضا با موفقیت تایید شد");
             res.setTimestamp(PersianDate.now());
+            res.setDetails(existSignature.getKeyId());
+
             return res;
 
         } catch (Exception e) {
-            // مدیریت خطاهای سرویس امضا
             res.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
             res.setMessage("خطا در ارتباط با سرویس امضا: " + e.getMessage());
             res.setTimestamp(PersianDate.now());
@@ -182,28 +217,50 @@ public class UserSignatureServiceImpl implements UserSignatureService {
         }
     }
 
-    public SignatureResponseDto sendRequestToSignatureService(SignatureRequestDto req) {
+
+    @Transactional
+    @Override
+    public SignatureResponseDto sendSignatureRequest(SignatureRequestDto req) {
+
         String url = "http://localhost:8585/api/v1/signature/generate";
 
+        // ساخت آبجکت جدید و اعمال مقادیر
+        SignatureRequestDto request = new SignatureRequestDto();
+        request.setUsername(req.getUsername());
+        request.setCountry(req.getCountry());
+        request.setReason(req.getReason());
+        request.setLocation(req.getLocation());
+        request.setOrganization(req.getOrganization());
+        request.setDepartment(req.getDepartment());
+        request.setState(req.getState());
+        request.setCity(req.getCity());
+        request.setEmail(req.getEmail());
+        request.setTitle(req.getTitle());
+        request.setUserId(req.getUserId());
+        request.setSignatureExpired(10);
+        request.setSignaturePassword(req.getSignaturePassword());
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        // اینجا باید ***request*** ارسال شود نه req
+        HttpEntity<SignatureRequestDto> entity = new HttpEntity<>(request, headers);
+
         try {
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_JSON);
-
-            HttpEntity<SignatureRequestDto> entity = new HttpEntity<>(req, headers);
-
             ResponseEntity<SignatureResponseDto> response =
                     restTemplate.postForEntity(url, entity, SignatureResponseDto.class);
 
             return response.getBody();
 
-        } catch (HttpClientErrorException | HttpServerErrorException e) {
-            throw new RuntimeException("خطا در ارتباط با سرویس امضا: " + e.getResponseBodyAsString());
+        } catch (HttpClientErrorException e) {
+            throw new RuntimeException("خطا از سرویس امضا: " + e.getStatusCode() + " - " + e.getResponseBodyAsString());
+        } catch (HttpServerErrorException e) {
+            throw new RuntimeException("خطای داخلی سرویس امضا: " + e.getStatusCode());
         } catch (ResourceAccessException e) {
-            throw new RuntimeException("سرویس امضا در دسترس نیست: " + e.getMessage());
+            throw new RuntimeException("اتصال به سرویس امضا برقرار نشد");
         } catch (Exception e) {
-            throw new RuntimeException("خطای غیرمنتظره: " + e.getMessage());
+            throw new RuntimeException("خطای نامشخص: " + e.getMessage());
         }
     }
-
 
 }

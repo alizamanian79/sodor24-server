@@ -1,11 +1,12 @@
-package com.app.server.dto.signatureMicroServiceDto;
+package com.app.server.dto.signatureDto;
 
 import lombok.*;
 
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
 @Builder
+@NoArgsConstructor
+@ToString
+@AllArgsConstructor
 public class SignatureRequestDto {
     private String username;
     private String country;
@@ -17,10 +18,7 @@ public class SignatureRequestDto {
     private String city;
     private String email;
     private String title;
-    private int signatureExpired;
+    private String userId; // optional
+    private Integer signatureExpired;
     private String signaturePassword;
-
-    private int usageCount;
-    private boolean valid;
-
 }

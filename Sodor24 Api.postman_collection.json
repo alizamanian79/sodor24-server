@@ -4,7 +4,7 @@
 		"name": "Sodor24 Api",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "42544422",
-		"_collection_link": "https://akuladacademy.postman.co/workspace/Sodor24~27f4f084-04ed-401d-af8e-3cba0b87819e/collection/42544422-179085a7-91d7-41dd-bba7-054385ea47a9?action=share&source=collection_link&creator=42544422"
+		"_collection_link": "https://akuladacademy.postman.co/workspace/27f4f084-04ed-401d-af8e-3cba0b87819e/collection/42544422-179085a7-91d7-41dd-bba7-054385ea47a9?action=share&source=collection_link&creator=42544422"
 	},
 	"item": [
 		{
@@ -730,7 +730,7 @@
 					"name": "Buy",
 					"item": [
 						{
-							"name": "Buy",
+							"name": "Buy Signature",
 							"request": {
 								"auth": {
 									"type": "bearer",
@@ -746,10 +746,15 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"id\":3,\r\n    \"title\":\"امضای طلایی\",\r\n    \"description\":\"طرح جدید امضای طلایی همواره در خدمت مشتریان\",\r\n    \"price\":1900000,\r\n    \"usageCount\":5,\r\n    \"period\":30,\r\n    \"active\":true\r\n}"
+									"raw": "{\r\n  \"userId\": 1,\r\n  \"signatureId\": 1,\r\n  \"country\": \"Iran\",\r\n  \"reason\": \"test request\",\r\n  \"location\": \"Tehran\",\r\n  \"organization\": \"Alibaba Group\",\r\n  \"department\": \"Floor B\",\r\n  \"state\": \"Tehran\",\r\n  \"city\": \"Tehran\",\r\n  \"email\": \"alizamaniandev@gmail.com\",\r\n  \"title\": \"Alibaba.ir\",\r\n  \"signaturePassword\": \"12dede34\"\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
 								},
 								"url": {
-									"raw": "{{HOST}}/api/v1/service/signature?userId=1&signatureId=1",
+									"raw": "{{HOST}}/api/v1/service/signature",
 									"host": [
 										"{{HOST}}"
 									],
@@ -758,15 +763,46 @@
 										"v1",
 										"service",
 										"signature"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Verify Signature",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{ACCESS_TOKEN}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{HOST}}/api/v1/service/signature/verify?otp=7624",
+									"host": [
+										"{{HOST}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"service",
+										"signature",
+										"verify"
 									],
 									"query": [
 										{
-											"key": "userId",
-											"value": "1"
-										},
-										{
-											"key": "signatureId",
-											"value": "1"
+											"key": "otp",
+											"value": "7624"
 										}
 									]
 								}
@@ -774,7 +810,7 @@
 							"response": []
 						},
 						{
-							"name": "List",
+							"name": "Signature Service List",
 							"protocolProfileBehavior": {
 								"disableBodyPruning": true
 							},
@@ -811,7 +847,7 @@
 							"response": []
 						},
 						{
-							"name": "Get By Id",
+							"name": "Get Signature By Id",
 							"protocolProfileBehavior": {
 								"disableBodyPruning": true
 							},
@@ -851,7 +887,7 @@
 					]
 				},
 				{
-					"name": "Main Action",
+					"name": "Plans",
 					"item": [
 						{
 							"name": "Get Signatures",
@@ -1124,7 +1160,7 @@
 									}
 								},
 								"url": {
-									"raw": "{{HOST}}/api/v1/signature/active/set?id=2&active=true",
+									"raw": "{{HOST}}/api/v1/signature/active/set?id=1&active=true",
 									"host": [
 										"{{HOST}}"
 									],
@@ -1138,7 +1174,7 @@
 									"query": [
 										{
 											"key": "id",
-											"value": "2"
+											"value": "1"
 										},
 										{
 											"key": "active",

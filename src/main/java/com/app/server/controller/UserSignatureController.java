@@ -6,9 +6,7 @@ import com.app.server.dto.signatureDto.SignatureResponseDto;
 import com.app.server.model.UserSignature;
 import com.app.server.service.UserSignatureService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
 import java.util.List;
 
 @RestController
@@ -16,12 +14,9 @@ import java.util.List;
 @RequestMapping("/api/v1/service/signature")
 public class UserSignatureController {
 
-    @Autowired
-    private RestTemplate restTemplate ;
+
 
     private final UserSignatureService userSignatureService;
-
-
 
 
     @PostMapping
@@ -49,11 +44,11 @@ public class UserSignatureController {
     }
 
 
-    @PostMapping("/test")
-    public SignatureResponseDto test(@RequestBody SignatureRequestDto req) {
-        SignatureResponseDto res = userSignatureService.sendSignatureRequest(req);
-        return res;
-    }
+//    @PostMapping("/test")
+//    public SignatureResponseDto test(@RequestBody SignatureRequestDto req) {
+//        SignatureResponseDto res = userSignatureService.sendSignatureRequest(req);
+//        return res;
+//    }
 
 
 

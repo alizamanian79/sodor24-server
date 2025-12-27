@@ -1,6 +1,7 @@
 package com.app.server.util.ZarinpalPaymentService.service.impl;
 
 
+import com.app.server.util.ZarinpalPaymentService.dto.ZarinpalPaymentRequest;
 import com.app.server.util.ZarinpalPaymentService.dto.ZarinpalPaymentResponse;
 import com.app.server.util.ZarinpalPaymentService.service.ZarinpalPaymentService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -51,22 +52,21 @@ public class ZarinpalPaymentServiceImpl implements ZarinpalPaymentService {
 
 
     @Override
-    public ZarinpalPaymentResponse payment(Long amount , String callback ,
-                                           String description , String mobile , String email ) {
+    public ZarinpalPaymentResponse payment(ZarinpalPaymentRequest req) {
 
         ZarinpalPaymentResponse res = new ZarinpalPaymentResponse();
 
         try {
             Map<String, Object> body = new HashMap<>();
             body.put("merchant_id", merchantId);
-            body.put("amount", amount);
+            body.put("amount", req.getAmount());
             body.put("currency",currency);
-            body.put("callback_url", callback);
-            body.put("description", description);
+            body.put("callback_url", req.getCallback_url());
+            body.put("description", req.getDescription());
 
             Map<String, String> metadata = new HashMap<>();
-            metadata.put("mobile", mobile);
-            metadata.put("email", email);
+            metadata.put("mobile", req.getMobile());
+            metadata.put("email", req.getEmail());
 //            metadata.put("order_id", "1235");
             body.put("metadata", metadata);
 

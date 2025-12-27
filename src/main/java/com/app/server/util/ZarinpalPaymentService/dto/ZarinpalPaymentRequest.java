@@ -1,5 +1,12 @@
 package com.app.server.util.ZarinpalPaymentService.dto;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@Builder
 public class ZarinpalPaymentRequest {
     private String email;
     private String mobile;

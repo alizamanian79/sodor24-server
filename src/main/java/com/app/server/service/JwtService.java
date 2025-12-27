@@ -8,7 +8,6 @@ public interface JwtService {
     String generateRefreshToken(String subject,Collection<? extends GrantedAuthority> authorities);
     String parseAccessToken(String accessToken);
     String convertRefreshTokenToAccessToken(String refreshToken);
-
-     Claims claimsFromToken(String accessToken);
-
+    Claims claimsFromToken(String accessToken);
+    String generateCallbackAccessToken(String subject);
 }

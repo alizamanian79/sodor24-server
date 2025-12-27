@@ -120,4 +120,17 @@ public class JwtServiceImpl implements JwtService {
             throw new IllegalArgumentException("Invalid or expired refresh token", e);
         }
     }
+
+
+    @Override
+    public String generateCallbackAccessToken(String subject) {
+        return Jwts.builder()
+                .setSubject(subject)
+                .claim("type", "callback-access-token")
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + (5 * 60 * 1000))) // 5 دقیقه
+                .signWith(accessTokenKey, SignatureAlgorithm.HS256)
+                .compact();
+    }
+
 }

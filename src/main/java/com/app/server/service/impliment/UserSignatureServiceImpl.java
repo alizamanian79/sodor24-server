@@ -56,6 +56,12 @@ public class UserSignatureServiceImpl implements UserSignatureService {
         return userSignatureRepository.findById(usersignatureId).orElseThrow(()-> new AppNotFoundException("امضا پیدا نشد"));
     }
 
+    @Override
+    public UserSignature findUserSignatureByOtp(String otp) {
+        UserSignature signature = userSignatureRepository.findByOtp(otp).orElseThrow(()->new AppNotFoundException("امضا کاربر پیدا نشد"));
+        return signature;
+    }
+
 
     @Transactional
     @Override

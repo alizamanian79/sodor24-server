@@ -4,6 +4,7 @@ package com.app.server.config;
 import com.app.server.exception.CustomAccessDeniedHandler;
 import com.app.server.exception.CustomAuthEntryPoint;
 import com.app.server.filter.JwtAccessTokenFilter;
+import com.app.server.filter.JwtAccessTokenQueryParamFilter;
 import com.app.server.filter.JwtRefreshTokenFilter;
 import com.app.server.filter.RequestInfoFilter;
 import com.app.server.provider.UsernamePasswordProvider;
@@ -44,18 +45,21 @@ public class SecurityConfig {
     private final JwtRefreshTokenFilter jwtRefreshTokenFilter;
     private final CustomAuthEntryPoint unauthorizedHandler;
     private final RequestInfoFilter requestInfoFilter;
+    private final JwtAccessTokenQueryParamFilter jwtAccessTokenQueryParamFilter;
 
     public SecurityConfig(@Lazy UsernamePasswordProvider usernamePasswordProvider,
                           @Lazy JwtAccessTokenFilter jwtAccessTokenFilter,
                           @Lazy JwtRefreshTokenFilter jwtRefreshTokenFilter,
                           @Lazy CustomAuthEntryPoint unauthorizedHandler,
-                          @Lazy RequestInfoFilter requestInfoFilter
+                          @Lazy RequestInfoFilter requestInfoFilter,
+                          @Lazy JwtAccessTokenQueryParamFilter jwtAccessTokenQueryParamFilter
     ) {
         this.usernamePasswordProvider = usernamePasswordProvider;
         this.jwtRefreshTokenFilter = jwtRefreshTokenFilter;
         this.jwtAccessTokenFilter = jwtAccessTokenFilter;
         this.unauthorizedHandler = unauthorizedHandler;
         this.requestInfoFilter = requestInfoFilter;
+        this.jwtAccessTokenQueryParamFilter = jwtAccessTokenQueryParamFilter;
     }
 
 
@@ -81,6 +85,7 @@ public class SecurityConfig {
                     auth.anyRequest().authenticated();
                 })
 
+                .addFilterBefore(jwtAccessTokenQueryParamFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtAccessTokenFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtRefreshTokenFilter, UsernamePasswordAuthenticationFilter.class)
 

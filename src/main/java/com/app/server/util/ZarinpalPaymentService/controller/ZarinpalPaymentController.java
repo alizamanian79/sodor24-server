@@ -24,8 +24,7 @@ public class ZarinpalPaymentController {
     @PostMapping("/payment")
     public ResponseEntity<?> zarinpalPayment(@RequestBody ZarinpalPaymentRequest req) {
         System.out.println(req);
-        ZarinpalPaymentResponse res = zarinpalPaymentService.payment(req.getAmount(),req.getCallback_url(),
-                req.getDescription(),req.getMobile(),req.getEmail());
+        ZarinpalPaymentResponse res = zarinpalPaymentService.payment(req);
         return new ResponseEntity<>(res, HttpStatus.OK);
     }
 

@@ -12,8 +12,7 @@ import java.io.IOException;
 @Component
 public class CustomAuthEntryPoint implements AuthenticationEntryPoint {
 
-    @Value("${app.client.login.redirect-url}")
-    private String redirectUrl;
+
 
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response,

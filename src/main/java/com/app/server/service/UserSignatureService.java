@@ -11,7 +11,7 @@ public interface UserSignatureService {
     UserSignature generateUserSignature(SignatureRequest req);
     List<UserSignature> findAll();
     UserSignature findById(Long id);
-
+    UserSignature findUserSignatureByOtp(String otp);
 
     boolean callBackSignatureProcess(Long id);
 

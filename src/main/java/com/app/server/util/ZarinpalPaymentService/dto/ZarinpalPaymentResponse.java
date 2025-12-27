@@ -1,4 +1,4 @@
-package com.app.server.Utils.ZarinpalPaymentService.dto;
+package com.app.server.util.ZarinpalPaymentService.dto;
 
 public class ZarinpalPaymentResponse {
     private String message;

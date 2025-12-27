@@ -3,12 +3,10 @@ import com.app.server.dto.response.CustomResponseDto;
 import com.app.server.exception.AppNotFoundException;
 import com.app.server.model.Signature;
 import com.app.server.repository.SignatureRepository;
-import com.app.server.repository.UserRepository;
 import com.app.server.service.SignatureService;
 import com.github.mfathi91.time.PersianDate;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -27,8 +25,6 @@ public class SignatureServiceImpl implements SignatureService {
 
     private final SignatureRepository signatureRepository;
 
-    @Value("${signature.price}")
-    private Long signaturePrice;
     private final RestTemplate restTemplate;
 
 

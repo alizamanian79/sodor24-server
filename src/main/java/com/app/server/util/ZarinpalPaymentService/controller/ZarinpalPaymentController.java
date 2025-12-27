@@ -1,9 +1,10 @@
 package com.app.server.util.ZarinpalPaymentService.controller;
 
-import com.app.server.Utils.ZarinpalPaymentService.dto.ZarinpalPaymentRequest;
-import com.app.server.Utils.ZarinpalPaymentService.dto.ZarinpalPaymentResponse;
-import com.app.server.Utils.ZarinpalPaymentService.dto.ZarinpalPaymentVerifyRequest;
 
+
+import com.app.server.util.ZarinpalPaymentService.dto.ZarinpalPaymentRequest;
+import com.app.server.util.ZarinpalPaymentService.dto.ZarinpalPaymentResponse;
+import com.app.server.util.ZarinpalPaymentService.dto.ZarinpalPaymentVerifyRequest;
 import com.app.server.util.ZarinpalPaymentService.service.ZarinpalPaymentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

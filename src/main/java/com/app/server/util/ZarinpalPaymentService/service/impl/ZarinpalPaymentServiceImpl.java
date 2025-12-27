@@ -1,8 +1,11 @@
 package com.app.server.util.ZarinpalPaymentService.service.impl;
 
-import com.app.server.Utils.ZarinpalPaymentService.dto.ZarinpalPaymentResponse;
+
+import com.app.server.util.ZarinpalPaymentService.dto.ZarinpalPaymentResponse;
 import com.app.server.util.ZarinpalPaymentService.service.ZarinpalPaymentService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.annotation.PostConstruct;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -16,15 +19,36 @@ import java.util.Map;
 
 @Service
 public class ZarinpalPaymentServiceImpl implements ZarinpalPaymentService {
-
     RestTemplate restTemplate = new RestTemplate();
 
+    // Add this config to application.yml
+    // # ==================== Zarinpal config ==================== #
+    // zarinpal.server_host=${ZARINPAL_SERVER_HOST:https://sandbox.zarinpal.com}
+    // zarinpal.merchant_Id=${ZARINPAL_MERCHANT_ID:7007f58a-3ec5-4ea6-a414-5849591ba0a7}
+
+
     // To Generate Link for payment
-    String merchantId = "7007f58a-3ec5-4ea6-a414-5849591ba0a7";
-    String requestUrl = "https://sandbox.zarinpal.com/pg/v4/payment/request.json";
-    String gatewayLink = "https://sandbox.zarinpal.com/pg/StartPay";
-    String verifyUrl = "https://sandbox.zarinpal.com/pg/v4/payment/verify.json";
+    @Value("${zarinpal.merchant_Id}")
+    private String merchantPaymentId;
+
+    @Value("${zarinpal.server_host}")
+    private String paymentServerHost;
+
+    String merchantId = "";
+    String requestUrl = "/pg/v4/payment/request.json";
+    String gatewayLink = "/pg/StartPay";
+    String verifyUrl = "/pg/v4/payment/verify.json";
     String currency = "IRT"; // IRT is Toman and IRR is Rial
+
+    @PostConstruct
+    public void init() {
+       this.merchantId = merchantPaymentId;
+       this.requestUrl=paymentServerHost+requestUrl;
+       this.gatewayLink=paymentServerHost+gatewayLink;
+       this.verifyUrl=paymentServerHost+verifyUrl;
+    }
+
+
 
     @Override
     public ZarinpalPaymentResponse payment(Long amount , String callback ,

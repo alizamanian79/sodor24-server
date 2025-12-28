@@ -16,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
@@ -28,7 +29,7 @@ public class UserSignatureController {
     @Value("${app.server.host}")
     private String serverHost;
 
-    private final JwtService jwtService;
+
     private final UserSignatureService userSignatureService;
     private final ZarinpalPaymentService zarinpalPaymentService;
 
@@ -138,6 +139,15 @@ public class UserSignatureController {
 
 
 
+    // using process
+    @PreAuthorize("hasRole('ADMIN') or #userId == authentication.principal.id")
+    @GetMapping("/using")
+    public ResponseEntity<?> using(@RequestParam Long userId , @RequestParam Long userSignatureId ) {
+        UserSignature find = userSignatureService.findById(userSignatureId);
+        boolean res = userSignatureService.signingProcess(userSignatureId);
+        return ResponseEntity.ok(res);
+    }
+
 
 
     @GetMapping
@@ -149,16 +159,6 @@ public class UserSignatureController {
     public UserSignature get(@PathVariable Long id){
         return userSignatureService.findById(id);
     }
-
-
-
-
-//    @PostMapping("/test")
-//    public SignatureResponseDto test(@RequestBody SignatureRequestDto req) {
-//        SignatureResponseDto res = userSignatureService.sendSignatureRequest(req);
-//        return res;
-//    }
-
 
 
 }

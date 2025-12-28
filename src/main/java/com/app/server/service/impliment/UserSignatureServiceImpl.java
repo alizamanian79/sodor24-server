@@ -19,6 +19,8 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.scheduling.annotation.Schedules;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
@@ -103,21 +105,10 @@ public class UserSignatureServiceImpl implements UserSignatureService {
     }
 
 
-    // Using Signature
-    @Override
-    @Transactional
-    public boolean callBackSignatureProcess(Long id){
-     UserSignature signature = findById(id);
-     if (signature.isValid()){
-         if (signature.getUsageCount() <=0){
-             return false;
-         }
-         signature.setUsageCount(signature.getUsageCount() - 1);
-         userSignatureRepository.save(signature);
-         return true;
-     }
-     return false;
-    }
+
+
+
+
 
 
     @Transactional
@@ -268,6 +259,46 @@ public class UserSignatureServiceImpl implements UserSignatureService {
         } catch (Exception e) {
             throw new RuntimeException("خطای نامشخص: " + e.getMessage());
         }
+    }
+
+
+
+
+    @Transactional
+    public boolean checkingValueSignature(Long id){
+        UserSignature signature = findById(id);
+        if (signature.isValid()){
+            if (signature.getUsageCount() <=0){
+                return false;
+            }
+            signature.setUsageCount(signature.getUsageCount() - 1);
+            userSignatureRepository.save(signature);
+            return true;
+        }
+        return false;
+    }
+
+
+
+    @Transactional
+    @Override
+    public boolean signingProcess(Long userSignatureId) {
+
+     boolean res = checkingValueSignature(userSignatureId);
+     UserSignature findSignature = findById(userSignatureId);
+
+     return true;
+
+    }
+
+
+//    @Scheduled(cron = "0 0 */12 * * *")
+    @Scheduled(cron = "*/30 * * * * *")
+    @Transactional
+    public void deleteInvalidSignatures() {
+        int deletedCount = userSignatureRepository.deleteAllInvalid();
+        System.out.println("Deleted invalid signatures: " + deletedCount);
+
     }
 
 }

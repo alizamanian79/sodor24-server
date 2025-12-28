@@ -17,9 +17,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-
 import java.io.IOException;
-import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -37,7 +35,7 @@ public class JwtAccessTokenQueryParamFilter extends OncePerRequestFilter {
             FilterChain filterChain
     ) throws ServletException, IOException {
 
-        String token = request.getParameter("access_token");
+        String token = request.getParameter("token");
 
         if (token != null && !token.isBlank()) {
 
@@ -69,7 +67,7 @@ public class JwtAccessTokenQueryParamFilter extends OncePerRequestFilter {
 
                         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-                        // wrap کردن request برای اضافه کردن Authorization header
+
                         request = new HttpServletRequestWrapper(request) {
                             @Override
                             public String getHeader(String name) {

@@ -122,7 +122,7 @@ public class UserSignatureServiceImpl implements UserSignatureService {
 
     @Transactional
     @Override
-    public Object verifySignature(String otp) {
+    public CustomResponseDto verifySignature(String otp) {
 
         CustomResponseDto res = new CustomResponseDto();
         Optional<UserSignature> find = userSignatureRepository.findByOtp(otp);
@@ -222,6 +222,7 @@ public class UserSignatureServiceImpl implements UserSignatureService {
             return res;
         }
     }
+
 
 
     @Transactional

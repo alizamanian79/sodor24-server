@@ -10,6 +10,7 @@ import com.app.server.service.UserSignatureService;
 import com.app.server.util.ZarinpalPaymentService.dto.ZarinpalPaymentRequest;
 import com.app.server.util.ZarinpalPaymentService.dto.ZarinpalPaymentResponse;
 import com.app.server.util.ZarinpalPaymentService.service.ZarinpalPaymentService;
+import com.github.mfathi91.time.PersianDate;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -43,7 +44,7 @@ public class UserSignatureController {
         }
 
         String accessToken = authorization.replace("Bearer ", "");
-        System.out.println(accessToken);
+
 
         UserSignature signature = userSignatureService.generateUserSignature(req);
 
@@ -67,7 +68,7 @@ public class UserSignatureController {
                             serverHost +
                                     "/api/v1/service/signature/verify" +
                                     "?otp=" + otp +
-                                    "&access_token=" + accessToken
+                                    "&token=" + accessToken
                     )
                     .build();
 
@@ -83,14 +84,59 @@ public class UserSignatureController {
 
 
     @GetMapping("/verify")
-    public ResponseEntity<?> verify(Authentication authentication) {
+    public ResponseEntity<?> verify(@RequestParam String otp,
+                                    @RequestParam String Authority,
+                                    @RequestParam String Status) {
+        UserSignature find = userSignatureService.findUserSignatureByOtp(otp);
         try {
-            Object auth = authentication.getPrincipal();
-            return new ResponseEntity<>(auth, HttpStatus.OK);
-        } catch (RuntimeException e) {
-            throw new RuntimeException(e);
+
+            if (Authority == null || Authority.isBlank()
+                    || Status == null || Status.isBlank()
+                    || !"OK".equals(Status)) {
+                return new ResponseEntity<>("تراکنش نا معتبر", HttpStatus.BAD_REQUEST);
+            }
+
+
+            if (find.isValid()) {
+                CustomResponseDto res = CustomResponseDto.builder()
+                        .message("امضای شما ثبت میباشد")
+                        .details(find.getKeyId())
+                        .timestamp(PersianDate.now())
+                        .build();
+                return ResponseEntity.ok(res);
+            }
+
+            boolean payStatus = zarinpalPaymentService.verifyPayment(
+                    Authority,
+                    find.getSignature().getPrice()
+            );
+
+            if (!payStatus) {
+                return new ResponseEntity<>("پرداخت ناموفق بود", HttpStatus.BAD_REQUEST);
+            }
+
+            CustomResponseDto res = userSignatureService.verifySignature(find.getOtp());
+
+
+            if (res.getDetails() !=null || res.getDetails().isEmpty()) {
+                return new ResponseEntity<>(res, HttpStatus.OK);
+            }
+
+            return new ResponseEntity<>("خطا در تایید امضا", HttpStatus.BAD_REQUEST);
+
+        } catch (Exception e) {
+
+            CustomResponseDto res = CustomResponseDto.builder()
+                    .message("امضای شما ثبت میباشد")
+                    .details(find.getKeyId())
+                    .timestamp(PersianDate.now())
+                    .build();
+
+            return new ResponseEntity<>(res, HttpStatus.OK);
         }
     }
+
+
 
 
 

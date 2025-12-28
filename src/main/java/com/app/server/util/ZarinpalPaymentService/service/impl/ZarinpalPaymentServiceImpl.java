@@ -150,7 +150,7 @@ public class ZarinpalPaymentServiceImpl implements ZarinpalPaymentService {
 
                 Object codeObj = dataMap.get("code");
 
-                if (codeObj != null && codeObj.toString().equals("100")) {
+                if (codeObj != null && codeObj.toString().equals("100") || codeObj.toString().equals("101")) {
 
                     return true;
                 }

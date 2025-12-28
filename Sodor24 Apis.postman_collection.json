@@ -1,10 +1,10 @@
 {
 	"info": {
 		"_postman_id": "179085a7-91d7-41dd-bba7-054385ea47a9",
-		"name": "Sodor24 Api",
+		"name": "Sodor24 Apis",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "42544422",
-		"_collection_link": "https://akuladacademy.postman.co/workspace/27f4f084-04ed-401d-af8e-3cba0b87819e/collection/42544422-179085a7-91d7-41dd-bba7-054385ea47a9?action=share&source=collection_link&creator=42544422"
+		"_collection_link": "https://akuladacademy.postman.co/workspace/Sodor24~27f4f084-04ed-401d-af8e-3cba0b87819e/collection/42544422-179085a7-91d7-41dd-bba7-054385ea47a9?action=share&source=collection_link&creator=42544422"
 	},
 	"item": [
 		{
@@ -642,7 +642,7 @@
 							}
 						},
 						"url": {
-							"raw": "{{HOST}}/api/v1/users/2/role",
+							"raw": "{{HOST}}/api/v1/users/1/role",
 							"host": [
 								"{{HOST}}"
 							],
@@ -650,7 +650,7 @@
 								"api",
 								"v1",
 								"users",
-								"2",
+								"1",
 								"role"
 							]
 						}
@@ -788,7 +788,7 @@
 									"raw": ""
 								},
 								"url": {
-									"raw": "{{HOST}}/api/v1/service/signature/verify?otp=7624",
+									"raw": "{{HOST}}/api/v1/service/signature/verify?otp=1752",
 									"host": [
 										"{{HOST}}"
 									],
@@ -802,7 +802,7 @@
 									"query": [
 										{
 											"key": "otp",
-											"value": "7624"
+											"value": "1752"
 										}
 									]
 								}
@@ -879,6 +879,43 @@
 										"service",
 										"signature",
 										"1"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Test Verify",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": []
+								},
+								"url": {
+									"raw": "{{HOST}}/api/v1/service/signature/verify?access-token={{ACCESS_TOKEN}}",
+									"host": [
+										"{{HOST}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"service",
+										"signature",
+										"verify"
+									],
+									"query": [
+										{
+											"key": "access-token",
+											"value": "{{ACCESS_TOKEN}}"
+										}
 									]
 								}
 							},
@@ -1013,7 +1050,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"title\":\"امضای نقره ای\",\r\n    \"description\":\"طرح جدید امضای نقره ای همواره در خدمت مشتریان\",\r\n    \"price\":1200000,\r\n    \"usageCount\":5,\r\n    \"period\":30\r\n}",
+									"raw": "{\r\n    \"title\":\"امضای خاکستری \",\r\n    \"description\":\"طرح جدید امضای خاکستریی همواره در خدمت مشتریان\",\r\n    \"price\":350000,\r\n    \"usageCount\":15,\r\n    \"period\":30\r\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -1208,7 +1245,7 @@
 							"formdata": []
 						},
 						"url": {
-							"raw": "{{HOST}}/api/v1/public/signatures?page=&size=&search=&sortBy=id&sortDir=asc",
+							"raw": "{{HOST}}/api/v1/public/signatures",
 							"host": [
 								"{{HOST}}"
 							],
@@ -1221,24 +1258,102 @@
 							"query": [
 								{
 									"key": "page",
-									"value": ""
+									"value": "",
+									"disabled": true
 								},
 								{
 									"key": "size",
-									"value": ""
+									"value": "",
+									"disabled": true
 								},
 								{
 									"key": "search",
-									"value": ""
+									"value": "",
+									"disabled": true
 								},
 								{
 									"key": "sortBy",
-									"value": "id"
+									"value": "id",
+									"disabled": true
 								},
 								{
 									"key": "sortDir",
-									"value": "asc"
+									"value": "asc",
+									"disabled": true
 								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Signatures Copy",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"url": {
+							"raw": "http://localhost:8080/signatures",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"signatures"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Zarinpal",
+			"item": [
+				{
+					"name": "GateWay",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{ACCESS_TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"alizamaniandev@gmail.com\",\r\n    \"mobile\":\"09917403979\",\r\n    \"amount\": 450000,\r\n    \"description\": \"پرداخت دوره\",\r\n    \"callback_url\": \"http://localhost:8080/api/v1/callback/zarinpalpayment/1352/450000\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{HOST}}/api/v1/zarinpal/payment",
+							"host": [
+								"{{HOST}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"zarinpal",
+								"payment"
 							]
 						}
 					},

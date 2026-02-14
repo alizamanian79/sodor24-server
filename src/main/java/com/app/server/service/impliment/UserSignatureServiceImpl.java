@@ -58,9 +58,30 @@ public class UserSignatureServiceImpl implements UserSignatureService {
 
     @Override
     public UserSignature findUserSignatureByOtp(String otp) {
-        UserSignature signature = userSignatureRepository.findByOtp(otp).orElseThrow(()->new AppNotFoundException("امضا کاربر پیدا نشد"));
+        UserSignature signature = userSignatureRepository.findByOtp(otp).orElseThrow(()->new AppNotFoundException("کد وارد شده نامعتبر میباشد"));
         return signature;
     }
+
+
+
+    // Using Signature
+    @Override
+    @Transactional
+    public boolean callBackSignatureProcess(Long id){
+     UserSignature signature = findById(id);
+     if (signature.isValid()){
+         if (signature.getUsageCount() <=0){
+             return false;
+         }
+         signature.setUsageCount(signature.getUsageCount() - 1);
+         userSignatureRepository.save(signature);
+         return true;
+     }
+     return false;
+    }
+
+
+
 
 
     @Transactional
@@ -71,7 +92,8 @@ public class UserSignatureServiceImpl implements UserSignatureService {
         Signature existSignature =signatureService.findSignatureById(req.getSignatureId());
 
         if (!existSignature.isActive()){
-            throw new AppConflicException("اعتبار این پلن از امضا تایید نشده","به محض تعویض وضعیت این پلن به شما اطلاع خواهیم داد");
+            throw new AppConflicException("اعتبار این پلن از امضا تایید نشده",
+                    "به محض تعویض وضعیت این پلن به شما اطلاع خواهیم داد");
         }
 
         // Generate Signature
@@ -96,132 +118,13 @@ public class UserSignatureServiceImpl implements UserSignatureService {
                 .signaturePassword(req.getSignaturePassword())
                 .signatureExpired(PersianDate.now().plusDays(existSignature.getPeriod()).toString())
                 .expiredAt(LocalDateTime.now().plusDays(existSignature.getPeriod()))
-
                 .build();
         UserSignature saved = userSignatureRepository.save(userSignature);
         return saved;
     }
 
 
-    // Using Signature
-    @Override
-    @Transactional
-    public boolean callBackSignatureProcess(Long id){
-     UserSignature signature = findById(id);
-     if (signature.isValid()){
-         if (signature.getUsageCount() <=0){
-             return false;
-         }
-         signature.setUsageCount(signature.getUsageCount() - 1);
-         userSignatureRepository.save(signature);
-         return true;
-     }
-     return false;
-    }
 
-
-    @Transactional
-    @Override
-    public CustomResponseDto verifySignature(String otp) {
-
-        CustomResponseDto res = new CustomResponseDto();
-        Optional<UserSignature> find = userSignatureRepository.findByOtp(otp);
-
-        // بررسی معتبر بودن OTP
-        if (find.isEmpty()) {
-            res.setStatus(HttpStatus.NOT_FOUND.value());
-            res.setMessage("OTP نامعتبر است");
-            res.setTimestamp(PersianDate.now());
-            return res;
-        }
-
-        UserSignature existSignature = find.get();
-
-        // بررسی تعداد استفاده
-        if (existSignature.getUsageCount() <= 0) {
-            res.setStatus(HttpStatus.BAD_REQUEST.value());
-            res.setMessage("تعداد استفاده امضا به پایان رسیده است");
-            res.setTimestamp(PersianDate.now());
-            return res;
-        }
-
-        try {
-
-            // لیست هشدار برای فیلدهای خالی
-            List<String> warnings = new ArrayList<>();
-
-            String username = existSignature.getUser().getUsername();
-            if (username == null) warnings.add("username is null");
-
-            String country = existSignature.getCountry();
-            if (country == null) warnings.add("country is null");
-
-            String reason = existSignature.getReason();
-            if (reason == null) warnings.add("reason is null");
-
-            String location = existSignature.getLocation();
-            if (location == null) warnings.add("location is null");
-
-            String organization = existSignature.getOrganization();
-            if (organization == null) warnings.add("organization is null");
-
-            String department = existSignature.getDepartment();
-            if (department == null) warnings.add("department is null");
-
-            String state = existSignature.getState();
-            if (state == null) warnings.add("state is null");
-
-            String city = existSignature.getCity();
-            if (city == null) warnings.add("city is null");
-
-            String email = existSignature.getEmail();
-            if (email == null) warnings.add("email is null");
-
-            String title = existSignature.getTitle();
-            if (title == null) warnings.add("title is null");
-
-            // ساخت DTO بدون مقدار فیک ("خالی")
-            SignatureRequestDto req = SignatureRequestDto.builder()
-                    .username(username)
-                    .country(country)
-                    .reason(reason)
-                    .location(location)
-                    .organization(organization)
-                    .department(department)
-                    .state(state)
-                    .city(city)
-                    .email(email)
-                    .title(title)
-                    .userId("")
-                    .signatureExpired(existSignature.getSignature().getPeriod())
-                    .signaturePassword(existSignature.getSignaturePassword())
-                    .build();
-
-//            // ارسال درخواست به سرویس امضا
-            SignatureResponseDto result = sendSignatureRequest(req);
-
-            // بروزرسانی دیتا
-            existSignature.setKeyId(result.getUserId());
-            existSignature.setValid(true);
-            existSignature.setOtp(null);
-            existSignature.setUsageCount(existSignature.getUsageCount() - 1);
-            userSignatureRepository.save(existSignature);
-
-            // پاسخ نهایی
-            res.setStatus(HttpStatus.OK.value());
-            res.setMessage("امضا با موفقیت تایید شد");
-            res.setTimestamp(PersianDate.now());
-            res.setDetails(existSignature.getKeyId());
-
-            return res;
-
-        } catch (Exception e) {
-            res.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
-            res.setMessage("خطا در ارتباط با سرویس امضا: " + e.getMessage());
-            res.setTimestamp(PersianDate.now());
-            return res;
-        }
-    }
 
 
 
@@ -269,5 +172,57 @@ public class UserSignatureServiceImpl implements UserSignatureService {
             throw new RuntimeException("خطای نامشخص: " + e.getMessage());
         }
     }
+
+
+
+
+
+
+
+
+    // Verify Transaction from signatur
+    @Transactional
+    @Override
+    public CustomResponseDto verifySignature(String otp) {
+
+        CustomResponseDto res = new CustomResponseDto();
+        Optional<UserSignature> find = userSignatureRepository.findByOtp(otp);
+
+        if (find.isEmpty()) {
+            res.setStatus(HttpStatus.NOT_FOUND.value());
+            res.setMessage("OTP نامعتبر است");
+            res.setTimestamp(PersianDate.now());
+            return res;
+        }
+        UserSignature existSignature = find.get();
+
+
+
+        try {
+
+//            existSignature.setKeyId("");
+            existSignature.setValid(true);
+            existSignature.setOtp(null);
+            existSignature.setUsageCount(existSignature.getUsageCount() - 1);
+            userSignatureRepository.save(existSignature);
+
+            // پاسخ نهایی
+            res.setStatus(HttpStatus.OK.value());
+            res.setMessage("امضا با موفقیت تایید شد");
+            res.setTimestamp(PersianDate.now());
+            res.setDetails(existSignature.getKeyId());
+
+            return res;
+
+        } catch (Exception e) {
+            res.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            res.setMessage("خطا در ارتباط با سرویس امضا: " + e.getMessage());
+            res.setTimestamp(PersianDate.now());
+            return res;
+        }
+    }
+
+
+
 
 }

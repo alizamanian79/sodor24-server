@@ -30,23 +30,12 @@ public class UserSignature {
     @JsonIdentityReference(alwaysAsId = true)
     private User user;
 
-
-
     private boolean valid;
     private LocalDateTime expiredAt;
-
-
     private int usageCount;
     private int totalUsageCount;
-
-
     private String keyId;
     private String otp;
-
-
-
-
-
     private String country;
     private String reason;
     private String location;

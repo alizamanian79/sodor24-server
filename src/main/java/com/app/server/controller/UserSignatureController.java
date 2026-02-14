@@ -2,21 +2,16 @@ package com.app.server.controller;
 
 import com.app.server.dto.request.SignatureRequest;
 import com.app.server.dto.response.CustomResponseDto;
-import com.app.server.dto.signatureDto.SignatureRequestDto;
-import com.app.server.dto.signatureDto.SignatureResponseDto;
 import com.app.server.model.UserSignature;
-import com.app.server.service.JwtService;
 import com.app.server.service.UserSignatureService;
 import com.app.server.util.ZarinpalPaymentService.dto.ZarinpalPaymentRequest;
 import com.app.server.util.ZarinpalPaymentService.dto.ZarinpalPaymentResponse;
 import com.app.server.util.ZarinpalPaymentService.service.ZarinpalPaymentService;
 import com.github.mfathi91.time.PersianDate;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
@@ -28,12 +23,11 @@ public class UserSignatureController {
     @Value("${app.server.host}")
     private String serverHost;
 
-    private final JwtService jwtService;
     private final UserSignatureService userSignatureService;
     private final ZarinpalPaymentService zarinpalPaymentService;
 
 
-    @PostMapping
+    @PostMapping()
     public ResponseEntity<?> buySignature(
             @RequestBody SignatureRequest req,
             @RequestHeader(value = "Authorization", required = false) String authorization
@@ -42,8 +36,6 @@ public class UserSignatureController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body("Access Token ارسال نشده است");
         }
-
-        String accessToken = authorization.replace("Bearer ", "");
 
 
         UserSignature signature = userSignatureService.generateUserSignature(req);
@@ -57,24 +49,11 @@ public class UserSignatureController {
         }
 
         if (signature != null) {
-            String otp = signature.getOtp();
-
-            ZarinpalPaymentRequest paymentReq = ZarinpalPaymentRequest.builder()
-                    .email(req.getEmail())
-                    .mobile(signature.getUser().getPhoneNumber())
-                    .amount(signature.getSignature().getPrice())
-                    .description("خرید سرویس امضای " + signature.getSignature().getTitle())
-                    .callback_url(
-                            serverHost +
-                                    "/api/v1/service/signature/verify" +
-                                    "?otp=" + otp +
-                                    "&token=" + accessToken
-                    )
+            CustomResponseDto res =CustomResponseDto.builder()
+                    .message("کد تایید به شماره تماس شما فرستاده شد")
+                    .details("")
+                    .timestamp(PersianDate.now())
                     .build();
-
-            ZarinpalPaymentResponse res =
-                    zarinpalPaymentService.payment(paymentReq);
-
             return ResponseEntity.ok(res);
         }
 
@@ -83,7 +62,64 @@ public class UserSignatureController {
 
 
 
-    @GetMapping("/verify")
+
+
+
+
+
+    @GetMapping
+    public List<UserSignature> list(){
+        return userSignatureService.findAll();
+    }
+
+    @GetMapping("/{id}")
+    public UserSignature get(@PathVariable Long id){
+        return userSignatureService.findById(id);
+    }
+
+
+
+    // Verify Otp
+    @GetMapping("/verify/otp/{otp}")
+    public ResponseEntity<?> verifyOtp(@PathVariable String otp,
+                                             @RequestHeader(value = "Authorization", required = false)
+                                             String authorization
+    ) throws Exception{
+      UserSignature signature =  userSignatureService.findUserSignatureByOtp(otp);
+      String accessToken = authorization.replace("Bearer ", "");
+
+      // Check Otp Before Gatway send to user
+      if (signature.getOtp().equals(null)) {
+          CustomResponseDto res = CustomResponseDto.builder()
+                  .message("امضا شما قبلا تاییده شده.")
+                  .details("")
+                  .timestamp(PersianDate.now())
+                  .build();
+          return new ResponseEntity<>(res, HttpStatus.OK);
+      }
+
+      ZarinpalPaymentRequest paymentReq = ZarinpalPaymentRequest.builder()
+                .email(signature.getEmail())
+                .mobile(signature.getUser().getPhoneNumber())
+                .amount(signature.getSignature().getPrice())
+                .description("خرید سرویس امضای " + signature.getSignature().getTitle())
+                .callback_url(
+                        serverHost +
+                                "/api/v1/service/signature/verify/service" +
+                                "?otp=" + otp +
+                                "&token=" + accessToken
+                )
+                .build();
+
+        ZarinpalPaymentResponse res =
+                zarinpalPaymentService.payment(paymentReq);
+        return new ResponseEntity<>(res, HttpStatus.OK);
+    }
+
+
+
+    // Verify transaction
+    @GetMapping("/verify/service")
     public ResponseEntity<?> verify(@RequestParam String otp,
                                     @RequestParam String Authority,
                                     @RequestParam String Status) {
@@ -128,29 +164,13 @@ public class UserSignatureController {
 
             CustomResponseDto res = CustomResponseDto.builder()
                     .message("امضای شما ثبت میباشد")
-                    .details(find.getKeyId())
+                    .details("")
                     .timestamp(PersianDate.now())
                     .build();
 
             return new ResponseEntity<>(res, HttpStatus.OK);
         }
     }
-
-
-
-
-
-    @GetMapping
-    public List<UserSignature> list(){
-        return userSignatureService.findAll();
-    }
-
-    @GetMapping("/{id}")
-    public UserSignature get(@PathVariable Long id){
-        return userSignatureService.findById(id);
-    }
-
-
 
 
 //    @PostMapping("/test")

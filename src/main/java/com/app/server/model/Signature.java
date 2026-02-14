@@ -41,10 +41,9 @@ public class Signature {
     @JsonIgnore
     private List<UserSignature> users;
 
-
-
     @CreationTimestamp
     private LocalDateTime createdAt;
+
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 

@@ -1,9 +1,9 @@
-package com.app.server.util.ZarinpalPaymentService.service.impl;
+package com.app.server.util.zarinpalPaymentService.service.impl;
 
 
-import com.app.server.util.ZarinpalPaymentService.dto.ZarinpalPaymentRequest;
-import com.app.server.util.ZarinpalPaymentService.dto.ZarinpalPaymentResponse;
-import com.app.server.util.ZarinpalPaymentService.service.ZarinpalPaymentService;
+import com.app.server.util.zarinpalPaymentService.dto.ZarinpalPaymentRequest;
+import com.app.server.util.zarinpalPaymentService.dto.ZarinpalPaymentResponse;
+import com.app.server.util.zarinpalPaymentService.service.ZarinpalPaymentService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;

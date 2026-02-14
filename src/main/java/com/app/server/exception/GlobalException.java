@@ -42,6 +42,20 @@ public class GlobalException {
     }
 
 
+    // ✅ Badrequest
+    @ExceptionHandler(AppBadRequestException.class)
+    public ResponseEntity<?> handleAppBadRequestException(AppBadRequestException e) {
+        ErrorResponse errorResponse = ErrorResponse.builder()
+                .message(e.getMessage() != null ? e.getMessage() : "آیتم یافت نشد")
+                .details(e.getDetails() != null ? e.getDetails() : "آیتمی که به دنبال آن هستید پیدا نشد.")
+                .status(HttpStatus.BAD_REQUEST.value())
+                .timestamp(PersianDate.now())
+                .build();
+
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
+
+
     // 401 Unauthorized
     @ExceptionHandler(AppUnAuthorizedException.class)
     public ResponseEntity<?> handleAppUnauthorizedException(AppUnAuthorizedException e) {
@@ -54,7 +68,6 @@ public class GlobalException {
 
         return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
     }
-
 
 
     // 400 Bad Request

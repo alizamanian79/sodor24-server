@@ -1,4 +1,4 @@
-package com.app.server.util.ZarinpalPaymentService.dto;
+package com.app.server.util.zarinpalPaymentService.dto;
 
 public class ZarinpalPaymentVerifyRequest {
     private Long amount;

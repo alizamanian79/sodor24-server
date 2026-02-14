@@ -1,6 +1,6 @@
-package com.app.server.util.ZarinpalPaymentService.controller;
+package com.app.server.util.zarinpalPaymentService.controller;
 
-import com.app.server.util.ZarinpalPaymentService.service.ZarinpalPaymentService;
+import com.app.server.util.zarinpalPaymentService.service.ZarinpalPaymentService;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;

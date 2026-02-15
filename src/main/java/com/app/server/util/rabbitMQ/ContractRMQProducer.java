@@ -1,17 +1,15 @@
-package com.app.server.util.rabbitmq;
+package com.app.server.util.rabbitMQ;
 
-import app.signature.service.dto.request.ContractRequestDto;
-import app.signature.service.dto.response.ContractResponseDto;
-import app.signature.service.dto.response.RMQError;
-import app.signature.service.dto.response.RMQResponse;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.app.server.exception.AppBadRequestException;
+import com.app.server.util.rabbitMQ.dto.request.ContractRequestDto;
+
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import com.app.server.exception.AppNotFoundException;
+
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -21,19 +19,19 @@ public class ContractRMQProducer {
 
     @Value("${app.rabbitmq.exchange}")
     private String exchange;
+
     @Value("${app.rabbitmq.routing-keys.contract}")
     private String contractRoutingKey;
 
     private static final Logger log = LoggerFactory.getLogger(ContractRMQProducer.class);
+
     private final RabbitTemplate rabbitTemplate;
-    private final ObjectMapper mapper = new ObjectMapper();
 
     public ContractRMQProducer(RabbitTemplate rabbitTemplate) {
         this.rabbitTemplate = rabbitTemplate;
     }
 
-    public ContractResponseDto sendAndReceive(ContractRequestDto contractRequestDto) {
-
+    public Object sendAndReceive(ContractRequestDto contractRequestDto) {
         log.info("Sending message to RabbitMQ -> {}", contractRequestDto);
 
         Map<String, Object> payload = new HashMap<>();
@@ -41,6 +39,7 @@ public class ContractRMQProducer {
         payload.put("reason", contractRequestDto.getReason());
         payload.put("country", contractRequestDto.getCountry());
 
+        // Encode files if exist
         try {
             if (contractRequestDto.getFile() != null) {
                 payload.put("file",
@@ -55,25 +54,32 @@ public class ContractRMQProducer {
                         contractRequestDto.getPrivateKeyFile().getOriginalFilename());
             }
         } catch (IOException e) {
-            throw new AppNotFoundException("خطا در خواندن فایل");
+            log.error("Error reading files for contract request: {}", e.getMessage(), e);
+            throw new AppBadRequestException("خطا در خواندن فایل‌ها");
         }
 
-        Object res = rabbitTemplate.convertSendAndReceive(
-                exchange, contractRoutingKey, payload
-        );
+        // Send and receive with error handling
+        Object res;
+        try {
+            res = rabbitTemplate.convertSendAndReceive(exchange, contractRoutingKey, payload);
+        } catch (Exception e) {
+            log.error("Error sending message to RabbitMQ: {}", e.getMessage(), e);
+            throw new AppBadRequestException("مشکل در ارتباط با سرویس امضا");
+        }
 
         if (res == null) {
-            throw new AppNotFoundException();
+            log.error("No response received from contract service");
+            throw new AppBadRequestException("پاسخی از سرویس امضا دریافت نشد (Timeout یا خطا)");
         }
 
-        RMQResponse<?> response = mapper.convertValue(res, RMQResponse.class);
-
-        if (!response.isSuccess()) {
-            RMQError err = response.getError();
-            throw new AppBadRequestException(err.getMessage());
+        try {
+            return res;
+        } catch (Exception e) {
+            log.error("Error converting RabbitMQ response: {}", e.getMessage(), e);
+            throw new AppBadRequestException("پاسخ دریافتی از سرویس امضا نامعتبر است");
         }
 
-        return mapper.convertValue(response.getData(), ContractResponseDto.class);
+
+
     }
-
 }

@@ -1,7 +1,6 @@
-package app.signature.service.dto.request;
+package com.app.server.util.rabbitMQ.dto.request;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.annotation.Nullable;
+
 import lombok.*;
 import org.springframework.web.multipart.MultipartFile;
 

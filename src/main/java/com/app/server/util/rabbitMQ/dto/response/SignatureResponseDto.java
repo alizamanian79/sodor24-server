@@ -1,9 +1,7 @@
-package app.signature.service.dto.response;
+package com.app.server.util.rabbitMQ.dto.response;
 
 import lombok.*;
 import org.springframework.http.HttpStatus;
-
-import java.time.LocalDateTime;
 import java.util.Date;
 
 @Getter

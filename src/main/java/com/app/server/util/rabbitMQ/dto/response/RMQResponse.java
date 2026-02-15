@@ -1,4 +1,4 @@
-package app.signature.service.dto.response;
+package com.app.server.util.rabbitMQ.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

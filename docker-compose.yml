@@ -1,8 +1,8 @@
 version: "3.9"
 
 services:
-  server-service:
-    container_name: server-service
+  sodor24-server:
+    container_name: sodor24-server
     image: alizamanian/server-service:v1.0.0
 #    build:
 #      context: .

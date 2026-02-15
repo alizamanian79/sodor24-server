@@ -1,5 +1,5 @@
 
-FROM maven:3.9.2-eclipse-temurin-17 AS build
+FROM eclipse-temurin:17-jre-alpine AS build
 
 WORKDIR /app
 
@@ -11,7 +11,7 @@ COPY src ./src
 RUN mvn clean install -DskipTests
 
 
-FROM eclipse-temurin:17-jdk
+FROM eclipse-temurin:17-jre-alpine
 
 WORKDIR /app
 

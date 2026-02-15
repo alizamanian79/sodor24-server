@@ -1299,29 +1299,89 @@
           "response": []
         },
         {
-          "name": "Signatures Copy",
-          "protocolProfileBehavior": {
-            "disableBodyPruning": true
-          },
+          "name": "Test Signature",
           "request": {
             "auth": {
               "type": "noauth"
             },
-            "method": "GET",
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"username\": \"rima\",\r\n  \"country\": \"IR\",\r\n  \"reason\": \"تأیید قرارداد فروش\",\r\n  \"location\": \"دفتر مرکزی\",\r\n  \"organization\": \"alibaba.ir\",\r\n  \"department\": \"واحد فنی\",\r\n  \"state\": \"تهران\",\r\n  \"city\": \"تهران\",\r\n  \"email\": \"alizamaniandev@example.com\",\r\n  \"title\": \"واحد فنی برنامه نویسی\",\r\n  \"userId\": \"\",\r\n  \"signatureExpired\": 11,\r\n  \"signaturePassword\":\"5588\"\r\n}\r\n",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{HOST}}/api/v1/public/test/signature",
+              "host": [
+                "{{HOST}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "public",
+                "test",
+                "signature"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Signing Contract Copy",
+          "request": {
+            "method": "POST",
             "header": [],
             "body": {
               "mode": "formdata",
-              "formdata": []
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "uuid": "9195f4e4-4ea4-4fa1-a7ce-bc0bca6b9a28",
+                  "src": "/H:/Downloads/Chrome/951683.pdf"
+                },
+                {
+                  "key": "privateKeyFile",
+                  "type": "file",
+                  "uuid": "4179841d-57b6-4db9-960f-29fb707f85b7",
+                  "src": "/H:/Downloads/Chrome/user-2292ff14-14c6-4b94-af1d-a62bf4aa6ca6.p12"
+                },
+                {
+                  "key": "keyPassword",
+                  "value": "5588",
+                  "type": "text",
+                  "uuid": "42e4c17b-5b6b-4566-ad11-3e43e186d474"
+                },
+                {
+                  "key": "reason",
+                  "value": "امضای دیجیتال RSA256",
+                  "type": "text",
+                  "uuid": "c7a18e73-85e8-406f-a89d-4f1fb6f14bb1"
+                },
+                {
+                  "key": "country",
+                  "value": "Iran",
+                  "type": "text",
+                  "uuid": "0ba71372-a73d-484c-9839-b22b2f27d891"
+                }
+              ]
             },
             "url": {
-              "raw": "http://localhost:8080/signatures",
-              "protocol": "http",
+              "raw": "{{HOST}}/api/v1/public/test/contract",
               "host": [
-                "localhost"
+                "{{HOST}}"
               ],
-              "port": "8080",
               "path": [
-                "signatures"
+                "api",
+                "v1",
+                "public",
+                "test",
+                "contract"
               ]
             }
           },

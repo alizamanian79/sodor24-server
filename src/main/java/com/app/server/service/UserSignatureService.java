@@ -15,6 +15,5 @@ public interface UserSignatureService {
     UserSignature findUserSignatureByOtp(String otp);
     CustomResponseDto verifySignature(String otp) ;
 
-    SignatureResponseDto sendSignatureRequest(SignatureRequestDto req);
-    boolean callBackSignatureProcess(Long id);
+    void sendRequestToSignatureService(UserSignature req);
 }

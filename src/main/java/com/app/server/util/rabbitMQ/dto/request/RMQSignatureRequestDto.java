@@ -9,7 +9,7 @@ import lombok.*;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class SignatureRequestDto {
+public class RMQSignatureRequestDto {
 
     private String username;          // نام کاربری یا نام کامل
     private String country;           // کد کشور (C)

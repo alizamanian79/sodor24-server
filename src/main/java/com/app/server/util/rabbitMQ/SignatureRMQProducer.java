@@ -2,7 +2,7 @@ package com.app.server.util.rabbitMQ;
 
 
 import com.app.server.exception.AppBadRequestException;
-import com.app.server.util.rabbitMQ.dto.request.SignatureRequestDto;
+import com.app.server.util.rabbitMQ.dto.request.RMQSignatureRequestDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -27,7 +27,7 @@ public class SignatureRMQProducer {
         this.rabbitTemplate = rabbitTemplate;
     }
 
-    public Object sendAndReceive(SignatureRequestDto message) {
+    public Object sendAndReceive(RMQSignatureRequestDto message) {
         log.info("Sending message -> {}", message);
 
         Object res;

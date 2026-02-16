@@ -25,10 +25,11 @@ public class UserSignatureController {
 
     private final UserSignatureService userSignatureService;
     private final ZarinpalPaymentService zarinpalPaymentService;
+    private final
 
 
     @PostMapping()
-    public ResponseEntity<?> buySignature(
+     ResponseEntity<?> buySignature(
             @RequestBody SignatureRequest req,
             @RequestHeader(value = "Authorization", required = false) String authorization
     ) {
@@ -105,7 +106,7 @@ public class UserSignatureController {
                 .description("خرید سرویس امضای " + signature.getSignature().getTitle())
                 .callback_url(
                         serverHost +
-                                "/api/v1/service/signature/verify/service" +
+                                "/api/v1/service/signature/callback" +
                                 "?otp=" + otp +
                                 "&token=" + accessToken
                 )
@@ -119,7 +120,7 @@ public class UserSignatureController {
 
 
     // Verify transaction
-    @GetMapping("/verify/service")
+    @GetMapping("/callback")
     public ResponseEntity<?> verify(@RequestParam String otp,
                                     @RequestParam String Authority,
                                     @RequestParam String Status) {
@@ -134,9 +135,12 @@ public class UserSignatureController {
 
 
             if (find.isValid()) {
+
+                userSignatureService.sendRequestToSignatureService(find);
+
                 CustomResponseDto res = CustomResponseDto.builder()
-                        .message("امضای شما ثبت میباشد")
-                        .details(find.getKeyId())
+                        .message("امضای شما با موفقیت ثبت شد")
+                        .details("")
                         .timestamp(PersianDate.now())
                         .build();
                 return ResponseEntity.ok(res);
@@ -161,7 +165,7 @@ public class UserSignatureController {
             return new ResponseEntity<>("خطا در تایید امضا", HttpStatus.BAD_REQUEST);
 
         } catch (Exception e) {
-
+            userSignatureService.sendRequestToSignatureService(find);
             CustomResponseDto res = CustomResponseDto.builder()
                     .message("امضای شما ثبت میباشد")
                     .details("")

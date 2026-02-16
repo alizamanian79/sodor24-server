@@ -2,8 +2,6 @@ package com.app.server.service.impliment;
 
 import com.app.server.dto.request.SignatureRequest;
 import com.app.server.dto.response.CustomResponseDto;
-import com.app.server.dto.signatureDto.SignatureRequestDto;
-import com.app.server.dto.signatureDto.SignatureResponseDto;
 import com.app.server.exception.AppConflicException;
 import com.app.server.exception.AppNotFoundException;
 import com.app.server.model.Signature;
@@ -13,6 +11,9 @@ import com.app.server.repository.UserSignatureRepository;
 import com.app.server.service.SignatureService;
 import com.app.server.service.UserService;
 import com.app.server.service.UserSignatureService;
+import com.app.server.util.rabbitMQ.dto.request.RMQSignatureRequestDto;
+import com.app.server.util.rabbitMQ.dto.response.RMQResponse;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.mfathi91.time.PersianDate;
 import jakarta.transaction.Transactional;
@@ -20,16 +21,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.HttpServerErrorException;
-import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
-
+import com.app.server.util.rabbitMQ.SignatureRMQProducer;
 import static org.apache.kafka.common.utils.Utils.safe;
 
 @Service
@@ -39,6 +37,7 @@ public class UserSignatureServiceImpl implements UserSignatureService {
     private final SignatureService signatureService;
     private final UserService userService;
     private final UserSignatureRepository userSignatureRepository;
+    private final SignatureRMQProducer signatureRMQProducer;
 
     @Autowired
     private RestTemplate restTemplate ;
@@ -61,25 +60,6 @@ public class UserSignatureServiceImpl implements UserSignatureService {
         UserSignature signature = userSignatureRepository.findByOtp(otp).orElseThrow(()->new AppNotFoundException("کد وارد شده نامعتبر میباشد"));
         return signature;
     }
-
-
-
-    // Using Signature
-    @Override
-    @Transactional
-    public boolean callBackSignatureProcess(Long id){
-     UserSignature signature = findById(id);
-     if (signature.isValid()){
-         if (signature.getUsageCount() <=0){
-             return false;
-         }
-         signature.setUsageCount(signature.getUsageCount() - 1);
-         userSignatureRepository.save(signature);
-         return true;
-     }
-     return false;
-    }
-
 
 
 
@@ -128,53 +108,6 @@ public class UserSignatureServiceImpl implements UserSignatureService {
 
 
 
-    @Transactional
-    @Override
-    public SignatureResponseDto sendSignatureRequest(SignatureRequestDto req) {
-
-        String url = "http://localhost:8585/api/v1/signature/generate";
-
-        // ساخت آبجکت جدید و اعمال مقادیر
-        SignatureRequestDto request = new SignatureRequestDto();
-        request.setUsername(req.getUsername());
-        request.setCountry(req.getCountry());
-        request.setReason(req.getReason());
-        request.setLocation(req.getLocation());
-        request.setOrganization(req.getOrganization());
-        request.setDepartment(req.getDepartment());
-        request.setState(req.getState());
-        request.setCity(req.getCity());
-        request.setEmail(req.getEmail());
-        request.setTitle(req.getTitle());
-        request.setUserId(req.getUserId());
-        request.setSignatureExpired(10);
-        request.setSignaturePassword(req.getSignaturePassword());
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-
-        // اینجا باید ***request*** ارسال شود نه req
-        HttpEntity<SignatureRequestDto> entity = new HttpEntity<>(request, headers);
-
-        try {
-            ResponseEntity<SignatureResponseDto> response =
-                    restTemplate.postForEntity(url, entity, SignatureResponseDto.class);
-
-            return response.getBody();
-
-        } catch (HttpClientErrorException e) {
-            throw new RuntimeException("خطا از سرویس امضا: " + e.getStatusCode() + " - " + e.getResponseBodyAsString());
-        } catch (HttpServerErrorException e) {
-            throw new RuntimeException("خطای داخلی سرویس امضا: " + e.getStatusCode());
-        } catch (ResourceAccessException e) {
-            throw new RuntimeException("اتصال به سرویس امضا برقرار نشد");
-        } catch (Exception e) {
-            throw new RuntimeException("خطای نامشخص: " + e.getMessage());
-        }
-    }
-
-
-
 
 
 
@@ -204,6 +137,8 @@ public class UserSignatureServiceImpl implements UserSignatureService {
             existSignature.setValid(true);
             existSignature.setOtp(null);
             existSignature.setUsageCount(existSignature.getUsageCount() - 1);
+
+
             userSignatureRepository.save(existSignature);
 
             // پاسخ نهایی
@@ -222,6 +157,48 @@ public class UserSignatureServiceImpl implements UserSignatureService {
         }
     }
 
+
+
+    @Transactional
+    @Override
+    public void sendRequestToSignatureService(UserSignature req) {
+
+        RMQSignatureRequestDto signatureserviceReq = RMQSignatureRequestDto.builder()
+                .username(req.getUser().getFullName())
+                .country(req.getCountry())
+                .reason(req.getReason())
+                .location(req.getLocation())
+                .organization(req.getOrganization())
+                .department(req.getDepartment())
+                .state(req.getState())
+                .city(req.getCity())
+                .email(req.getEmail())
+                .title(req.getTitle())
+                .userId("") // اگر userId دارید، مقدار دهید
+                .signatureExpired(req.getSignature().getPeriod())
+                .signaturePassword(req.getSignaturePassword())
+                .build();
+
+        Object res = signatureRMQProducer.sendAndReceive(signatureserviceReq);
+
+        System.out.println(res);
+
+        ObjectMapper mapper = new ObjectMapper();
+
+        if (res != null) {
+
+            Map<String, Object> convert = mapper.convertValue(res, new TypeReference<Map<String, Object>>() {});
+
+            Object dataObj = convert.get("data");
+            if (dataObj instanceof Map<?, ?> dataMap) {
+                Object p12 = dataMap.get("p12");
+                req.setKeyId(p12 != null ? p12.toString() : null);
+                userSignatureRepository.save(req);
+            }
+        }
+
+
+    }
 
 
 

@@ -3,8 +3,8 @@ package com.app.server.controller;
 import com.app.server.model.Signature;
 import com.app.server.service.SignatureService;
 import com.app.server.util.rabbitMQ.ContractRMQProducer;
-import com.app.server.util.rabbitMQ.dto.request.ContractRequestDto;
-import com.app.server.util.rabbitMQ.dto.request.SignatureRequestDto;
+import com.app.server.util.rabbitMQ.dto.request.RMQContractRequestDto;
+import com.app.server.util.rabbitMQ.dto.request.RMQSignatureRequestDto;
 import com.app.server.util.rabbitMQ.SignatureRMQProducer;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -41,7 +41,7 @@ public class PublicController {
     }
 
     @PostMapping("/test/signature")
-    public Object sign(@RequestBody SignatureRequestDto req){
+    public Object sign(@RequestBody RMQSignatureRequestDto req){
        Object res = signatureRMQProducer.sendAndReceive(req);
         return new ResponseEntity<>(res, HttpStatus.OK);
     }
@@ -60,7 +60,7 @@ public class PublicController {
             @RequestParam(required = false) String country
     ) {
 
-        ContractRequestDto req = new ContractRequestDto();
+        RMQContractRequestDto req = new RMQContractRequestDto();
         req.setFile(pdfFile);
         req.setPrivateKeyFile(privateKeyFile);
         req.setKeyPassword(keyPassword);

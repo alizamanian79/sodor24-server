@@ -1,7 +1,7 @@
 package com.app.server.util.rabbitMQ;
 
 import com.app.server.exception.AppBadRequestException;
-import com.app.server.util.rabbitMQ.dto.request.ContractRequestDto;
+import com.app.server.util.rabbitMQ.dto.request.RMQContractRequestDto;
 
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.slf4j.Logger;
@@ -31,27 +31,27 @@ public class ContractRMQProducer {
         this.rabbitTemplate = rabbitTemplate;
     }
 
-    public Object sendAndReceive(ContractRequestDto contractRequestDto) {
-        log.info("Sending message to RabbitMQ -> {}", contractRequestDto);
+    public Object sendAndReceive(RMQContractRequestDto RMQContractRequestDto) {
+        log.info("Sending message to RabbitMQ -> {}", RMQContractRequestDto);
 
         Map<String, Object> payload = new HashMap<>();
-        payload.put("keyPassword", contractRequestDto.getKeyPassword());
-        payload.put("reason", contractRequestDto.getReason());
-        payload.put("country", contractRequestDto.getCountry());
+        payload.put("keyPassword", RMQContractRequestDto.getKeyPassword());
+        payload.put("reason", RMQContractRequestDto.getReason());
+        payload.put("country", RMQContractRequestDto.getCountry());
 
         // Encode files if exist
         try {
-            if (contractRequestDto.getFile() != null) {
+            if (RMQContractRequestDto.getFile() != null) {
                 payload.put("file",
-                        Base64.encodeBase64String(contractRequestDto.getFile().getBytes()));
+                        Base64.encodeBase64String(RMQContractRequestDto.getFile().getBytes()));
                 payload.put("fileName",
-                        contractRequestDto.getFile().getOriginalFilename());
+                        RMQContractRequestDto.getFile().getOriginalFilename());
             }
-            if (contractRequestDto.getPrivateKeyFile() != null) {
+            if (RMQContractRequestDto.getPrivateKeyFile() != null) {
                 payload.put("privateKeyFile",
-                        Base64.encodeBase64String(contractRequestDto.getPrivateKeyFile().getBytes()));
+                        Base64.encodeBase64String(RMQContractRequestDto.getPrivateKeyFile().getBytes()));
                 payload.put("keyFileName",
-                        contractRequestDto.getPrivateKeyFile().getOriginalFilename());
+                        RMQContractRequestDto.getPrivateKeyFile().getOriginalFilename());
             }
         } catch (IOException e) {
             log.error("Error reading files for contract request: {}", e.getMessage(), e);

@@ -11,7 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ContractRequestDto {
+public class RMQContractRequestDto {
 
 
     private MultipartFile file;

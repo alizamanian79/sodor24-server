@@ -83,7 +83,7 @@ public class UserSignatureServiceImpl implements UserSignatureService {
                 .signature(existSignature)
                 .valid(false)
                 .usageCount(existSignature.getUsageCount())
-                .keyId(null)
+
 
                 //username
                 .country(req.getCountry().toString())
@@ -145,7 +145,7 @@ public class UserSignatureServiceImpl implements UserSignatureService {
             res.setStatus(HttpStatus.OK.value());
             res.setMessage("امضا با موفقیت تایید شد");
             res.setTimestamp(PersianDate.now());
-            res.setDetails(existSignature.getKeyId());
+
 
             return res;
 
@@ -193,9 +193,13 @@ public class UserSignatureServiceImpl implements UserSignatureService {
             if (dataObj instanceof Map<?, ?> dataMap) {
 
                 Object p12 = dataMap.get("p12");
-                Object userId = dataMap.get("userId");
+                System.out.println(p12);
 
-                req.setKeyId(p12 != null ? p12.toString() : null);
+                Object id = dataMap.get("userId");
+                System.out.println(p12);
+
+                req.setPrivateKeyIdLink(p12 != null ? p12.toString() : null);
+                req.setPrivateKeyId(id.toString());
                 userSignatureRepository.save(req);
             }
         }

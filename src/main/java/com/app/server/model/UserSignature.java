@@ -7,7 +7,6 @@ import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 import java.util.Random;
-import java.util.UUID;
 
 @Getter
 @Setter
@@ -35,7 +34,9 @@ public class UserSignature {
     private int usageCount;
     private int totalUsageCount;
 
-    private String keyId;
+
+    private String privateKeyId;
+    private String privateKeyIdLink;
 
     private String otp;
     private String country;

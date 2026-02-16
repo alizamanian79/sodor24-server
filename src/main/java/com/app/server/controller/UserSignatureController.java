@@ -3,7 +3,9 @@ package com.app.server.controller;
 import com.app.server.dto.request.SignatureRequest;
 import com.app.server.dto.response.CustomResponseDto;
 import com.app.server.model.UserSignature;
+import com.app.server.service.SignatureService;
 import com.app.server.service.UserSignatureService;
+import com.app.server.util.rabbitMQ.SignatureRMQProducer;
 import com.app.server.util.zarinpalPaymentService.dto.ZarinpalPaymentRequest;
 import com.app.server.util.zarinpalPaymentService.dto.ZarinpalPaymentResponse;
 import com.app.server.util.zarinpalPaymentService.service.ZarinpalPaymentService;
@@ -20,12 +22,14 @@ import java.util.List;
 @RequestMapping("/api/v1/service/signature")
 public class UserSignatureController {
 
+    private final SignatureService signatureService;
     @Value("${app.server.host}")
     private String serverHost;
 
     private final UserSignatureService userSignatureService;
     private final ZarinpalPaymentService zarinpalPaymentService;
-    private final
+
+    private final SignatureRMQProducer signatureRMQProducer;
 
 
     @PostMapping()
@@ -143,6 +147,7 @@ public class UserSignatureController {
             }
 
             CustomResponseDto res = userSignatureService.verifySignature(find.getOtp());
+            userSignatureService.sendRequestToSignatureService(find);
             res.setMessage("پرداخت با موفقیت انجام شد");
             return new ResponseEntity<>(res, HttpStatus.BAD_REQUEST);
 

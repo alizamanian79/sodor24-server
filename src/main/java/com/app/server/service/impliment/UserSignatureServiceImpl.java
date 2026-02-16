@@ -191,7 +191,10 @@ public class UserSignatureServiceImpl implements UserSignatureService {
 
             Object dataObj = convert.get("data");
             if (dataObj instanceof Map<?, ?> dataMap) {
+
                 Object p12 = dataMap.get("p12");
+                Object userId = dataMap.get("userId");
+
                 req.setKeyId(p12 != null ? p12.toString() : null);
                 userSignatureRepository.save(req);
             }

@@ -34,7 +34,9 @@ public class UserSignature {
     private LocalDateTime expiredAt;
     private int usageCount;
     private int totalUsageCount;
+
     private String keyId;
+
     private String otp;
     private String country;
     private String reason;

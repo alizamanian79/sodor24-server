@@ -125,28 +125,15 @@ public class UserSignatureController {
                                     @RequestParam String Authority,
                                     @RequestParam String Status) {
         UserSignature find = userSignatureService.findUserSignatureByOtp(otp);
-        try {
 
-            if (Authority == null || Authority.isBlank()
+        // Validate transaction payment
+        if (Authority == null || Authority.isBlank()
                     || Status == null || Status.isBlank()
                     || !"OK".equals(Status)) {
-                return new ResponseEntity<>("تراکنش نا معتبر", HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>("پرداخت ناموفق بود", HttpStatus.BAD_REQUEST);
             }
 
-
-            if (find.isValid()) {
-
-                userSignatureService.sendRequestToSignatureService(find);
-
-                CustomResponseDto res = CustomResponseDto.builder()
-                        .message("امضای شما با موفقیت ثبت شد")
-                        .details("")
-                        .timestamp(PersianDate.now())
-                        .build();
-                return ResponseEntity.ok(res);
-            }
-
-            boolean payStatus = zarinpalPaymentService.verifyPayment(
+        boolean payStatus = zarinpalPaymentService.verifyPayment(
                     Authority,
                     find.getSignature().getPrice()
             );
@@ -156,24 +143,10 @@ public class UserSignatureController {
             }
 
             CustomResponseDto res = userSignatureService.verifySignature(find.getOtp());
+            res.setMessage("پرداخت با موفقیت انجام شد");
+            return new ResponseEntity<>(res, HttpStatus.BAD_REQUEST);
 
 
-            if (res.getDetails() !=null || res.getDetails().isEmpty()) {
-                return new ResponseEntity<>(res, HttpStatus.OK);
-            }
-
-            return new ResponseEntity<>("خطا در تایید امضا", HttpStatus.BAD_REQUEST);
-
-        } catch (Exception e) {
-            userSignatureService.sendRequestToSignatureService(find);
-            CustomResponseDto res = CustomResponseDto.builder()
-                    .message("امضای شما ثبت میباشد")
-                    .details("")
-                    .timestamp(PersianDate.now())
-                    .build();
-
-            return new ResponseEntity<>(res, HttpStatus.OK);
-        }
     }
 
 

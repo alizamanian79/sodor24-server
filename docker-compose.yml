@@ -7,21 +7,34 @@ services:
       context: .
       dockerfile: Dockerfile
     environment:
-      SPRING_PROFILES_ACTIVE: prod
+      SPRING_PROFILES_ACTIVE: docker
+
       SPRING_DATASOURCE_URL: jdbc:mysql://sodor24-db:3306/sodor24db?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: 1234
+
+      # ✅ RabbitMQ (FIXED)
+      SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_RABBITMQ_PORT: 5672
+      SPRING_RABBITMQ_USERNAME: guest
+      SPRING_RABBITMQ_PASSWORD: guest
+
       SPRING_REDIS_HOST: redis
+
       APP_SERVER_HOST: http://localhost:8181
       APP_CLIENT_HOST: http://localhost:3000
+
       ZARINPAL_SERVER_HOST: https://sandbox.zarinpal.com
       ZARINPAL_MERCHANT_ID: 7007f58a-3ec5-4ea6-a414-5849591ba0a7
-      RABBITMQ_HOST: sodor24-rabbitmq
+
     depends_on:
       sodor24-db:
         condition: service_healthy
       redis:
         condition: service_started
+      rabbitmq:
+        condition: service_healthy
+
     ports:
       - "8181:8181"
     restart: unless-stopped
@@ -95,10 +108,13 @@ services:
       SPRING_DATASOURCE_URL: jdbc:mysql://sodor24-db:3306/signaturedb?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: 1234
-      SPRING_RABBITMQ_HOST: rabbitmq
+
+      # ✅ RabbitMQ (FIXED)
+      SPRING_RABBITMQ_HOST: sodor24-rabbitmq
       SPRING_RABBITMQ_PORT: 5672
       SPRING_RABBITMQ_USERNAME: guest
       SPRING_RABBITMQ_PASSWORD: guest
+
     restart: unless-stopped
     networks:
       - sodor24-network

@@ -24,7 +24,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\r\n    \"username\": \"admin\",\r\n    \"fullName\":\"علی زمانیان\",\r\n    \"password\": \"admin\",\r\n    \"phoneNumber\": \"09917403979\"\r\n}",
+              "raw": "{\r\n    \"username\": \"admin\",\r\n    \"fullName\":\"alizamanian\",\r\n    \"password\": \"admin\",\r\n    \"phoneNumber\": \"09917403979\"\r\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -746,7 +746,7 @@
                 "header": [],
                 "body": {
                   "mode": "raw",
-                  "raw": "{\r\n  \"userId\": 1,\r\n  \"signatureId\": 1,\r\n  \"country\": \"Iran\",\r\n  \"reason\": \"test request\",\r\n  \"location\": \"Tehran\",\r\n  \"organization\": \"Alibaba Group\",\r\n  \"department\": \"Floor B\",\r\n  \"state\": \"Tehran\",\r\n  \"city\": \"Tehran\",\r\n  \"email\": \"alizamaniandev@gmail.com\",\r\n  \"title\": \"Alibaba.ir\",\r\n  \"signaturePassword\": \"12dede34\"\r\n}\r\n",
+                  "raw": "{\r\n  \"userId\": 1,\r\n  \"signatureId\": 1,\r\n  \"country\": \"Iran\",\r\n  \"reason\": \"test request\",\r\n  \"location\": \"Tehran\",\r\n  \"organization\": \"Alibaba\",\r\n  \"department\": \"Technical department\",\r\n  \"state\": \"Tehran\",\r\n  \"city\": \"Tehran\",\r\n  \"email\": \"alizamaniandev@gmail.com\",\r\n  \"title\": \"Alibaba.ir\",\r\n  \"signaturePassword\": \"12dede34\"\r\n}\r\n",
                   "options": {
                     "raw": {
                       "language": "json"
@@ -791,7 +791,7 @@
                   "formdata": []
                 },
                 "url": {
-                  "raw": "{{HOST}}/api/v1/service/signature/verify/otp/7289",
+                  "raw": "{{HOST}}/api/v1/service/signature/verify/otp/1997",
                   "host": [
                     "{{HOST}}"
                   ],
@@ -802,7 +802,7 @@
                     "signature",
                     "verify",
                     "otp",
-                    "7289"
+                    "1997"
                   ]
                 }
               },
@@ -918,7 +918,7 @@
                   "raw": ""
                 },
                 "url": {
-                  "raw": "{{HOST}}/api/v1/service/signature/1",
+                  "raw": "{{HOST}}/api/v1/service/signature/8",
                   "host": [
                     "{{HOST}}"
                   ],
@@ -927,7 +927,7 @@
                     "v1",
                     "service",
                     "signature",
-                    "1"
+                    "8"
                   ]
                 }
               },
@@ -1062,7 +1062,7 @@
                 "header": [],
                 "body": {
                   "mode": "raw",
-                  "raw": "{\r\n    \"title\":\"امضای خاکستری \",\r\n    \"description\":\"طرح جدید امضای خاکستریی همواره در خدمت مشتریان\",\r\n    \"price\":350000,\r\n    \"usageCount\":15,\r\n    \"period\":30\r\n}",
+                  "raw": "{\r\n    \"title\":\"امضای خاکستری \",\r\n    \"description\":\"طرح جدید امضای خاکستریی همواره در خدمت مشتریان\",\r\n    \"price\":350000,\r\n    \"usageCount\":30,\r\n    \"period\":30\r\n}",
                   "options": {
                     "raw": {
                       "language": "json"
@@ -1343,17 +1343,17 @@
                   "key": "file",
                   "type": "file",
                   "uuid": "9195f4e4-4ea4-4fa1-a7ce-bc0bca6b9a28",
-                  "src": "/H:/Downloads/Chrome/951683.pdf"
+                  "src": "/E:/Github/signature-service/contract.pdf"
                 },
                 {
                   "key": "privateKeyFile",
                   "type": "file",
                   "uuid": "4179841d-57b6-4db9-960f-29fb707f85b7",
-                  "src": "/H:/Downloads/Chrome/user-2292ff14-14c6-4b94-af1d-a62bf4aa6ca6.p12"
+                  "src": "/H:/Downloads/Chrome/ali.p12"
                 },
                 {
                   "key": "keyPassword",
-                  "value": "5588",
+                  "value": "12dede34",
                   "type": "text",
                   "uuid": "42e4c17b-5b6b-4566-ad11-3e43e186d474"
                 },

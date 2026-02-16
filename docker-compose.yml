@@ -2,10 +2,10 @@ services:
 
   sodor24-server:
     container_name: sodor24-server
-    image: sodor24-server
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: alizamanian/sodor24-server:v2.0.0
+#    build:
+#      context: .
+#      dockerfile: Dockerfile
     environment:
       SPRING_PROFILES_ACTIVE: docker
 

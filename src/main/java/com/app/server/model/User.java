@@ -59,6 +59,14 @@ public class User implements UserDetails, Serializable {
 
 
 
+    @OneToOne(cascade = CascadeType.ALL,fetch = FetchType.EAGER)
+    private Contract contract;
+
+
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL,mappedBy = "user")
+    private Set<UserContract> signedContract = new HashSet<>();
+
+
 
 
     @Override

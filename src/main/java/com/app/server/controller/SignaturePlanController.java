@@ -1,4 +1,5 @@
 package com.app.server.controller;
+import com.app.server.dto.request.SignaturePlanRequestDto;
 import com.app.server.model.SignaturePlan;
 import com.app.server.service.SignaturePlanService;
 import jakarta.validation.Valid;
@@ -7,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.*;
 
 @RestController
-@RequestMapping("/api/v1/signature-plan")
+@RequestMapping("/api/v1/signature/plan")
 @RequiredArgsConstructor
 public class SignaturePlanController {
 
@@ -26,14 +27,19 @@ public class SignaturePlanController {
     }
 
     @PostMapping
-    public SignaturePlan generateSignaturePlan(@Valid @RequestBody SignaturePlan req) {
+    public SignaturePlan generateSignaturePlan(@Valid @RequestBody SignaturePlanRequestDto req) {
         return signaturePlanService.generateSignaturePlan(req);
     }
 
-    @PutMapping
-    public SignaturePlan updateSignaturePlan(@RequestBody SignaturePlan req) {
-        return signaturePlanService.updateSignaturePlan(req);
+    @PutMapping("/{id}")
+    public SignaturePlan updateSignaturePlan(
+            @PathVariable Long id,
+            @Valid @RequestBody SignaturePlanRequestDto req
+    ) {
+        return signaturePlanService.updateSignaturePlanById(req, id);
     }
+
+
 
     @DeleteMapping("/{id}")
     public Object deleteSignaturePlan(@PathVariable Long id) {

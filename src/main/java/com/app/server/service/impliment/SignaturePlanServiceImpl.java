@@ -1,4 +1,5 @@
 package com.app.server.service.impliment;
+import com.app.server.dto.request.SignaturePlanRequestDto;
 import com.app.server.dto.response.CustomResponseDto;
 import com.app.server.exception.AppNotFoundException;
 import com.app.server.model.SignaturePlan;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -43,15 +45,16 @@ public class SignaturePlanServiceImpl implements SignaturePlanService {
 
     // Generate signature plan
     @Override
-    public SignaturePlan generateSignaturePlan(SignaturePlan signature) {
-        signature.setActive(false);
-        return signaturePlanRepository.save(signature);
+    public SignaturePlan generateSignaturePlan(SignaturePlanRequestDto req) {
+        req.setActive(false);
+        SignaturePlan res = createSignaturePlanFormFromRequest(req);
+        return signaturePlanRepository.save(res);
     }
 
     // Delete signature plan
     @Override
-    public Object deleteSignaturePlan(Long signatureId) {
-        SignaturePlan signature = findSignaturePlanById(signatureId);
+    public Object deleteSignaturePlan(Long id) {
+        SignaturePlan signature = findSignaturePlanById(id);
         signaturePlanRepository.delete(signature);
         CustomResponseDto responseDto = CustomResponseDto.builder()
                 .status(HttpStatus.OK.value())
@@ -66,14 +69,14 @@ public class SignaturePlanServiceImpl implements SignaturePlanService {
     // Update signature plan
     @Transactional
     @Override
-    public SignaturePlan updateSignaturePlan(SignaturePlan signature) {
-        SignaturePlan findSignature = findSignaturePlanById(signature.getId());
-        findSignature.setTitle(signature.getTitle());
-        findSignature.setDescription(signature.getDescription());
-        findSignature.setPrice(signature.getPrice());
-        findSignature.setUsageCount(signature.getUsageCount());
-        findSignature.setPeriod(signature.getPeriod());
-        findSignature.setActive(signature.isActive());
+    public SignaturePlan updateSignaturePlanById(SignaturePlanRequestDto req,Long id) {
+        SignaturePlan findSignature = findSignaturePlanById(id);
+        findSignature.setTitle(req.getTitle());
+        findSignature.setDescription(req.getDescription());
+        findSignature.setPrice(req.getPrice());
+        findSignature.setUsageCount(req.getUsageCount());
+        findSignature.setPeriod(req.getPeriod());
+        findSignature.setActive(req.isActive());
         signaturePlanRepository.save(findSignature);
         return findSignature;
     }
@@ -132,5 +135,24 @@ public class SignaturePlanServiceImpl implements SignaturePlanService {
         return signaturePlanRepository.findAll(spec, pageable);
     }
 
+
+    public SignaturePlan createSignaturePlanFormFromRequest(SignaturePlanRequestDto req) {
+
+            return SignaturePlan.builder()
+
+                    .title(req.getTitle())
+                    .description(req.getDescription())
+                    .price(req.getPrice())
+                    .usageCount(req.getUsageCount())
+                    .period(req.getPeriod())
+                    .features(req.getFeatures())
+                    .isActive(req.isActive())
+                    .features(req.getFeatures())
+                    .tags(req.getTags())
+                    .build();
+
+
+
+    }
 
 }

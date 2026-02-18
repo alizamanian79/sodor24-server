@@ -43,17 +43,17 @@ public class GlobalException {
 
 
 //    // ✅ Badrequest
-//    @ExceptionHandler(AppBadRequestException.class)
-//    public ResponseEntity<?> handleAppBadRequestException(AppBadRequestException e) {
-//        ErrorResponse errorResponse = ErrorResponse.builder()
-//                .message(e.getMessage() != null ? e.getMessage() : "در درخواست شما مشکلی وجود دارد")
-//                .details(e.getDetails() != null ? e.getDetails() : "درخواست اشتباه")
-//                .status(HttpStatus.BAD_REQUEST.value())
-//                .timestamp(PersianDate.now())
-//                .build();
-//
-//        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
-//    }
+    @ExceptionHandler(AppBadRequestException.class)
+    public ResponseEntity<?> handleAppBadRequestException(AppBadRequestException e) {
+        ErrorResponse errorResponse = ErrorResponse.builder()
+                .message(e.getMessage() != null ? e.getMessage() : "در درخواست شما مشکلی وجود دارد")
+                .details(e.getDetails() != null ? e.getDetails() : "درخواست اشتباه")
+                .status(HttpStatus.BAD_REQUEST.value())
+                .timestamp(PersianDate.now())
+                .build();
+
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
 
 
     // 401 Unauthorized

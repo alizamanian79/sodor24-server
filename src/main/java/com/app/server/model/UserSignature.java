@@ -24,7 +24,7 @@ public class UserSignature {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "signature_id")
+    @JoinColumn(name = "signaturePlanId")
     private SignaturePlan signature;
 
     @ManyToOne

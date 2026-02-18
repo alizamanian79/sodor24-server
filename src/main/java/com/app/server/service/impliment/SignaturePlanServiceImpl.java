@@ -1,9 +1,9 @@
 package com.app.server.service.impliment;
 import com.app.server.dto.response.CustomResponseDto;
 import com.app.server.exception.AppNotFoundException;
-import com.app.server.model.Signature;
-import com.app.server.repository.SignatureRepository;
-import com.app.server.service.SignatureService;
+import com.app.server.model.SignaturePlan;
+import com.app.server.repository.SignaturePlanRepository;
+import com.app.server.service.SignaturePlanService;
 import com.github.mfathi91.time.PersianDate;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -14,45 +14,45 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
 import java.util.Collections;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class SignatureServiceImpl implements SignatureService {
+public class SignaturePlanServiceImpl implements SignaturePlanService {
 
-    private final SignatureRepository signatureRepository;
-
-    private final RestTemplate restTemplate;
+    private final SignaturePlanRepository signaturePlanRepository;
 
 
 
-
+    // Get all signature plans
     @Override
-    public List<Signature> getSignatures() {
-        List<Signature> all = signatureRepository.findAll();
+    public List<SignaturePlan> getAllSignaturePlans() {
+        List<SignaturePlan> all = signaturePlanRepository.findAll();
         Collections.reverse(all);
         return all;
     }
 
+    // Find signature plan by Id
     @Override
-    public Signature findSignatureById(Long id) {
-        return signatureRepository.findSignatureById(id)
+    public SignaturePlan findSignaturePlanById(Long id) {
+        return signaturePlanRepository.findSignatureById(id)
                 .orElseThrow(() -> new AppNotFoundException("امضای شما پیدا نشد"));
     }
 
+    // Generate signature plan
     @Override
-    public Signature generateSignature(Signature signature) {
+    public SignaturePlan generateSignaturePlan(SignaturePlan signature) {
         signature.setActive(false);
-        return signatureRepository.save(signature);
+        return signaturePlanRepository.save(signature);
     }
 
+    // Delete signature plan
     @Override
-    public Object deleteSignature(Long signatureId) {
-        Signature signature = findSignatureById(signatureId);
-        signatureRepository.delete(signature);
+    public Object deleteSignaturePlan(Long signatureId) {
+        SignaturePlan signature = findSignaturePlanById(signatureId);
+        signaturePlanRepository.delete(signature);
         CustomResponseDto responseDto = CustomResponseDto.builder()
                 .status(HttpStatus.OK.value())
                 .timestamp(PersianDate.now())
@@ -62,26 +62,30 @@ public class SignatureServiceImpl implements SignatureService {
         return responseDto;
     }
 
+
+    // Update signature plan
     @Transactional
     @Override
-    public Signature updateSignature(Signature signature) {
-        Signature findSignature = findSignatureById(signature.getId());
+    public SignaturePlan updateSignaturePlan(SignaturePlan signature) {
+        SignaturePlan findSignature = findSignaturePlanById(signature.getId());
         findSignature.setTitle(signature.getTitle());
         findSignature.setDescription(signature.getDescription());
         findSignature.setPrice(signature.getPrice());
         findSignature.setUsageCount(signature.getUsageCount());
         findSignature.setPeriod(signature.getPeriod());
         findSignature.setActive(signature.isActive());
-        signatureRepository.save(findSignature);
+        signaturePlanRepository.save(findSignature);
         return findSignature;
     }
 
+
+    // Signature plan Active status
     @Transactional
     @Override
-    public Object activeSignature(Long signatureId , boolean active) {
-        Signature signature = findSignatureById(signatureId);
+    public Object activeSignaturePlan(Long signatureId , boolean active) {
+        SignaturePlan signature = findSignaturePlanById(signatureId);
         signature.setActive(active);
-        Signature saved = signatureRepository.save(signature);
+        SignaturePlan saved = signaturePlanRepository.save(signature);
 
         String status = signature.isActive() == true ? " \s معتبر \s" :" \s نا معتبر \s";
         CustomResponseDto res = CustomResponseDto.builder()
@@ -95,7 +99,7 @@ public class SignatureServiceImpl implements SignatureService {
 
 
     @Override
-    public Page<Signature> getPageableSignatures(
+    public Page<SignaturePlan> getPageableSignaturesPlan(
             Integer page,
             Integer size,
             String search,
@@ -103,7 +107,6 @@ public class SignatureServiceImpl implements SignatureService {
             String sortDir
     ) {
 
-        // اگر page و size خالی بود → بدون صفحه‌بندی همه را برگردان
         Pageable pageable = Pageable.unpaged();
         if (page != null && size != null) {
             Sort sort = Sort.by(sortDir.equalsIgnoreCase("desc")
@@ -113,12 +116,10 @@ public class SignatureServiceImpl implements SignatureService {
             pageable = PageRequest.of(page, size, sort);
         }
 
-        Specification<Signature> spec = Specification.where(null);
+        Specification<SignaturePlan> spec = Specification.where(null);
 
-        // 🔒 فقط رکوردهای active = true
         spec = spec.and((root, query, cb) -> cb.isTrue(root.get("active")));
 
-        // سرچ روی فیلدهای title و description
         if (search != null && !search.isBlank()) {
             String keyword = "%" + search.toLowerCase() + "%";
 
@@ -128,7 +129,7 @@ public class SignatureServiceImpl implements SignatureService {
             ));
         }
 
-        return signatureRepository.findAll(spec, pageable);
+        return signaturePlanRepository.findAll(spec, pageable);
     }
 
 

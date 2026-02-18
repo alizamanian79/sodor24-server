@@ -3,7 +3,7 @@ package com.app.server.controller;
 import com.app.server.dto.request.SignatureRequest;
 import com.app.server.dto.response.CustomResponseDto;
 import com.app.server.model.UserSignature;
-import com.app.server.service.SignatureService;
+import com.app.server.service.SignaturePlanService;
 import com.app.server.service.UserSignatureService;
 import com.app.server.util.rabbitMQ.SignatureRMQProducer;
 import com.app.server.util.zarinpalPaymentService.dto.ZarinpalPaymentRequest;
@@ -22,7 +22,7 @@ import java.util.List;
 @RequestMapping("/api/v1/service/signature")
 public class UserSignatureController {
 
-    private final SignatureService signatureService;
+    private final SignaturePlanService signaturePlanService;
     @Value("${app.server.host}")
     private String serverHost;
 

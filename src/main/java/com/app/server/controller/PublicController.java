@@ -1,7 +1,7 @@
 package com.app.server.controller;
 
-import com.app.server.model.Signature;
-import com.app.server.service.SignatureService;
+import com.app.server.model.SignaturePlan;
+import com.app.server.service.SignaturePlanService;
 import com.app.server.util.rabbitMQ.ContractRMQProducer;
 import com.app.server.util.rabbitMQ.dto.request.RMQContractRequestDto;
 import com.app.server.util.rabbitMQ.dto.request.RMQSignatureRequestDto;
@@ -19,20 +19,20 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping("/api/v1/public")
 public class PublicController {
 
-    private final SignatureService signatureService;
+    private final SignaturePlanService signaturePlanService;
     private final SignatureRMQProducer signatureRMQProducer;
     private final ContractRMQProducer contractRMQProducer;
 
 
     @GetMapping("/signatures")
-    public Page<Signature> getSignatures(
+    public Page<SignaturePlan> getSignatures(
             @RequestParam(required = false) Integer page,
             @RequestParam(required = false) Integer size,
             @RequestParam(required = false) String search,
             @RequestParam(defaultValue = "id") String sortBy,
             @RequestParam(defaultValue = "asc") String sortDir
     ) {
-        return signatureService.getPageableSignatures(page, size, search, sortBy, sortDir);
+        return signaturePlanService.getPageableSignaturesPlan(page, size, search, sortBy, sortDir);
     }
 
     @GetMapping("/test")

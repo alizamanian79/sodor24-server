@@ -4,15 +4,14 @@ import com.app.server.dto.request.SignatureRequest;
 import com.app.server.dto.response.CustomResponseDto;
 import com.app.server.exception.AppConflicException;
 import com.app.server.exception.AppNotFoundException;
-import com.app.server.model.Signature;
+import com.app.server.model.SignaturePlan;
 import com.app.server.model.User;
 import com.app.server.model.UserSignature;
 import com.app.server.repository.UserSignatureRepository;
-import com.app.server.service.SignatureService;
+import com.app.server.service.SignaturePlanService;
 import com.app.server.service.UserService;
 import com.app.server.service.UserSignatureService;
 import com.app.server.util.rabbitMQ.dto.request.RMQSignatureRequestDto;
-import com.app.server.util.rabbitMQ.dto.response.RMQResponse;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.mfathi91.time.PersianDate;
@@ -28,13 +27,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import com.app.server.util.rabbitMQ.SignatureRMQProducer;
-import static org.apache.kafka.common.utils.Utils.safe;
 
 @Service
 @RequiredArgsConstructor
 public class UserSignatureServiceImpl implements UserSignatureService {
 
-    private final SignatureService signatureService;
+    private final SignaturePlanService signaturePlanService;
     private final UserService userService;
     private final UserSignatureRepository userSignatureRepository;
     private final SignatureRMQProducer signatureRMQProducer;
@@ -69,7 +67,7 @@ public class UserSignatureServiceImpl implements UserSignatureService {
     public UserSignature generateUserSignature(SignatureRequest req) {
         // find user and signature plan
         User existUser = userService.findUserById(req.getUserId());
-        Signature existSignature =signatureService.findSignatureById(req.getSignatureId());
+        SignaturePlan existSignature = signaturePlanService.findSignaturePlanById(req.getSignatureId());
 
         if (!existSignature.isActive()){
             throw new AppConflicException("اعتبار این پلن از امضا تایید نشده",

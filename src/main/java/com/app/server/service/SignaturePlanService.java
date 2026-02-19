@@ -3,6 +3,7 @@ package com.app.server.service;
 import com.app.server.dto.request.SignaturePlanRequestDto;
 import com.app.server.model.SignaturePlan;
 import org.springframework.data.domain.Page;
+import org.springframework.security.core.Authentication;
 
 import java.util.List;
 

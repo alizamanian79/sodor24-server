@@ -3,10 +3,10 @@ package com.app.server.dto.request;
 import lombok.Data;
 
 @Data
-public class SignatureRequest {
+public class SignatureRequestDto {
 
     private Long userId;
-    private Long signatureId;
+    private Long signaturePlanId;
     private String country;
     private String  reason;
     private String location;

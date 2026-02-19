@@ -1,15 +1,21 @@
 package com.app.server.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
+
+@JsonIdentityInfo(
+        generator = ObjectIdGenerators.PropertyGenerator.class,
+        property = "id"
+)
 
 @Getter
 @Setter
@@ -19,7 +25,7 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "signature_plan")
-public class SignaturePlan {
+public class SignaturePlan implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -47,19 +53,21 @@ public class SignaturePlan {
     private boolean isActive;
 
     @ElementCollection
-    @CollectionTable(name = "signature_features", joinColumns = @JoinColumn(name = "signature_id"))
+    @CollectionTable(name = "signaturePlan_features", joinColumns = @JoinColumn(name = "signaturePlan_id"))
     @Column(name = "feature")
     private List<String> features;
 
     @ElementCollection
-    @CollectionTable(name = "signature_tags", joinColumns = @JoinColumn(name = "signature_id"))
+    @CollectionTable(name = "signaturePlan_tags", joinColumns = @JoinColumn(name = "signaturePlan_id"))
     @Column(name = "tag")
     private Set<String> tags;
 
 
 
+
+
+
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JsonIgnore
     private List<UserSignature> users;
 
     @CreationTimestamp

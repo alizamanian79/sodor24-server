@@ -1,6 +1,6 @@
 package com.app.server.controller;
 
-import com.app.server.dto.request.SignatureRequest;
+import com.app.server.dto.request.SignatureRequestDto;
 import com.app.server.dto.response.CustomResponseDto;
 import com.app.server.model.UserSignature;
 import com.app.server.service.SignaturePlanService;
@@ -34,7 +34,7 @@ public class UserSignatureController {
 
     @PostMapping()
      ResponseEntity<?> buySignature(
-            @RequestBody SignatureRequest req,
+            @RequestBody SignatureRequestDto req,
             @RequestHeader(value = "Authorization", required = false) String authorization
     ) {
         if (authorization == null || !authorization.startsWith("Bearer ")) {
@@ -106,8 +106,8 @@ public class UserSignatureController {
       ZarinpalPaymentRequest paymentReq = ZarinpalPaymentRequest.builder()
                 .email(signature.getEmail())
                 .mobile(signature.getUser().getPhoneNumber())
-                .amount(signature.getSignature().getPrice())
-                .description("خرید سرویس امضای " + signature.getSignature().getTitle())
+                .amount(signature.getSignaturePlan().getPrice())
+                .description("خرید سرویس امضای " + signature.getSignaturePlan().getTitle())
                 .callback_url(
                         serverHost +
                                 "/api/v1/service/signature/callback" +
@@ -139,7 +139,7 @@ public class UserSignatureController {
 
         boolean payStatus = zarinpalPaymentService.verifyPayment(
                     Authority,
-                    find.getSignature().getPrice()
+                    find.getSignaturePlan().getPrice()
             );
 
             if (!payStatus) {

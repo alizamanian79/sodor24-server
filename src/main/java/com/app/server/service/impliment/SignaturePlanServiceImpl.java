@@ -3,8 +3,10 @@ import com.app.server.dto.request.SignaturePlanRequestDto;
 import com.app.server.dto.response.CustomResponseDto;
 import com.app.server.exception.AppNotFoundException;
 import com.app.server.model.SignaturePlan;
+import com.app.server.model.User;
 import com.app.server.repository.SignaturePlanRepository;
 import com.app.server.service.SignaturePlanService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.mfathi91.time.PersianDate;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +16,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
@@ -46,8 +49,24 @@ public class SignaturePlanServiceImpl implements SignaturePlanService {
     // Generate signature plan
     @Override
     public SignaturePlan generateSignaturePlan(SignaturePlanRequestDto req) {
+
         req.setActive(false);
-        SignaturePlan res = createSignaturePlanFormFromRequest(req);
+
+        SignaturePlan res = SignaturePlan.builder()
+
+                .title(req.getTitle())
+                .description(req.getDescription())
+                .price(req.getPrice())
+                .usageCount(req.getUsageCount())
+                .period(req.getPeriod())
+                .features(req.getFeatures())
+                .isActive(req.isActive())
+                .features(req.getFeatures())
+                .tags(req.getTags())
+                .build();
+
+
+
         return signaturePlanRepository.save(res);
     }
 
@@ -136,23 +155,5 @@ public class SignaturePlanServiceImpl implements SignaturePlanService {
     }
 
 
-    public SignaturePlan createSignaturePlanFormFromRequest(SignaturePlanRequestDto req) {
-
-            return SignaturePlan.builder()
-
-                    .title(req.getTitle())
-                    .description(req.getDescription())
-                    .price(req.getPrice())
-                    .usageCount(req.getUsageCount())
-                    .period(req.getPeriod())
-                    .features(req.getFeatures())
-                    .isActive(req.isActive())
-                    .features(req.getFeatures())
-                    .tags(req.getTags())
-                    .build();
-
-
-
-    }
 
 }

@@ -1,6 +1,6 @@
 package com.app.server.service.impliment;
 
-import com.app.server.dto.request.SignatureRequest;
+import com.app.server.dto.request.SignatureRequestDto;
 import com.app.server.dto.response.CustomResponseDto;
 import com.app.server.exception.AppConflicException;
 import com.app.server.exception.AppNotFoundException;
@@ -64,12 +64,12 @@ public class UserSignatureServiceImpl implements UserSignatureService {
 
     @Transactional
     @Override
-    public UserSignature generateUserSignature(SignatureRequest req) {
+    public UserSignature generateUserSignature(SignatureRequestDto req) {
         // find user and signature plan
         User existUser = userService.findUserById(req.getUserId());
-        SignaturePlan existSignature = signaturePlanService.findSignaturePlanById(req.getSignatureId());
+        SignaturePlan signaturePlan = signaturePlanService.findSignaturePlanById(req.getSignaturePlanId());
 
-        if (!existSignature.isActive()){
+        if (!signaturePlan.isActive()){
             throw new AppConflicException("اعتبار این پلن از امضا تایید نشده",
                     "به محض تعویض وضعیت این پلن به شما اطلاع خواهیم داد");
         }
@@ -78,9 +78,9 @@ public class UserSignatureServiceImpl implements UserSignatureService {
 
         UserSignature userSignature = UserSignature.builder()
                 .user(existUser)
-                .signature(existSignature)
+                .signaturePlan(signaturePlan)
                 .valid(false)
-                .usageCount(existSignature.getUsageCount())
+                .usageCount(signaturePlan.getUsageCount())
 
 
                 //username
@@ -94,8 +94,8 @@ public class UserSignatureServiceImpl implements UserSignatureService {
                 .email(req.getEmail().toString())
                 .title(req.getTitle().toString())
                 .signaturePassword(req.getSignaturePassword())
-                .signatureExpired(PersianDate.now().plusDays(existSignature.getPeriod()).toString())
-                .expiredAt(LocalDateTime.now().plusDays(existSignature.getPeriod()))
+                .signatureExpired(PersianDate.now().plusDays(signaturePlan.getPeriod()).toString())
+                .expiredAt(LocalDateTime.now().plusDays(signaturePlan.getPeriod()))
                 .build();
         UserSignature saved = userSignatureRepository.save(userSignature);
         return saved;
@@ -172,8 +172,8 @@ public class UserSignatureServiceImpl implements UserSignatureService {
                 .city(req.getCity())
                 .email(req.getEmail())
                 .title(req.getTitle())
-                .userId("") // اگر userId دارید، مقدار دهید
-                .signatureExpired(req.getSignature().getPeriod())
+                .userId("")
+                .signatureExpired(req.getSignaturePlan().getPeriod())
                 .signaturePassword(req.getSignaturePassword())
                 .build();
 

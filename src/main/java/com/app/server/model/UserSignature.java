@@ -25,7 +25,8 @@ public class UserSignature {
 
     @ManyToOne
     @JoinColumn(name = "signaturePlanId")
-    private SignaturePlan signature;
+    @JsonIdentityReference(alwaysAsId = true)
+    private SignaturePlan signaturePlan;
 
     @ManyToOne
     @JoinColumn(name = "user_id")

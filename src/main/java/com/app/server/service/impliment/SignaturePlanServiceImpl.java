@@ -53,7 +53,8 @@ public class SignaturePlanServiceImpl implements SignaturePlanService {
         req.setActive(false);
 
         SignaturePlan res = SignaturePlan.builder()
-
+                .creatorId(req.getCreatorId())
+                .updatedUserId(0L)
                 .title(req.getTitle())
                 .description(req.getDescription())
                 .price(req.getPrice())
@@ -90,6 +91,7 @@ public class SignaturePlanServiceImpl implements SignaturePlanService {
     @Override
     public SignaturePlan updateSignaturePlanById(SignaturePlanRequestDto req,Long id) {
         SignaturePlan findSignature = findSignaturePlanById(id);
+        findSignature.setUpdatedUserId(req.getUpdatedUserId());
         findSignature.setTitle(req.getTitle());
         findSignature.setDescription(req.getDescription());
         findSignature.setPrice(req.getPrice());

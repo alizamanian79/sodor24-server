@@ -51,11 +51,8 @@ public class User implements UserDetails, Serializable {
 
 
 
-
-
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL,mappedBy = "user")
-    private List<UserSignature> signatures;
-
+    private List<Signature> signatures;
 
 
 

@@ -2,9 +2,9 @@ package com.app.server.controller;
 
 import com.app.server.dto.request.SignatureRequestDto;
 import com.app.server.dto.response.CustomResponseDto;
-import com.app.server.model.UserSignature;
+import com.app.server.model.Signature;
 import com.app.server.service.SignaturePlanService;
-import com.app.server.service.UserSignatureService;
+import com.app.server.service.SignatureService;
 import com.app.server.util.rabbitMQ.SignatureRMQProducer;
 import com.app.server.util.zarinpalPaymentService.dto.ZarinpalPaymentRequest;
 import com.app.server.util.zarinpalPaymentService.dto.ZarinpalPaymentResponse;
@@ -19,17 +19,16 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/service/signature")
-public class UserSignatureController {
+@RequestMapping("/api/v1/signature/service")
+public class SignatureController {
 
     private final SignaturePlanService signaturePlanService;
     @Value("${app.server.host}")
     private String serverHost;
 
-    private final UserSignatureService userSignatureService;
+    private final SignatureService signatureService;
     private final ZarinpalPaymentService zarinpalPaymentService;
 
-    private final SignatureRMQProducer signatureRMQProducer;
 
 
     @PostMapping()
@@ -43,7 +42,7 @@ public class UserSignatureController {
         }
 
 
-        UserSignature signature = userSignatureService.generateUserSignature(req);
+        Signature signature = signatureService.generateUserSignature(req);
 
         if (signature.isValid()) {
             return ResponseEntity.ok(
@@ -68,18 +67,14 @@ public class UserSignatureController {
 
 
 
-
-
-
-
     @GetMapping
-    public List<UserSignature> list(){
-        return userSignatureService.findAll();
+    public List<Signature> list(){
+        return signatureService.findAll();
     }
 
     @GetMapping("/{id}")
-    public UserSignature get(@PathVariable Long id){
-        return userSignatureService.findById(id);
+    public Signature get(@PathVariable Long id){
+        return signatureService.findById(id);
     }
 
 
@@ -90,7 +85,7 @@ public class UserSignatureController {
                                              @RequestHeader(value = "Authorization", required = false)
                                              String authorization
     ) throws Exception{
-      UserSignature signature =  userSignatureService.findUserSignatureByOtp(otp);
+      Signature signature =  signatureService.findUserSignatureByOtp(otp);
       String accessToken = authorization.replace("Bearer ", "");
 
       // Check Otp Before Gatway send to user
@@ -110,7 +105,7 @@ public class UserSignatureController {
                 .description("خرید سرویس امضای " + signature.getSignaturePlan().getTitle())
                 .callback_url(
                         serverHost +
-                                "/api/v1/service/signature/callback" +
+                                "/api/v1/signature/service/callback" +
                                 "?otp=" + otp +
                                 "&token=" + accessToken
                 )
@@ -128,7 +123,7 @@ public class UserSignatureController {
     public ResponseEntity<?> verify(@RequestParam String otp,
                                     @RequestParam String Authority,
                                     @RequestParam String Status) {
-        UserSignature find = userSignatureService.findUserSignatureByOtp(otp);
+        Signature find = signatureService.findUserSignatureByOtp(otp);
 
         // Validate transaction payment
         if (Authority == null || Authority.isBlank()
@@ -146,8 +141,8 @@ public class UserSignatureController {
                 return new ResponseEntity<>("پرداخت ناموفق بود", HttpStatus.BAD_REQUEST);
             }
 
-            CustomResponseDto res = userSignatureService.verifySignature(find.getOtp());
-            userSignatureService.sendRequestToSignatureService(find);
+            CustomResponseDto res = signatureService.verifySignature(find.getOtp());
+            signatureService.sendRequestToSignatureService(find);
             res.setMessage("پرداخت با موفقیت انجام شد");
             return new ResponseEntity<>(res, HttpStatus.BAD_REQUEST);
 

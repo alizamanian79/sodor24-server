@@ -40,6 +40,9 @@ public class SignaturePlanRequestDto {
 
 
 
+    private Long creatorId;
+    private Long updatedUserId;
+
     private boolean isActive;
 
     @ElementCollection

@@ -18,7 +18,7 @@ import java.util.Random;
 @NoArgsConstructor
 @Entity
 @Table(name = "user_signature")
-public class UserSignature {
+public class Signature {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

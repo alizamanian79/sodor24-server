@@ -1,7 +1,10 @@
 package com.app.server.controller;
 import com.app.server.dto.request.SignaturePlanRequestDto;
 import com.app.server.model.SignaturePlan;
+import com.app.server.model.User;
 import com.app.server.service.SignaturePlanService;
+import com.app.server.service.UserService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
@@ -14,7 +17,7 @@ import java.util.*;
 public class SignaturePlanController {
 
     private final SignaturePlanService signaturePlanService;
-
+    private final UserService userService;
 
     @GetMapping
     public List<SignaturePlan> getAllSignaturePlans() {
@@ -28,15 +31,25 @@ public class SignaturePlanController {
     }
 
     @PostMapping
-    public SignaturePlan generateSignaturePlan(@Valid @RequestBody SignaturePlanRequestDto req) {
+    public SignaturePlan generateSignaturePlan(
+            @Valid @RequestBody SignaturePlanRequestDto req,Authentication auth) {
+
+        User user = userService.convertUserFromAuthentication(auth);
+        req.setCreatorId(user.getId());
+
         return signaturePlanService.generateSignaturePlan(req);
     }
 
     @PutMapping("/{id}")
     public SignaturePlan updateSignaturePlan(
             @PathVariable Long id,
-            @Valid @RequestBody SignaturePlanRequestDto req
+            @Valid @RequestBody SignaturePlanRequestDto req,Authentication authentication
     ) {
+
+        User user = userService.convertUserFromAuthentication(authentication);
+        req.setCreatorId(user.getId());
+
+        req.setUpdatedUserId(user.getId());
         return signaturePlanService.updateSignaturePlanById(req, id);
     }
 
@@ -51,5 +64,7 @@ public class SignaturePlanController {
     public Object changeActiveSignaturePlan(@RequestParam Long id, @RequestParam boolean active) {
         return signaturePlanService.activeSignaturePlan(id, active);
     }
+
+
 
 }

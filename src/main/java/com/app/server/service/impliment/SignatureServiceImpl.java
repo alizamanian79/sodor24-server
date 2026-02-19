@@ -6,21 +6,19 @@ import com.app.server.exception.AppConflicException;
 import com.app.server.exception.AppNotFoundException;
 import com.app.server.model.SignaturePlan;
 import com.app.server.model.User;
-import com.app.server.model.UserSignature;
-import com.app.server.repository.UserSignatureRepository;
+import com.app.server.model.Signature;
+import com.app.server.repository.SignatureRepository;
 import com.app.server.service.SignaturePlanService;
 import com.app.server.service.UserService;
-import com.app.server.service.UserSignatureService;
+import com.app.server.service.SignatureService;
 import com.app.server.util.rabbitMQ.dto.request.RMQSignatureRequestDto;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.mfathi91.time.PersianDate;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
@@ -30,32 +28,30 @@ import com.app.server.util.rabbitMQ.SignatureRMQProducer;
 
 @Service
 @RequiredArgsConstructor
-public class UserSignatureServiceImpl implements UserSignatureService {
+public class SignatureServiceImpl implements SignatureService {
 
     private final SignaturePlanService signaturePlanService;
     private final UserService userService;
-    private final UserSignatureRepository userSignatureRepository;
+    private final SignatureRepository signatureRepository;
     private final SignatureRMQProducer signatureRMQProducer;
 
-    @Autowired
-    private RestTemplate restTemplate ;
 
 
     @Override
-    public List<UserSignature> findAll() {
-        List<UserSignature> list = userSignatureRepository.findAll();
+    public List<Signature> findAll() {
+        List<Signature> list = signatureRepository.findAll();
         Collections.reverse(list);
         return list;
     }
 
     @Override
-    public UserSignature findById(Long usersignatureId) {
-        return userSignatureRepository.findById(usersignatureId).orElseThrow(()-> new AppNotFoundException("امضا پیدا نشد"));
+    public Signature findById(Long id) {
+        return signatureRepository.findById(id).orElseThrow(()-> new AppNotFoundException("امضا پیدا نشد"));
     }
 
     @Override
-    public UserSignature findUserSignatureByOtp(String otp) {
-        UserSignature signature = userSignatureRepository.findByOtp(otp).orElseThrow(()->new AppNotFoundException("کد وارد شده نامعتبر میباشد"));
+    public Signature findUserSignatureByOtp(String otp) {
+        Signature signature = signatureRepository.findByOtp(otp).orElseThrow(()->new AppNotFoundException("کد وارد شده نامعتبر میباشد"));
         return signature;
     }
 
@@ -64,7 +60,7 @@ public class UserSignatureServiceImpl implements UserSignatureService {
 
     @Transactional
     @Override
-    public UserSignature generateUserSignature(SignatureRequestDto req) {
+    public Signature generateUserSignature(SignatureRequestDto req) {
         // find user and signature plan
         User existUser = userService.findUserById(req.getUserId());
         SignaturePlan signaturePlan = signaturePlanService.findSignaturePlanById(req.getSignaturePlanId());
@@ -75,15 +71,12 @@ public class UserSignatureServiceImpl implements UserSignatureService {
         }
 
         // Generate Signature
-
-        UserSignature userSignature = UserSignature.builder()
+        Signature signature = Signature.builder()
                 .user(existUser)
                 .signaturePlan(signaturePlan)
                 .valid(false)
                 .usageCount(signaturePlan.getUsageCount())
 
-
-                //username
                 .country(req.getCountry().toString())
                 .reason(req.getReason().toString())
                 .location(req.getLocation().toString())
@@ -97,7 +90,7 @@ public class UserSignatureServiceImpl implements UserSignatureService {
                 .signatureExpired(PersianDate.now().plusDays(signaturePlan.getPeriod()).toString())
                 .expiredAt(LocalDateTime.now().plusDays(signaturePlan.getPeriod()))
                 .build();
-        UserSignature saved = userSignatureRepository.save(userSignature);
+        Signature saved = signatureRepository.save(signature);
         return saved;
     }
 
@@ -117,7 +110,7 @@ public class UserSignatureServiceImpl implements UserSignatureService {
     public CustomResponseDto verifySignature(String otp) {
 
         CustomResponseDto res = new CustomResponseDto();
-        Optional<UserSignature> find = userSignatureRepository.findByOtp(otp);
+        Optional<Signature> find = signatureRepository.findByOtp(otp);
 
         if (find.isEmpty()) {
             res.setStatus(HttpStatus.NOT_FOUND.value());
@@ -125,7 +118,7 @@ public class UserSignatureServiceImpl implements UserSignatureService {
             res.setTimestamp(PersianDate.now());
             return res;
         }
-        UserSignature existSignature = find.get();
+        Signature existSignature = find.get();
 
 
 
@@ -137,7 +130,7 @@ public class UserSignatureServiceImpl implements UserSignatureService {
             existSignature.setUsageCount(existSignature.getUsageCount() - 1);
 
 
-            userSignatureRepository.save(existSignature);
+            signatureRepository.save(existSignature);
 
             // پاسخ نهایی
             res.setStatus(HttpStatus.OK.value());
@@ -159,7 +152,7 @@ public class UserSignatureServiceImpl implements UserSignatureService {
 
     @Transactional
     @Override
-    public void sendRequestToSignatureService(UserSignature req) {
+    public void sendRequestToSignatureService(Signature req) {
 
         RMQSignatureRequestDto signatureserviceReq = RMQSignatureRequestDto.builder()
                 .username(req.getUser().getFullName())
@@ -198,7 +191,7 @@ public class UserSignatureServiceImpl implements UserSignatureService {
 
                 req.setPrivateKeyIdLink(p12 != null ? p12.toString() : null);
                 req.setPrivateKeyId(id.toString());
-                userSignatureRepository.save(req);
+                signatureRepository.save(req);
             }
         }
 

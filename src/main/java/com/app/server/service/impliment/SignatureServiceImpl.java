@@ -2,6 +2,7 @@ package com.app.server.service.impliment;
 
 import com.app.server.dto.request.SignatureRequestDto;
 import com.app.server.dto.response.CustomResponseDto;
+import com.app.server.exception.AppBadRequestException;
 import com.app.server.exception.AppConflicException;
 import com.app.server.exception.AppNotFoundException;
 import com.app.server.model.SignaturePlan;
@@ -20,10 +21,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
+
 import com.app.server.util.rabbitMQ.SignatureRMQProducer;
 
 @Service
@@ -50,7 +49,7 @@ public class SignatureServiceImpl implements SignatureService {
     }
 
     @Override
-    public Signature findUserSignatureByOtp(String otp) {
+    public Signature findSignatureByOtp(String otp) {
         Signature signature = signatureRepository.findByOtp(otp).orElseThrow(()->new AppNotFoundException("کد وارد شده نامعتبر میباشد"));
         return signature;
     }
@@ -60,8 +59,7 @@ public class SignatureServiceImpl implements SignatureService {
 
     @Transactional
     @Override
-    public Signature generateUserSignature(SignatureRequestDto req) {
-        // find user and signature plan
+    public Signature generateSignature(SignatureRequestDto req) {
         User existUser = userService.findUserById(req.getUserId());
         SignaturePlan signaturePlan = signaturePlanService.findSignaturePlanById(req.getSignaturePlanId());
 
@@ -70,7 +68,7 @@ public class SignatureServiceImpl implements SignatureService {
                     "به محض تعویض وضعیت این پلن به شما اطلاع خواهیم داد");
         }
 
-        // Generate Signature
+
         Signature signature = Signature.builder()
                 .user(existUser)
                 .signaturePlan(signaturePlan)
@@ -87,8 +85,7 @@ public class SignatureServiceImpl implements SignatureService {
                 .email(req.getEmail().toString())
                 .title(req.getTitle().toString())
                 .signaturePassword(req.getSignaturePassword())
-                .signatureExpired(PersianDate.now().plusDays(signaturePlan.getPeriod()).toString())
-                .expiredAt(LocalDateTime.now().plusDays(signaturePlan.getPeriod()))
+                .signatureExpired(LocalDateTime.now().plusDays(signaturePlan.getPeriod()))
                 .build();
         Signature saved = signatureRepository.save(signature);
         return saved;
@@ -127,7 +124,7 @@ public class SignatureServiceImpl implements SignatureService {
 //            existSignature.setKeyId("");
             existSignature.setValid(true);
             existSignature.setOtp(null);
-            existSignature.setUsageCount(existSignature.getUsageCount() - 1);
+            existSignature.setUsageCount(existSignature.getUsageCount());
 
 
             signatureRepository.save(existSignature);
@@ -199,5 +196,105 @@ public class SignatureServiceImpl implements SignatureService {
     }
 
 
+    @Transactional
+    @Override
+    public CustomResponseDto deleteSignature(Long id) {
+        Signature existSignature = findById(id);
+        signatureRepository.delete(existSignature);
+        CustomResponseDto res = CustomResponseDto.builder()
+                .message("امضا حذف شد")
+                .status(HttpStatus.OK.value())
+                .timestamp(PersianDate.now())
+                .build();
+        return res;
+    }
 
+    @Transactional
+    @Override
+    public Signature updateSignature(Long id , SignatureRequestDto req)  {
+
+
+
+        Signature findSignature = findById(id);
+
+        if (findSignature.isValid()) {
+            return null;
+        }
+
+        SignaturePlan findPlan = signaturePlanService.findSignaturePlanById(req.getSignaturePlanId());
+        User findUser = userService.findUserById(req.getUserId());
+
+        findSignature.setSignaturePlan(findPlan);
+        findSignature.setUser(findUser);
+
+        findSignature.setUsageCount(findPlan.getUsageCount());
+        findSignature.setTotalUsageCount(findPlan.getUsageCount());
+
+        findSignature.setValid(false);
+        findSignature.setPrivateKeyId(null);
+        findSignature.setPrivateKeyIdLink(null);
+
+        findSignature.setOtp(String.valueOf(1000 + new Random().nextInt(9000)));
+        findSignature.setCountry(req.getCountry());
+        findSignature.setReason(req.getReason());
+        findSignature.setLocation(req.getLocation());
+        findSignature.setOrganization(req.getOrganization());
+        findSignature.setDepartment(req.getDepartment());
+        findSignature.setState(req.getState());
+        findSignature.setCity(req.getCity());
+        findSignature.setEmail(req.getEmail());
+        findSignature.setTitle(req.getTitle());
+        findSignature.setSignatureExpired(LocalDateTime.now().plusDays(findPlan.getPeriod()));
+
+       return signatureRepository.save(findSignature);
+
+
+    }
+
+
+    @Transactional
+    @Override
+    public Signature changeSignatureValid(Long id,boolean valid) {
+        Signature signature = findById(id);
+        signature.setValid(valid);
+        Signature saved = signatureRepository.save(signature);
+        return saved;
+    }
+
+
+    // Using Signature
+    @Transactional
+    @Override
+    public boolean useSignature(Signature req) {
+
+        Signature signature = findById(req.getId());
+
+        if (!signature.isValid()) {
+            throw new AppBadRequestException("امضای شما معتبر نمی‌باشد.");
+        }
+
+        if (LocalDateTime.now().isAfter(signature.getSignatureExpired())) {
+            signature.setValid(false);
+            signatureRepository.save(signature);
+            throw new AppBadRequestException("تاریخ امضای شما به پایان رسیده است.");
+        }
+
+
+        if (signature.getUsageCount() <= 0) {
+            signature.setValid(false);
+            signatureRepository.save(signature);
+            throw new AppBadRequestException("تعداد استفاده این پلن امضا به پایان رسیده است.");
+        }
+
+
+        signature.setUsageCount(signature.getUsageCount() - 1);
+
+        if (signature.getUsageCount() == 0) {
+            signature.setValid(false);
+        }
+
+        signatureRepository.save(signature);
+
+        return true;
+    }
 }

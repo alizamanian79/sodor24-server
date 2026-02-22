@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
+import org.springframework.cglib.core.Local;
 
 import java.time.LocalDateTime;
 import java.util.Random;
@@ -23,25 +24,31 @@ public class Signature {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+
+
+
     @ManyToOne
-    @JoinColumn(name = "signaturePlanId")
+    @JoinColumn(name = "signature_plan_id")
     @JsonIdentityReference(alwaysAsId = true)
     private SignaturePlan signaturePlan;
+
+
+
 
     @ManyToOne
     @JoinColumn(name = "user_id")
     @JsonIdentityReference(alwaysAsId = true)
     private User user;
 
+
+
+
+
     private boolean valid;
-    private LocalDateTime expiredAt;
     private int usageCount;
     private int totalUsageCount;
-
-
     private String privateKeyId;
     private String privateKeyIdLink;
-
     private String otp;
     private String country;
     private String reason;
@@ -52,7 +59,9 @@ public class Signature {
     private String city;
     private String email;
     private String title;
-    private String signatureExpired;
+
+
+    private LocalDateTime signatureExpired;
     private String signaturePassword;
 
 

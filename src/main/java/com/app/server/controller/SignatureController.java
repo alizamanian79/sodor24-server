@@ -3,17 +3,22 @@ package com.app.server.controller;
 import com.app.server.dto.request.SignatureRequestDto;
 import com.app.server.dto.response.CustomResponseDto;
 import com.app.server.model.Signature;
+import com.app.server.model.User;
 import com.app.server.service.SignaturePlanService;
 import com.app.server.service.SignatureService;
+import com.app.server.service.UserService;
 import com.app.server.util.rabbitMQ.SignatureRMQProducer;
 import com.app.server.util.zarinpalPaymentService.dto.ZarinpalPaymentRequest;
 import com.app.server.util.zarinpalPaymentService.dto.ZarinpalPaymentResponse;
 import com.app.server.util.zarinpalPaymentService.service.ZarinpalPaymentService;
 import com.github.mfathi91.time.PersianDate;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
@@ -28,12 +33,13 @@ public class SignatureController {
 
     private final SignatureService signatureService;
     private final ZarinpalPaymentService zarinpalPaymentService;
-
+    private final UserService userService;
 
 
     @PostMapping()
-     ResponseEntity<?> buySignature(
-            @RequestBody SignatureRequestDto req,
+     ResponseEntity<?> signatureRequest(
+            @Valid @RequestBody SignatureRequestDto req,
+            Authentication auth,
             @RequestHeader(value = "Authorization", required = false) String authorization
     ) {
         if (authorization == null || !authorization.startsWith("Bearer ")) {
@@ -42,7 +48,9 @@ public class SignatureController {
         }
 
 
-        Signature signature = signatureService.generateUserSignature(req);
+        User user = userService.convertUserFromAuthentication(auth);
+        req.setUserId(user.getId());
+        Signature signature = signatureService.generateSignature(req);
 
         if (signature.isValid()) {
             return ResponseEntity.ok(
@@ -65,18 +73,17 @@ public class SignatureController {
     }
 
 
-
-
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
-    public List<Signature> list(){
+    public List<Signature> signatureList(){
         return signatureService.findAll();
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/{id}")
     public Signature get(@PathVariable Long id){
         return signatureService.findById(id);
     }
-
 
 
     // Verify Otp
@@ -85,7 +92,7 @@ public class SignatureController {
                                              @RequestHeader(value = "Authorization", required = false)
                                              String authorization
     ) throws Exception{
-      Signature signature =  signatureService.findUserSignatureByOtp(otp);
+      Signature signature =  signatureService.findSignatureByOtp(otp);
       String accessToken = authorization.replace("Bearer ", "");
 
       // Check Otp Before Gatway send to user
@@ -118,12 +125,12 @@ public class SignatureController {
 
 
 
-    // Verify transaction
+    // Callback
     @GetMapping("/callback")
     public ResponseEntity<?> verify(@RequestParam String otp,
                                     @RequestParam String Authority,
                                     @RequestParam String Status) {
-        Signature find = signatureService.findUserSignatureByOtp(otp);
+        Signature find = signatureService.findSignatureByOtp(otp);
 
         // Validate transaction payment
         if (Authority == null || Authority.isBlank()
@@ -150,12 +157,58 @@ public class SignatureController {
     }
 
 
-//    @PostMapping("/test")
-//    public SignatureResponseDto test(@RequestBody SignatureRequestDto req) {
-//        SignatureResponseDto res = userSignatureService.sendSignatureRequest(req);
-//        return res;
-//    }
+
+    @GetMapping("/use/{id}")
+    public boolean useSignature(@PathVariable Long id) throws Exception {
+        Signature req = signatureService.findById(id);
+        boolean result = signatureService.useSignature(req);
+        return result;
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteSignature(@PathVariable Long id) throws Exception {
+
+        CustomResponseDto res = signatureService.deleteSignature(id);
+
+        return new ResponseEntity<>(res,HttpStatus.OK);
+    }
+
+    @PutMapping("/{id}")
+    ResponseEntity<?> updateSignature (
+            @PathVariable Long id
+            ,
+            @Valid @RequestBody SignatureRequestDto req,
+            Authentication auth,
+            @RequestHeader(value = "Authorization", required = false) String authorization
+    ) throws Exception {
+        if (authorization == null || !authorization.startsWith("Bearer ")) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body("Access Token ارسال نشده است");
+        }
 
 
+        User user = userService.convertUserFromAuthentication(auth);
+        req.setUserId(user.getId());
+        Signature signature = signatureService.updateSignature(id,req);
+
+
+        if (signature != null) {
+            CustomResponseDto res =CustomResponseDto.builder()
+                    .message("کد تایید به شماره تماس شما فرستاده شد")
+                    .details("")
+                    .timestamp(PersianDate.now())
+                    .build();
+            return ResponseEntity.ok(res);
+        }
+
+
+        CustomResponseDto res =CustomResponseDto.builder()
+                .message("امضای شما دارای اعتبار میباشد")
+                .details("")
+                .timestamp(PersianDate.now())
+                .build();
+
+        return ResponseEntity.ok(res);
+    }
 
 }

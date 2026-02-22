@@ -50,6 +50,7 @@ public class SignaturePlan implements Serializable {
     private int period;
 
 
+
     private Long creatorId;
     private Long updatedUserId;
 
@@ -73,7 +74,9 @@ public class SignaturePlan implements Serializable {
 
 
 
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.EAGER,
+            mappedBy = "signaturePlan",
+            orphanRemoval = true)
     private List<Signature> users;
 
     @CreationTimestamp

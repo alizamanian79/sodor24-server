@@ -51,7 +51,9 @@ public class User implements UserDetails, Serializable {
 
 
 
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL,mappedBy = "user")
+    @OneToMany(fetch = FetchType.EAGER,
+            mappedBy = "user",
+            orphanRemoval = true)
     private List<Signature> signatures;
 
 

@@ -165,6 +165,8 @@ public class SignatureController {
         return result;
     }
 
+
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteSignature(@PathVariable Long id) throws Exception {
 
@@ -173,6 +175,10 @@ public class SignatureController {
         return new ResponseEntity<>(res,HttpStatus.OK);
     }
 
+
+
+
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
     ResponseEntity<?> updateSignature (
             @PathVariable Long id

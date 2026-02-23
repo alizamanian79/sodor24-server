@@ -2,28 +2,31 @@ services:
 
   sodor24-server:
     container_name: sodor24-server
-    image: alizamanian/sodor24-server:v2.0.0
-#    build:
-#      context: .
-#      dockerfile: Dockerfile
+#    image: alizamanian/sodor24-server:v2.0.0
+    build:
+      context: .
+      dockerfile: Dockerfile
     environment:
-      SPRING_PROFILES_ACTIVE: docker
 
+      # ✅ Server Config
+      SPRING_PROFILES_ACTIVE: docker
       SPRING_DATASOURCE_URL: jdbc:mysql://sodor24-db:3306/sodor24db?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: 1234
+      SERVER_PORT: 8181
 
-      # ✅ RabbitMQ (FIXED)
+      # ✅ RabbitMQ Config
       SPRING_RABBITMQ_HOST: rabbitmq
       SPRING_RABBITMQ_PORT: 5672
       SPRING_RABBITMQ_USERNAME: guest
       SPRING_RABBITMQ_PASSWORD: guest
-
       SPRING_REDIS_HOST: redis
 
-      APP_SERVER_HOST: http://localhost:8181
+      # ✅ App Config
+      APP_SERVER_HOST: http://sodor24-server:${SERVER_PORT}
       APP_CLIENT_HOST: http://localhost:3000
 
+      # ✅ Zarinpal Config
       ZARINPAL_SERVER_HOST: https://sandbox.zarinpal.com
       ZARINPAL_MERCHANT_ID: 7007f58a-3ec5-4ea6-a414-5849591ba0a7
 

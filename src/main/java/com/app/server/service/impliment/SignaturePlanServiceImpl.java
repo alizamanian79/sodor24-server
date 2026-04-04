@@ -142,7 +142,7 @@ public class SignaturePlanServiceImpl implements SignaturePlanService {
 
         Specification<SignaturePlan> spec = Specification.where(null);
 
-        spec = spec.and((root, query, cb) -> cb.isTrue(root.get("active")));
+        spec = spec.and((root, query, cb) -> cb.isTrue(root.get("isActive")));
 
         if (search != null && !search.isBlank()) {
             String keyword = "%" + search.toLowerCase() + "%";

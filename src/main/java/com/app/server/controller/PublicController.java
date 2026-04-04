@@ -24,7 +24,7 @@ public class PublicController {
     private final ContractRMQProducer contractRMQProducer;
 
 
-    @GetMapping("/signatures")
+    @GetMapping("/signature/plan")
     public Page<SignaturePlan> getSignatures(
             @RequestParam(required = false) Integer page,
             @RequestParam(required = false) Integer size,

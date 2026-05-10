@@ -1,14 +1,15 @@
 package com.app.server.controller;
 
 import com.app.server.dto.request.ContractRequestDto;
-import com.app.server.dto.request.SigningDto;
 import com.app.server.model.Contract;
-import com.app.server.model.UserContract;
+import com.app.server.model.User;
 import com.app.server.service.ContractService;
-import com.app.server.service.UserContractService;
+import com.app.server.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,8 +20,7 @@ import java.util.List;
 public class ContractController {
 
     private final ContractService contractService;
-
-    private final UserContractService userContractService;
+    private final UserService userService;
 
 
     @GetMapping
@@ -29,18 +29,37 @@ public class ContractController {
         return new ResponseEntity<>(res, HttpStatus.OK);
     }
 
-    @PostMapping("/preparation")
-    public ResponseEntity<?> contractPreparation(@RequestBody ContractRequestDto contract) {
-        Contract res = contractService.contractPreparation(contract);
-        return new ResponseEntity<>(res, HttpStatus.OK);
+    @GetMapping("/id/{id}")
+    public ResponseEntity<?> getById(@PathVariable Long id){
+        return new ResponseEntity<>(contractService.findContractById(id),HttpStatus.OK);
     }
 
-    @PostMapping("/signing")
-    public ResponseEntity<?> contractPreparation(@RequestBody SigningDto req) {
-        UserContract res = userContractService.signedContract(req.getUserId(),req.getContractId());
-        return new ResponseEntity<>(res, HttpStatus.OK);
+    @GetMapping("/slug/{slug}")
+    public ResponseEntity<?> getBySlug(@PathVariable String slug){
+        return new ResponseEntity<>(contractService.findContractBySlug(slug),HttpStatus.OK);
     }
 
+
+    @PostMapping(value = "/preparation",
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> contractPreparation(
+            @ModelAttribute ContractRequestDto req, Authentication auth) {
+
+        User user = userService.convertUserFromAuthentication(auth);
+        req.setUserId(user.getId());
+
+        Contract contract = contractService.preparationContract(req);
+        return new ResponseEntity<>(contract, HttpStatus.OK);
+    }
+
+
+//    @PostMapping(value = "/preparation",
+//            consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+//    public ResponseEntity<?> contractPreparation(
+//            @RequestParam RMQContractRequestDto req) {
+//        System.out.println(req);
+//        return new ResponseEntity<>("ok", HttpStatus.OK);
+//    }
 
 
 }

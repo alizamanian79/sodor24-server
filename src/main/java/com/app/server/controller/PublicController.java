@@ -6,6 +6,8 @@ import com.app.server.util.rabbitMQ.ContractRMQProducer;
 import com.app.server.util.rabbitMQ.dto.request.RMQContractRequestDto;
 import com.app.server.util.rabbitMQ.dto.request.RMQSignatureRequestDto;
 import com.app.server.util.rabbitMQ.SignatureRMQProducer;
+import com.app.server.util.rabbitMQ.dto.response.RMQContractResponse;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -52,23 +54,8 @@ public class PublicController {
             value = "/test/contract",
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE
     )
-    public ResponseEntity<?> signContract(
-            @RequestPart("file") MultipartFile pdfFile,
-            @RequestPart("privateKeyFile") MultipartFile privateKeyFile,
-            @RequestParam("keyPassword") String keyPassword,
-            @RequestParam(required = false) String reason,
-            @RequestParam(required = false) String country
-    ) {
-
-        RMQContractRequestDto req = new RMQContractRequestDto();
-        req.setFile(pdfFile);
-        req.setPrivateKeyFile(privateKeyFile);
-        req.setKeyPassword(keyPassword);
-        req.setReason(reason);
-        req.setCountry(country);
-
-        Object res = contractRMQProducer.sendAndReceive(req);
-
+    public ResponseEntity<?> signContract(@ModelAttribute RMQContractRequestDto req) {
+        RMQContractResponse res = contractRMQProducer.sendAndReceive(req);
         return ResponseEntity.ok(res);
     }
 

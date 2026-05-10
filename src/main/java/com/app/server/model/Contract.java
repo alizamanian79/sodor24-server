@@ -1,21 +1,19 @@
 package com.app.server.model;
 
-
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import lombok.*;
-
-import java.util.HashSet;
-import java.util.Random;
-import java.util.Set;
+import org.hibernate.annotations.CreationTimestamp;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 
 @JsonIdentityInfo(
         generator = ObjectIdGenerators.PropertyGenerator.class,
         property = "slug"
 )
-
 @Getter
 @Setter
 @Builder
@@ -31,26 +29,20 @@ public class Contract {
 
     private String title;
     private String description;
-    private String pdf;
     private String signedLink;
     private String unSignedLink;
 
-    @OneToOne
-    private User owner;
 
 
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL,mappedBy = "contract")
-    private Set<UserContract> signers = new HashSet<>();
+
+    @OneToMany(mappedBy = "contract", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private List<UserContract> signers = new ArrayList<>();
 
 
     @Column(unique = true)
     private String slug;
 
-    @PrePersist
-    protected void onCreate() {
-        Random random = new Random();
-        int randomNumber = 5 + random.nextInt(9000);
-        this.slug = String.valueOf(randomNumber);
-    }
+    @CreationTimestamp
+    private LocalDateTime createdAt;
 
 }

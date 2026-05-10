@@ -3,6 +3,8 @@ package com.app.server.util.rabbitMQ;
 import com.app.server.exception.AppBadRequestException;
 import com.app.server.util.rabbitMQ.dto.request.RMQContractRequestDto;
 
+import com.app.server.util.rabbitMQ.dto.response.RMQContractResponse;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,13 +33,16 @@ public class ContractRMQProducer {
         this.rabbitTemplate = rabbitTemplate;
     }
 
-    public Object sendAndReceive(RMQContractRequestDto RMQContractRequestDto) {
+    public RMQContractResponse sendAndReceive(RMQContractRequestDto RMQContractRequestDto) throws RuntimeException {
         log.info("Sending message to RabbitMQ -> {}", RMQContractRequestDto);
 
         Map<String, Object> payload = new HashMap<>();
         payload.put("keyPassword", RMQContractRequestDto.getKeyPassword());
         payload.put("reason", RMQContractRequestDto.getReason());
         payload.put("country", RMQContractRequestDto.getCountry());
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        RMQContractResponse result ;
 
         // Encode files if exist
         try {
@@ -62,6 +67,8 @@ public class ContractRMQProducer {
         Object res;
         try {
             res = rabbitTemplate.convertSendAndReceive(exchange, contractRoutingKey, payload);
+            result = objectMapper.convertValue(res,RMQContractResponse.class);
+
         } catch (Exception e) {
             log.error("Error sending message to RabbitMQ: {}", e.getMessage(), e);
             throw new AppBadRequestException("مشکل در ارتباط با سرویس امضا");
@@ -73,7 +80,7 @@ public class ContractRMQProducer {
         }
 
         try {
-            return res;
+            return result;
         } catch (Exception e) {
             log.error("Error converting RabbitMQ response: {}", e.getMessage(), e);
             throw new AppBadRequestException("پاسخ دریافتی از سرویس امضا نامعتبر است");

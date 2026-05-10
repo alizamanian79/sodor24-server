@@ -7,7 +7,9 @@ import java.util.List;
 
 public interface ContractService {
     List<Contract> contractList ();
-    Contract contractPreparation(ContractRequestDto req);
+    Contract preparationContract(ContractRequestDto req);
     Contract findContractById(Long contractId);
-    Contract findContractBySlug(String contractSlug) ;
+    Contract findContractBySlug(String slug);
+    String deleteContractById(Long id);
+    boolean isExistContract(String slug);
 }

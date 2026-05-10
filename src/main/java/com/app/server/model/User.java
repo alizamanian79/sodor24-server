@@ -57,13 +57,8 @@ public class User implements UserDetails, Serializable {
     private List<Signature> signatures;
 
 
-
-    @OneToOne(cascade = CascadeType.ALL,fetch = FetchType.EAGER)
-    private Contract contract;
-
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL,mappedBy = "user")
-    private Set<UserContract> signedContract = new HashSet<>();
-
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private List<UserContract> signedContract = new ArrayList<>();
 
 
 
@@ -78,13 +73,6 @@ public class User implements UserDetails, Serializable {
         }
         return authorities;
     }
-
-
-
-
-
-
-
 
 
     @Override

@@ -1,17 +1,24 @@
 package com.app.server.dto.request;
 
-import lombok.Builder;
+import com.app.server.model.User;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.ManyToOne;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
-@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class ContractRequestDto {
-    private Long userId;
+
     private String title;
     private String description;
-    private String pdf;
     private String signedLink;
     private String unSignedLink;
-
+    private String slug;
+    private Long userId;
 
 }

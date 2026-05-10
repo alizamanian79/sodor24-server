@@ -12,12 +12,9 @@ import org.springframework.web.multipart.MultipartFile;
 @AllArgsConstructor
 @NoArgsConstructor
 public class RMQContractRequestDto {
-
-
     private MultipartFile file;
     private MultipartFile privateKeyFile;
     private String keyPassword;
-
     private String reason;
     private String country;
 

@@ -4,14 +4,18 @@ import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
-import org.springframework.cglib.core.Local;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 
 
-
+@JsonIdentityInfo(
+        generator = ObjectIdGenerators.PropertyGenerator.class,
+        property = "id"
+)
 @Getter
 @Setter
 @Builder
@@ -41,7 +45,9 @@ public class Signature {
     private User user;
 
 
-
+    @JsonBackReference
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private List<UserContract> contractList = new ArrayList<>();
 
 
     private boolean valid;

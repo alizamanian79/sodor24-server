@@ -297,4 +297,10 @@ public class SignatureServiceImpl implements SignatureService {
 
         return true;
     }
+
+    @Transactional
+    @Override
+    public Signature updateSignatureIntenral(Signature req) {
+        return signatureRepository.save(req);
+    }
 }

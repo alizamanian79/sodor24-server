@@ -19,4 +19,6 @@ public interface SignatureService {
     Signature changeSignatureValid(Long id,boolean valid);
     void sendRequestToSignatureService(Signature req);
     boolean useSignature(Signature req) throws Exception;
+
+    Signature updateSignatureIntenral(Signature req);
 }

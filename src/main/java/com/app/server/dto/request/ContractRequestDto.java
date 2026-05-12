@@ -20,5 +20,5 @@ public class ContractRequestDto {
     private String unSignedLink;
     private String slug;
     private Long userId;
-
+    private Long signatureId;
 }

@@ -8,11 +8,16 @@ import jakarta.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class ContractRequestDto {
+
+    private MultipartFile pdfFile;
+    private MultipartFile privateKeyFile;
+    private String password;
 
     private String title;
     private String description;

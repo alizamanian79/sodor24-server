@@ -17,8 +17,12 @@ import com.app.server.util.rabbitMQ.dto.request.RMQContractRequestDto;
 import com.app.server.util.rabbitMQ.dto.response.RMQContractResponse;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -43,15 +47,35 @@ public class ContractServiceImpl implements ContractService {
 
     @Transactional
     @Override
-    public Contract preparationContract(ContractRequestDto req) {
+    public Contract preparationContract(ContractRequestDto req) throws Exception {
 
-
+        Contract contract=new Contract();
         Signature signature = checkSignature(req.getSignatureId());
 
         if (req.getSlug().isBlank()){
-            return signingNewContract(req);
+            contract = signingNewContract(req);
+        }else {
+            contract = signingContractExist(req);
         }
-        return signingContractExist(req);
+
+
+       String exName = contract.getSlug().toString()+".pdf";
+        MultipartFile mainFile = renameMultipartFile(req.getPdfFile(),exName);
+
+        RMQContractRequestDto result = RMQContractRequestDto.builder()
+                .file(mainFile)
+                .privateKeyFile(req.getPrivateKeyFile())
+                .keyPassword(req.getPassword())
+                .country(signature.getCountry())
+                .reason(signature.getReason())
+                .build();
+        RMQContractResponse res = sendAndReceive(result);
+        System.out.println(res);
+        contract.setSignedLink(res.getData().getSignedPdf());
+        contract.setUnSignedLink(res.getData().getUnsignedPdf());
+        contractRepository.save(contract);
+        return contract;
+
     }
 
 
@@ -171,6 +195,15 @@ public class ContractServiceImpl implements ContractService {
         userContractRepository.save(signingBuilder);
         return signingBuilder.getContract();
 
+    }
+
+    public MultipartFile renameMultipartFile(MultipartFile file, String newFileName) throws IOException {
+        return new MockMultipartFile(
+                newFileName,                // New filename
+                newFileName,                // Original filename (optional)
+                file.getContentType(),      // Content type
+                file.getInputStream()       // File content
+        );
     }
 
 }

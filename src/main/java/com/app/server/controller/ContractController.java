@@ -43,7 +43,7 @@ public class ContractController {
     @PostMapping(value = "/preparation",
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> contractPreparation(
-            @ModelAttribute ContractRequestDto req, Authentication auth) {
+            @ModelAttribute ContractRequestDto req, Authentication auth) throws Exception {
 
         User user = userService.convertUserFromAuthentication(auth);
         req.setUserId(user.getId());

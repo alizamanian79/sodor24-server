@@ -1,7 +1,7 @@
 {
 	"_type": "export",
 	"__export_format": 3,
-	"__export_date": "2026-05-07T08:07:01.834Z",
+	"__export_date": "2026-05-13T17:56:59.547Z",
 	"__export_source": "insomnia.desktop.app:v6.3.2",
 	"resources": [
 		{
@@ -39,12 +39,12 @@
 			"created": 1777205307455,
 			"description": "",
 			"environment": {
-				"ACCESS_TOKEN": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsInR5cGUiOiJhY2Nlc3MtdG9rZW4iLCJhdXRob3JpdGllcyI6WyJSRUFEIiwiREVMRVRFIiwiUk9MRV9VU0VSIiwiUk9MRV9BRE1JTiIsIkVESVQiLCJXUklURSJdLCJpYXQiOjE3NzgxNDA4MDUsImV4cCI6MTc3ODE0MjAwNX0.FRsnpOrjF-J6Gf0ooAMoOe3BbHb_UWrrRorpiUOSVEA",
+				"ACCESS_TOKEN": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsInR5cGUiOiJhY2Nlc3MtdG9rZW4iLCJhdXRob3JpdGllcyI6WyJSRUFEIiwiREVMRVRFIiwiUk9MRV9VU0VSIiwiUk9MRV9BRE1JTiIsIkVESVQiLCJXUklURSJdLCJpYXQiOjE3Nzg2OTQwMDQsImV4cCI6MTc3ODY5NTIwNH0.P9WSoKAc2kgwz_IN42oGri_GhQrQdvood0fN_DQdgok",
 				"HOST": "http://localhost:8181",
 				"REFRESH_TOKEN": ""
 			},
 			"metaSortKey": -1777205307455,
-			"modified": 1778140816042,
+			"modified": 1778694019671,
 			"name": "Sodor24 Apis",
 			"parentId": "wrk_e52fe7b4bc94461ca052968010d439ff",
 			"_type": "request_group"
@@ -138,6 +138,25 @@
 				"mimeType": "multipart/form-data",
 				"params": [
 					{
+						"fileName": "C:\\Users\\MEHR GOSTAR\\Downloads\\contract.pdf",
+						"id": "pair_c4bce0e3c9b64d6590ef73b40f006406",
+						"name": "pdfFile",
+						"type": "file",
+						"value": ""
+					},
+					{
+						"fileName": "C:\\Users\\MEHR GOSTAR\\Downloads\\Ali.p12",
+						"id": "pair_fc11005070d04aa6906d46e5dc90416e",
+						"name": "privateKeyFile",
+						"type": "file",
+						"value": ""
+					},
+					{
+						"id": "pair_74fa3e1209624868830b6958ff87690d",
+						"name": "password",
+						"value": "12dede34"
+					},
+					{
 						"id": "pair_c198dc57c38f4164b46aa6336a392683",
 						"name": "title",
 						"value": "salam"
@@ -160,11 +179,16 @@
 					{
 						"id": "pair_a15b397e23034e89a50c0d0fef2c162e",
 						"name": "slug",
-						"value": "JADID"
+						"value": ""
 					},
 					{
 						"id": "pair_c90b29d058de4451918dab10c9d36408",
 						"name": "userId",
+						"value": "1"
+					},
+					{
+						"id": "pair_ab64489e204c44429b418b958e94cf2b",
+						"name": "signatureId",
 						"value": "1"
 					}
 				]
@@ -181,8 +205,8 @@
 			"isPrivate": false,
 			"metaSortKey": -1777205307190,
 			"method": "POST",
-			"modified": 1778139639932,
-			"name": "Preparation",
+			"modified": 1778694327726,
+			"name": "Preparation new contract",
 			"parameters": [],
 			"parentId": "fld_3d2a3b16e62644ba8c8535c424baba46",
 			"settingDisableRenderRequestBody": false,
@@ -233,7 +257,7 @@
 			"isPrivate": false,
 			"metaSortKey": -1777329757315.5,
 			"method": "GET",
-			"modified": 1778141161133,
+			"modified": 1778694492213,
 			"name": "Get by slug",
 			"parameters": [],
 			"parentId": "fld_3d2a3b16e62644ba8c8535c424baba46",
@@ -243,7 +267,7 @@
 			"settingRebuildPath": true,
 			"settingSendCookies": true,
 			"settingStoreCookies": true,
-			"url": "{{ HOST  }}/api/v1/contract/slug/JADID",
+			"url": "{{ HOST  }}/api/v1/contract/slug/58792",
 			"_type": "request"
 		},
 		{
@@ -259,7 +283,7 @@
 			"isPrivate": false,
 			"metaSortKey": -1777391982253.25,
 			"method": "GET",
-			"modified": 1778141133829,
+			"modified": 1778604354850,
 			"name": "Get by id",
 			"parameters": [],
 			"parentId": "fld_3d2a3b16e62644ba8c8535c424baba46",
@@ -269,7 +293,80 @@
 			"settingRebuildPath": true,
 			"settingSendCookies": true,
 			"settingStoreCookies": true,
-			"url": "{{ HOST  }}/api/v1/contract/id/102",
+			"url": "{{ HOST  }}/api/v1/contract/id/152",
+			"_type": "request"
+		},
+		{
+			"_id": "req_fcc62a9aec3449d6a2c9f8f5616ed139",
+			"authentication": {
+				"disabled": false,
+				"prefix": "",
+				"token": "{{ ACCESS_TOKEN  }}",
+				"type": "bearer"
+			},
+			"body": {
+				"mimeType": "multipart/form-data",
+				"params": [
+					{
+						"id": "pair_c198dc57c38f4164b46aa6336a392683",
+						"name": "title",
+						"value": "salam"
+					},
+					{
+						"id": "pair_b32331b69ca549899f6469005cb071a2",
+						"name": "description",
+						"value": "kobi"
+					},
+					{
+						"id": "pair_69ae4c44dfa2427b83eb78af93f13091",
+						"name": "signedLink",
+						"value": "ddd"
+					},
+					{
+						"id": "pair_24e33b2f9d2f45b995dc6a8b8c5997d3",
+						"name": "unSignedLink",
+						"value": "de"
+					},
+					{
+						"id": "pair_a15b397e23034e89a50c0d0fef2c162e",
+						"name": "slug",
+						"value": "54470"
+					},
+					{
+						"id": "pair_c90b29d058de4451918dab10c9d36408",
+						"name": "userId",
+						"value": "1"
+					},
+					{
+						"id": "pair_ab64489e204c44429b418b958e94cf2b",
+						"name": "signatureId",
+						"value": "2"
+					}
+				]
+			},
+			"created": 1778604305890,
+			"description": "",
+			"headers": [
+				{
+					"id": "pair_77dde9471b4d4c28be4d1d2b01f5c358",
+					"name": "Content-Type",
+					"value": "multipart/form-data"
+				}
+			],
+			"isPrivate": false,
+			"metaSortKey": -1775435646588,
+			"method": "POST",
+			"modified": 1778607132202,
+			"name": "Preparation contract",
+			"parameters": [],
+			"parentId": "fld_3d2a3b16e62644ba8c8535c424baba46",
+			"settingDisableRenderRequestBody": false,
+			"settingEncodeUrl": true,
+			"settingMaxTimelineDataSize": 1000,
+			"settingRebuildPath": true,
+			"settingSendCookies": true,
+			"settingStoreCookies": true,
+			"url": "{{HOST}}/api/v1/contract/preparation",
 			"_type": "request"
 		},
 		{
@@ -352,7 +449,7 @@
 			"isPrivate": false,
 			"metaSortKey": -1777205307213,
 			"method": "POST",
-			"modified": 1777971642676,
+			"modified": 1778694666345,
 			"name": "Signing Contract Copy",
 			"parameters": [],
 			"parentId": "fld_d0c0a024ad2e4837897156641a2aa645",
@@ -1060,7 +1157,7 @@
 			"isPrivate": false,
 			"metaSortKey": -1777205307356,
 			"method": "GET",
-			"modified": 1778138978288,
+			"modified": 1778694040366,
 			"name": "Verify Signature Otp",
 			"parameters": [],
 			"parentId": "fld_019a8f4f738f4faeb262d581d3b0752f",
@@ -1070,7 +1167,7 @@
 			"settingRebuildPath": true,
 			"settingSendCookies": true,
 			"settingStoreCookies": true,
-			"url": "{{HOST}}/api/v1/signature/service/verify/otp/6516",
+			"url": "{{HOST}}/api/v1/signature/service/verify/otp/1816",
 			"_type": "request"
 		},
 		{

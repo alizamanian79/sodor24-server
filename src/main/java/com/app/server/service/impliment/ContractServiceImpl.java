@@ -49,7 +49,7 @@ public class ContractServiceImpl implements ContractService {
     @Override
     public Contract preparationContract(ContractRequestDto req) throws Exception {
 
-        Contract contract=new Contract();
+        Contract contract;
         Signature signature = checkSignature(req.getSignatureId());
 
         if (req.getSlug().isBlank()){
@@ -59,8 +59,11 @@ public class ContractServiceImpl implements ContractService {
         }
 
 
-       String exName = contract.getSlug().toString()+".pdf";
-        MultipartFile mainFile = renameMultipartFile(req.getPdfFile(),exName);
+        // Handle pdf file name
+        String pdfName = contract.getSignedLink().equals("")?contract.getSlug()+".pdf":contract.getSignedLink();
+        MultipartFile mainFile = renameMultipartFile(req.getPdfFile(),pdfName);
+
+
 
         RMQContractRequestDto result = RMQContractRequestDto.builder()
                 .file(mainFile)
@@ -71,8 +74,8 @@ public class ContractServiceImpl implements ContractService {
                 .build();
         RMQContractResponse res = sendAndReceive(result);
         System.out.println(res);
-        contract.setSignedLink(res.getData().getSignedPdf());
-        contract.setUnSignedLink(res.getData().getUnsignedPdf());
+        contract.setSignedLink(res.getData().getFileName());
+        contract.setUnSignedLink(res.getData().getFileName());
         contractRepository.save(contract);
         return contract;
 

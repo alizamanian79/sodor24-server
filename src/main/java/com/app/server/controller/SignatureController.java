@@ -20,6 +20,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.view.RedirectView;
+
 import java.util.List;
 
 @RestController
@@ -71,6 +73,10 @@ public class SignatureController {
 
         return ResponseEntity.badRequest().build();
     }
+
+
+
+
 
 
     @PreAuthorize("hasRole('ADMIN')")
@@ -127,16 +133,22 @@ public class SignatureController {
 
     // Callback
     @GetMapping("/callback")
-    public ResponseEntity<?> verify(@RequestParam String otp,
+    public RedirectView verify(@RequestParam String otp,
                                     @RequestParam String Authority,
                                     @RequestParam String Status) {
+
+
         Signature find = signatureService.findSignatureByOtp(otp);
 
         // Validate transaction payment
         if (Authority == null || Authority.isBlank()
                     || Status == null || Status.isBlank()
                     || !"OK".equals(Status)) {
-                return new ResponseEntity<>("پرداخت ناموفق بود", HttpStatus.BAD_REQUEST);
+
+
+//                return new ResponseEntity<>("پرداخت ناموفق بود", HttpStatus.BAD_REQUEST);
+           return redirectView(false,"sID="+find.getId());
+
             }
 
         boolean payStatus = zarinpalPaymentService.verifyPayment(
@@ -145,26 +157,77 @@ public class SignatureController {
             );
 
             if (!payStatus) {
-                return new ResponseEntity<>("پرداخت ناموفق بود", HttpStatus.BAD_REQUEST);
+                RedirectView redirect =
+                        redirectView(false,"sid="+find.getId().toString());
+                return redirect;
             }
 
             CustomResponseDto res = signatureService.verifySignature(find.getOtp());
             signatureService.sendRequestToSignatureService(find);
             res.setMessage("پرداخت با موفقیت انجام شد");
-            return new ResponseEntity<>(res, HttpStatus.BAD_REQUEST);
+
+            return redirectView(true,"sid="+find.getId().toString());
 
 
     }
 
 
+    // Call back redirecter
+//    @GetMapping("/sandbox/callback")
+//    public RedirectView testCallback(@RequestParam String otp) {
+//        Signature find = signatureService.findSignatureByOtp(otp);
+//
+//        try {
+//            CustomResponseDto res = signatureService.verifySignature(otp);
+//            String queryPrefix = "msg=" + "OK" + "&sid=" + find.getId().toString();
+//            return redirectView(find.isValid(), queryPrefix);
+//        } catch (Exception e) {
+//            String queryPrefix = "msg=" + "ERROR" + "&sid=" + find.getId().toString();
+//            return redirectView(find.isValid(), queryPrefix);
+//        }
+//    }
 
-    @GetMapping("/use/{id}")
-    public boolean useSignature(@PathVariable Long id) throws Exception {
-        Signature req = signatureService.findById(id);
-        boolean result = signatureService.useSignature(req);
-        return result;
+
+
+
+    @GetMapping("/sandbox/callback")
+    public ResponseEntity<?> testCallback(@RequestParam String otp) {
+        Signature find = signatureService.findSignatureByOtp(otp);
+
+        try {
+            CustomResponseDto res = signatureService.verifySignature(otp);
+            return new ResponseEntity<>(res,HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(e,HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
+
+
+    public RedirectView redirectView(boolean value, String queryPrefix) {
+        String url = value
+                ? "http://localhost:3000/transaction/payed?" + queryPrefix
+                : "http://localhost:3000/transaction/error?" + queryPrefix;
+
+        RedirectView redirectView = new RedirectView(url);
+        redirectView.setStatusCode(HttpStatus.FOUND); // 302
+        redirectView.setContextRelative(false); // عدم استفاده از context path
+        redirectView.setHttp10Compatible(false); // استفاده از HTTP 1.1
+        redirectView.setExposeModelAttributes(false); // عدم expose مدل attributes
+        redirectView.setExposePathVariables(false); // عدم expose path variables
+
+        return redirectView;
+    }
+
+
+
+//    @GetMapping("/use/{id}")
+//    public boolean useSignature(@PathVariable Long id) throws Exception {
+//        Signature req = signatureService.findById(id);
+//        boolean result = signatureService.useSignature(req);
+//        return result;
+//    }
+//
 
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")

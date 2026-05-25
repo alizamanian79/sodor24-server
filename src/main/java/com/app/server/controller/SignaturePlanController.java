@@ -37,7 +37,8 @@ public class SignaturePlanController {
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public SignaturePlan generateSignaturePlan(
-            @Valid @RequestBody SignaturePlanRequestDto req,Authentication auth) {
+            @Valid @RequestBody SignaturePlanRequestDto req,Authentication auth
+    ) {
 
         User user = userService.convertUserFromAuthentication(auth);
         req.setCreatorId(user.getId());
@@ -62,7 +63,7 @@ public class SignaturePlanController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
-    public Object deleteSignaturePlan(@PathVariable Long id) {
+    public Object deleteSignaturePlan(@Valid @PathVariable Long id) {
        return signaturePlanService.deleteSignaturePlan(id);
     }
 
@@ -71,7 +72,7 @@ public class SignaturePlanController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/active/set")
-    public Object changeActiveSignaturePlan(@RequestParam Long id, @RequestParam boolean active) {
+    public Object changeActiveSignaturePlan(@Valid @RequestParam Long id, @RequestParam boolean active) {
         return signaturePlanService.activeSignaturePlan(id, active);
     }
 

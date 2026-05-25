@@ -55,7 +55,9 @@ public class Signature {
     private int totalUsageCount;
     private String privateKeyId;
     private String privateKeyIdLink;
+
     private String otp;
+
     private String country;
     private String reason;
     private String location;
@@ -66,8 +68,12 @@ public class Signature {
     private String email;
     private String title;
 
+    private String status;
+
 
     private LocalDateTime signatureExpired;
+
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String signaturePassword;
 
 

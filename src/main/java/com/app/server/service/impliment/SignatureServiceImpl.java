@@ -75,6 +75,7 @@ public class SignatureServiceImpl implements SignatureService {
                 .valid(false)
                 .usageCount(signaturePlan.getUsageCount())
 
+                .status("در انتظار تایید کد")
                 .country(req.getCountry().toString())
                 .reason(req.getReason().toString())
                 .location(req.getLocation().toString())
@@ -100,12 +101,10 @@ public class SignatureServiceImpl implements SignatureService {
 
 
 
-
-    // Verify Transaction from signatur
+    // Verify Transaction from signature
     @Transactional
     @Override
     public CustomResponseDto verifySignature(String otp) {
-
         CustomResponseDto res = new CustomResponseDto();
         Optional<Signature> find = signatureRepository.findByOtp(otp);
 
@@ -115,86 +114,98 @@ public class SignatureServiceImpl implements SignatureService {
             res.setTimestamp(PersianDate.now());
             return res;
         }
+
         Signature existSignature = find.get();
 
-
-
         try {
+            // ابتدا درخواست به سرویس امضا
+            boolean signatureSuccess = sendRequestToSignatureService(existSignature);
 
-//            existSignature.setKeyId("");
-            existSignature.setValid(true);
-            existSignature.setOtp(null);
-            existSignature.setUsageCount(existSignature.getUsageCount());
+            if (signatureSuccess) {
+                existSignature.setValid(true);
+                existSignature.setStatus("احراز هویت با موفقیت تایید شد");
+                res.setStatus(HttpStatus.OK.value());
+                res.setMessage("OK");
+            } else {
+                existSignature.setValid(false);
+                existSignature.setStatus("عدم احراز هویت");
+                res.setStatus(HttpStatus.BAD_GATEWAY.value());
+                res.setMessage("SERVER");
+            }
 
+            // فقط در صورت موفقیت، OTP را پاک کن
+            if (signatureSuccess) {
+                existSignature.setOtp(null);
+            } else {
+                // در صورت خطا، OTP جدید تولید کن
+                existSignature.setOtp(String.valueOf(1000 + new Random().nextInt(9000)));
+            }
 
             signatureRepository.save(existSignature);
-
-            // پاسخ نهایی
-            res.setStatus(HttpStatus.OK.value());
-            res.setMessage("امضا با موفقیت تایید شد");
             res.setTimestamp(PersianDate.now());
-
 
             return res;
 
         } catch (Exception e) {
+            existSignature.setOtp(String.valueOf(1000 + new Random().nextInt(9000)));
+            existSignature.setStatus("عدم تایید احراز هویت");
+            existSignature.setValid(false);
+            signatureRepository.save(existSignature);
+
             res.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
-            res.setMessage("خطا در ارتباط با سرویس امضا: " + e.getMessage());
+            res.setMessage("ERROR");
             res.setTimestamp(PersianDate.now());
             return res;
         }
     }
 
-
-
-    @Transactional
+    // بدون @Transactional برای جلوگیری از مشکلات همزمانی
     @Override
-    public void sendRequestToSignatureService(Signature req) {
+    public boolean sendRequestToSignatureService(Signature req) {
+        try {
+            RMQSignatureRequestDto signatureserviceReq = RMQSignatureRequestDto.builder()
+                    .username(req.getUser().getFullName())
+                    .country(req.getCountry())
+                    .reason(req.getReason())
+                    .location(req.getLocation())
+                    .organization(req.getOrganization())
+                    .department(req.getDepartment())
+                    .state(req.getState())
+                    .city(req.getCity())
+                    .email(req.getEmail())
+                    .title(req.getTitle())
+                    .userId("")
+                    .signatureExpired(req.getSignaturePlan().getPeriod())
+                    .signaturePassword(req.getSignaturePassword())
+                    .build();
 
-        RMQSignatureRequestDto signatureserviceReq = RMQSignatureRequestDto.builder()
-                .username(req.getUser().getFullName())
-                .country(req.getCountry())
-                .reason(req.getReason())
-                .location(req.getLocation())
-                .organization(req.getOrganization())
-                .department(req.getDepartment())
-                .state(req.getState())
-                .city(req.getCity())
-                .email(req.getEmail())
-                .title(req.getTitle())
-                .userId("")
-                .signatureExpired(req.getSignaturePlan().getPeriod())
-                .signaturePassword(req.getSignaturePassword())
-                .build();
+            Object res = signatureRMQProducer.sendAndReceive(signatureserviceReq);
+            System.out.println("Response from signature service: " + res);
 
-        Object res = signatureRMQProducer.sendAndReceive(signatureserviceReq);
+            if (res != null) {
+                ObjectMapper mapper = new ObjectMapper();
+                Map<String, Object> convert = mapper.convertValue(res, new TypeReference<Map<String, Object>>() {});
 
-        System.out.println(res);
+                Object dataObj = convert.get("data");
+                if (dataObj instanceof Map<?, ?> dataMap) {
+                    Object p12 = dataMap.get("p12");
+                    Object id = dataMap.get("userId");
 
-        ObjectMapper mapper = new ObjectMapper();
-
-        if (res != null) {
-
-            Map<String, Object> convert = mapper.convertValue(res, new TypeReference<Map<String, Object>>() {});
-
-            Object dataObj = convert.get("data");
-            if (dataObj instanceof Map<?, ?> dataMap) {
-
-                Object p12 = dataMap.get("p12");
-                System.out.println(p12);
-
-                Object id = dataMap.get("userId");
-                System.out.println(p12);
-
-                req.setPrivateKeyIdLink(p12 != null ? p12.toString() : null);
-                req.setPrivateKeyId(id.toString());
-                signatureRepository.save(req);
+                    if (id != null && !id.toString().isBlank()) {
+                        req.setPrivateKeyId(id.toString());
+                        req.setPrivateKeyIdLink(p12 != null ? p12.toString() : null);
+                        return true; // موفقیت
+                    }
+                }
             }
+            return false; // عدم موفقیت
+
+        } catch (Exception e) {
+            System.err.println("Error in sendRequestToSignatureService: " + e.getMessage());
+            e.printStackTrace();
+            return false;
         }
-
-
     }
-
 
     @Transactional
     @Override

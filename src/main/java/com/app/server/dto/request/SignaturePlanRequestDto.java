@@ -18,6 +18,7 @@ import java.util.Set;
 @NoArgsConstructor
 public class SignaturePlanRequestDto {
 
+    @NotNull
     @NotBlank(message = "عنوان نمی‌تواند خالی باشد")
     @Size(min = 3, max = 100, message = "عنوان باید بین ۳ تا ۱۰۰ کاراکتر باشد")
     private String title;

@@ -1,6 +1,7 @@
 package com.app.server.controller;
 
 import com.app.server.dto.request.ContractRequestDto;
+import com.app.server.exception.AppBadRequestException;
 import com.app.server.model.Contract;
 import com.app.server.model.User;
 import com.app.server.service.ContractService;
@@ -45,11 +46,16 @@ public class ContractController {
     public ResponseEntity<?> contractPreparation(
             @ModelAttribute ContractRequestDto req, Authentication auth) throws Exception {
 
-        User user = userService.convertUserFromAuthentication(auth);
-        req.setUserId(user.getId());
+        try{
+            User user = userService.convertUserFromAuthentication(auth);
+            req.setUserId(user.getId());
+            Contract contract = contractService.preparationContract(req);
+            return new ResponseEntity<>(contract, HttpStatus.OK);
 
-        Contract contract = contractService.preparationContract(req);
-        return new ResponseEntity<>(contract, HttpStatus.OK);
+        } catch (Exception e) {
+            throw new AppBadRequestException("رمز کیلید شما اشتباه میباشد");
+        }
+
     }
 
 

@@ -1,9 +1,9 @@
-package com.app.server.util.rabbitMQ;
+package com.app.server.util.signature_service_producer;
 
 import com.app.server.exception.AppBadRequestException;
-import com.app.server.util.rabbitMQ.dto.request.RMQContractRequestDto;
+import com.app.server.util.signature_service_producer.dto.request.RMQContractRequestDto;
 
-import com.app.server.util.rabbitMQ.dto.response.RMQContractResponse;
+import com.app.server.util.signature_service_producer.dto.response.RMQContractResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.slf4j.Logger;

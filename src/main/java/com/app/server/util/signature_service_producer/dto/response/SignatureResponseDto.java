@@ -1,4 +1,4 @@
-package com.app.server.util.rabbitMQ.dto.response;
+package com.app.server.util.signature_service_producer.dto.response;
 
 import lombok.*;
 import org.springframework.http.HttpStatus;

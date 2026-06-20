@@ -12,7 +12,7 @@ import com.app.server.repository.SignatureRepository;
 import com.app.server.service.SignaturePlanService;
 import com.app.server.service.UserService;
 import com.app.server.service.SignatureService;
-import com.app.server.util.rabbitMQ.dto.request.RMQSignatureRequestDto;
+import com.app.server.util.signature_service_producer.dto.request.RMQSignatureRequestDto;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.mfathi91.time.PersianDate;
@@ -23,7 +23,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.*;
 
-import com.app.server.util.rabbitMQ.SignatureRMQProducer;
+import com.app.server.util.signature_service_producer.SignatureRMQProducer;
 
 @Service
 @RequiredArgsConstructor

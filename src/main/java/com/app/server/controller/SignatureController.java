@@ -7,7 +7,6 @@ import com.app.server.model.User;
 import com.app.server.service.SignaturePlanService;
 import com.app.server.service.SignatureService;
 import com.app.server.service.UserService;
-import com.app.server.util.rabbitMQ.SignatureRMQProducer;
 import com.app.server.util.zarinpalPaymentService.dto.ZarinpalPaymentRequest;
 import com.app.server.util.zarinpalPaymentService.dto.ZarinpalPaymentResponse;
 import com.app.server.util.zarinpalPaymentService.service.ZarinpalPaymentService;

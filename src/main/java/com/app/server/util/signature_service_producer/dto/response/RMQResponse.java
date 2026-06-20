@@ -1,4 +1,4 @@
-package com.app.server.util.rabbitMQ.dto.response;
+package com.app.server.util.signature_service_producer.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,8 +9,8 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class RMQContractResponse<T> {
+public class RMQResponse<T> {
     private boolean success;
-    private ContractData data;
-    private ContractError error;
+    private T data;
+    private RMQError error;
 }

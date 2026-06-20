@@ -1,4 +1,4 @@
-package com.app.server.util.rabbitMQ.dto.request;
+package com.app.server.util.signature_service_producer.dto.request;
 
 
 import lombok.*;

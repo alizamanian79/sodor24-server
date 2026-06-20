@@ -5,11 +5,13 @@ import com.app.server.dto.request.RegisterRequestDto;
 import com.app.server.dto.request.UpdateUserRequestDto;
 import com.app.server.dto.response.CustomResponseDto;
 import com.app.server.dto.response.RegisterResponseDto;
+import com.app.server.event.InitialEvent;
 import com.app.server.exception.AppUnAuthorizedException;
 import com.app.server.model.Role;
 import com.app.server.model.User;
 import com.app.server.repository.UserRepository;
 import com.app.server.service.UserService;
+import com.app.server.util.wallet_service_producer.WalletRMQProducer;
 import com.github.mfathi91.time.PersianDate;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +25,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 @Service
 @RequiredArgsConstructor
@@ -31,6 +35,8 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final RedisHealthChecker redisHealthChecker;
+    private final WalletRMQProducer walletRMQProducer;
+
 
     @Override
     public List<User> getAllUsers() {
@@ -50,8 +56,9 @@ public class UserServiceImpl implements UserService {
                 .build();
 
         userRepository.save(user);
-
         clearAllUserCache();
+
+        initialMethod(user.getId());
 
         return RegisterResponseDto.builder()
                 .message("با موفقیت ایجاد شد " + user.getUsername() + " کاربر")
@@ -163,5 +170,11 @@ public class UserServiceImpl implements UserService {
             return null;
         }
         return user;
+    }
+
+    public void initialMethod(Long userId){
+        ExecutorService executorService = Executors.newSingleThreadExecutor();
+        executorService.execute(new InitialEvent(walletRMQProducer));
+
     }
 }

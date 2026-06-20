@@ -1,8 +1,8 @@
-package com.app.server.util.rabbitMQ;
+package com.app.server.util.signature_service_producer;
 
 
 import com.app.server.exception.AppBadRequestException;
-import com.app.server.util.rabbitMQ.dto.request.RMQSignatureRequestDto;
+import com.app.server.util.signature_service_producer.dto.request.RMQSignatureRequestDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;

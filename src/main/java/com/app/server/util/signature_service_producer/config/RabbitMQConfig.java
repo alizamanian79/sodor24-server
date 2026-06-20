@@ -1,4 +1,4 @@
-package com.app.server.util.rabbitMQ.config;
+package com.app.server.util.signature_service_producer.config;
 
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;

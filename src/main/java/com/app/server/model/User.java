@@ -61,6 +61,7 @@ public class User implements UserDetails, Serializable {
     private List<UserContract> signedContract = new ArrayList<>();
 
 
+    private String walletId;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

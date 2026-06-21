@@ -76,6 +76,8 @@ public class User implements UserDetails, Serializable {
     }
 
 
+    private String otp;
+
     @Override
     public String getPassword() {
         return password;
@@ -104,6 +106,6 @@ public class User implements UserDetails, Serializable {
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return false;
     }
 }

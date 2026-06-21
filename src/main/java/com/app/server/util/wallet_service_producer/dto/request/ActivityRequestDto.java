@@ -2,12 +2,14 @@ package com.app.server.util.wallet_service_producer.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class ActivityRequestDto {
 
     @NotBlank(message = "ایدی کاربر نمیتواند خالی باشد")

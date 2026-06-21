@@ -65,7 +65,7 @@ public class JwtRefreshTokenFilter extends OncePerRequestFilter {
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
         List<String> excludePaths = List.of(
                 "/api/v1/auth",
-                "/api/v1/public"
+                "/api/v1/public","/api/v1/otp"
         );
 
         return excludePaths.contains(request.getServletPath());

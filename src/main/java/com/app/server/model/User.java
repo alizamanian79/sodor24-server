@@ -76,7 +76,8 @@ public class User implements UserDetails, Serializable {
     }
 
 
-    private String otp;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Otp> otps = new ArrayList<>();
 
     @Override
     public String getPassword() {
@@ -106,6 +107,6 @@ public class User implements UserDetails, Serializable {
 
     @Override
     public boolean isEnabled() {
-        return false;
+        return true;
     }
 }

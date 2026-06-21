@@ -79,6 +79,7 @@ public class SecurityConfig {
                     auth.requestMatchers(
                             "/api/v1/auth/**",
                             "/api/v1/public/**",
+                            "/api/v1/otp/**",
                             "/api/v1/payment/callback/**",
                             "/h2-console/**"
                     ).permitAll();

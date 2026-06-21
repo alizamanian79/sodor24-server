@@ -11,6 +11,7 @@ import com.app.server.util.wallet_service_producer.WalletRMQProducer;
 import com.app.server.util.wallet_service_producer.dto.request.CreateWalletRequestDto;
 import com.app.server.util.wallet_service_producer.dto.response.WalletResponseDto;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.annotations.Filter;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -18,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Map;
 
 @RestController
@@ -67,9 +69,24 @@ public class PublicController {
 
 
     @GetMapping("/wallet")
-    public WalletResponseDto wallet() {
-        return walletRMQProducer.walletLists();
+    public ResponseEntity<?> wallet() {
+
+
+            CreateWalletRequestDto req = CreateWalletRequestDto.builder()
+                    .sub("")
+                    .balance(BigDecimal.ZERO)
+                    .currency("IRT")
+                    .build();
+            WalletResponseDto res = walletRMQProducer.createWallet(req);
+            Map<String,Object> data = (Map<String, Object>) res.getData();
+            String sub = data.get("sub").toString();
+
+
+
+
+        return new ResponseEntity<>(sub,HttpStatus.OK);
     }
+
 
 
 }

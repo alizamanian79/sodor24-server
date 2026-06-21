@@ -10,9 +10,12 @@ import com.app.server.model.User;
 import com.app.server.repository.UserRepository;
 import com.app.server.service.UserService;
 import com.app.server.util.wallet_service_producer.WalletRMQProducer;
+import com.app.server.util.wallet_service_producer.dto.request.CreateWalletRequestDto;
+import com.app.server.util.wallet_service_producer.dto.response.WalletResponseDto;
 import com.github.mfathi91.time.PersianDate;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
@@ -22,16 +25,22 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.*;
 
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
+
+    @Value("${application.wallet-service.currency}")
+    private String currency;
+
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final RedisHealthChecker redisHealthChecker;
     private final WalletRMQProducer walletRMQProducer;
+
 
 
     @Override
@@ -50,9 +59,10 @@ public class UserServiceImpl implements UserService {
                 .fullName(req.getFullName())
                 .phoneNumber(req.getPhoneNumber())
                 .roles(Set.of(Role.USER))
+                .walletId(createWallet())
                 .build();
 
-        User saved = userRepository.save(user);
+        userRepository.save(user);
 
         clearAllUserCache();
 
@@ -168,6 +178,22 @@ public class UserServiceImpl implements UserService {
         }
         return user;
     }
+
+    public String createWallet(){
+        CreateWalletRequestDto req = CreateWalletRequestDto.builder()
+                .sub("")
+                .balance(BigDecimal.ZERO)
+                .currency(currency)
+                .build();
+        WalletResponseDto res = walletRMQProducer.createWallet(req);
+        Map<String,Object> data = (Map<String, Object>) res.getData();
+        String sub = data.get("sub").toString();
+        return sub;
+    }
+
+
+
+
 
 
 }

@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class CustomResponseDto<E,D> {
+public class WalletResponseDto<E,D> {
     private int status;
     private E error;
     private D data;

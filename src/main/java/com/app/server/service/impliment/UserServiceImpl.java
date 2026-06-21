@@ -3,9 +3,7 @@ package com.app.server.service.impliment;
 import com.app.server.config.RedisHealthChecker;
 import com.app.server.dto.request.RegisterRequestDto;
 import com.app.server.dto.request.UpdateUserRequestDto;
-import com.app.server.dto.response.CustomResponseDto;
 import com.app.server.dto.response.RegisterResponseDto;
-import com.app.server.event.InitialEvent;
 import com.app.server.exception.AppUnAuthorizedException;
 import com.app.server.model.Role;
 import com.app.server.model.User;
@@ -25,8 +23,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 @Service
 @RequiredArgsConstructor
@@ -43,6 +39,7 @@ public class UserServiceImpl implements UserService {
         return userRepository.findAll(Sort.by("id").ascending());
     }
 
+    @Transactional
     @Override
     public RegisterResponseDto registerUser(RegisterRequestDto req) {
 
@@ -55,10 +52,10 @@ public class UserServiceImpl implements UserService {
                 .roles(Set.of(Role.USER))
                 .build();
 
-        userRepository.save(user);
+        User saved = userRepository.save(user);
+
         clearAllUserCache();
 
-        initialMethod(user.getId());
 
         return RegisterResponseDto.builder()
                 .message("با موفقیت ایجاد شد " + user.getUsername() + " کاربر")
@@ -150,7 +147,7 @@ public class UserServiceImpl implements UserService {
         userRepository.delete(user);
         clearAllUserCache();
 
-        return CustomResponseDto.builder()
+        return com.app.server.dto.response.CustomResponseDto.builder()
                 .message("کاربر با موفقیت حذف شد")
                 .details("")
                 .status(200)
@@ -172,9 +169,5 @@ public class UserServiceImpl implements UserService {
         return user;
     }
 
-    public void initialMethod(Long userId){
-        ExecutorService executorService = Executors.newSingleThreadExecutor();
-        executorService.execute(new InitialEvent(walletRMQProducer));
 
-    }
 }

@@ -13,6 +13,7 @@ import com.app.server.service.SignaturePlanService;
 import com.app.server.service.UserService;
 import com.app.server.service.SignatureService;
 import com.app.server.util.signature_service_producer.dto.request.RMQSignatureRequestDto;
+import com.app.server.util.wallet_service_producer.WalletRMQProducer;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.mfathi91.time.PersianDate;
@@ -33,7 +34,6 @@ public class SignatureServiceImpl implements SignatureService {
     private final UserService userService;
     private final SignatureRepository signatureRepository;
     private final SignatureRMQProducer signatureRMQProducer;
-
 
 
     @Override
@@ -334,6 +334,7 @@ public class SignatureServiceImpl implements SignatureService {
             }
 
             req.setValid(true);
+            req.setStatus("معتبر");
             signatureRepository.save(req);
 
           CustomResponseDto res =  CustomResponseDto.builder()

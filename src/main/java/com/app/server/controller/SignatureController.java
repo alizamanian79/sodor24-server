@@ -8,6 +8,9 @@ import com.app.server.service.SignaturePlanService;
 import com.app.server.service.SignatureService;
 import com.app.server.service.UserService;
 
+import com.app.server.util.wallet_service_producer.WalletRMQProducer;
+import com.app.server.util.wallet_service_producer.dto.request.PaymentRequestDto;
+import com.app.server.util.wallet_service_producer.dto.response.WalletResponseDto;
 import com.github.mfathi91.time.PersianDate;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +22,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
 
+import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -32,6 +37,8 @@ public class SignatureController {
 
     private final SignatureService signatureService;
     private final UserService userService;
+
+    private final WalletRMQProducer walletRMQProducer;
 
 
     @PostMapping()
@@ -97,11 +104,43 @@ public class SignatureController {
     }
 
 
-    @GetMapping("/generate-key")
-    public ResponseEntity<?> generateKey(@RequestParam Long id) throws Exception{
-        CustomResponseDto res =  signatureService.generateSignatureKeys(id);
-        return new ResponseEntity<>(res, HttpStatus.OK);
+    @GetMapping("/buy/{id}")
+    public ResponseEntity<?> buySignature(@PathVariable Long id) throws Exception{
+
+        Signature existSignature = signatureService.findById(id);
+
+        BigDecimal signaturePrice = new BigDecimal(existSignature.getSignaturePlan().getPrice());
+
+        PaymentRequestDto paymentReq = PaymentRequestDto
+                .builder()
+                .sub(existSignature.getUser().getWalletId())
+                .amount(signaturePrice)
+                .process("withdraw")
+                .email(existSignature.getEmail())
+                .phoneNumber(existSignature.getUser().getPhoneNumber())
+                .description("برداشت از حساب مبلغ" + "\s"+ signaturePrice +"\s" +
+                        "از طریق درگاه داخلی"+"\s - \s" + "\s سرویس \s"+existSignature.getSignaturePlan().getTitle())
+                .paymentServiceName("internal")
+                .callbackUrl("http://localhost:3000/done")
+                .build();
+        
+        WalletResponseDto res = walletRMQProducer.paymentRequest(paymentReq);
+
+        if (res.getStatus()==200){
+          CustomResponseDto signatured =  signatureService.generateSignatureKeys(id);
+        }
+
+        return ResponseEntity.status(res.getStatus()).body(res);
     }
+
+
+
+
+//    @GetMapping("/generate-key")
+//    public ResponseEntity<?> generateKey(@RequestParam Long id) throws Exception{
+//        CustomResponseDto res =  signatureService.generateSignatureKeys(id);
+//        return new ResponseEntity<>(res, HttpStatus.OK);
+//    }
 
 
 

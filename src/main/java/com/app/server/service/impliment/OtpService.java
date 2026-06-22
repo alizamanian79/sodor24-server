@@ -61,9 +61,6 @@ public class OtpService {
         otp.setUsed(true);
         otpRepository.save(otp);
 
-
-        // main part
-        // تأیید کاربر
         User user = otp.getUser();
 
         ActivityRequestDto activeWallet =ActivityRequestDto.builder()

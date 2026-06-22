@@ -133,7 +133,7 @@ public class SignatureServiceImpl implements SignatureService {
                 res.setMessage("SERVER");
             }
 
-            // فقط در صورت موفقیت، OTP را پاک کن
+
             if (signatureSuccess) {
                 existSignature.setOtp(null);
             } else {
@@ -141,6 +141,7 @@ public class SignatureServiceImpl implements SignatureService {
                 existSignature.setOtp(String.valueOf(1000 + new Random().nextInt(9000)));
             }
 
+            res.setMessage("yes");
             signatureRepository.save(existSignature);
             res.setTimestamp(PersianDate.now());
 
@@ -159,7 +160,10 @@ public class SignatureServiceImpl implements SignatureService {
         }
     }
 
-    // بدون @Transactional برای جلوگیری از مشکلات همزمانی
+
+
+
+
     @Override
     public boolean sendRequestToSignatureService(Signature req) {
         try {
@@ -206,6 +210,9 @@ public class SignatureServiceImpl implements SignatureService {
             return false;
         }
     }
+
+
+
 
     @Transactional
     @Override

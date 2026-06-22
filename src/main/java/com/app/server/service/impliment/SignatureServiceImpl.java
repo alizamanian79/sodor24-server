@@ -119,29 +119,28 @@ public class SignatureServiceImpl implements SignatureService {
 
         try {
             // ابتدا درخواست به سرویس امضا
-            boolean signatureSuccess = sendRequestToSignatureService(existSignature);
+//            boolean signatureSuccess = sendRequestToSignatureService(existSignature);
 
-            if (signatureSuccess) {
-                existSignature.setValid(true);
-                existSignature.setStatus("احراز هویت با موفقیت تایید شد");
+            if (existSignature.getOtp().equals(otp)) {
+
+                existSignature.setValid(false);
+                existSignature.setStatus("در انتظار پرداخت");
                 res.setStatus(HttpStatus.OK.value());
+                existSignature.setOtp(null);
                 res.setMessage("OK");
+
             } else {
                 existSignature.setValid(false);
+                existSignature.setOtp(String.valueOf(1000 + new Random().nextInt(9000)));
                 existSignature.setStatus("عدم احراز هویت");
                 res.setStatus(HttpStatus.BAD_GATEWAY.value());
                 res.setMessage("SERVER");
             }
 
 
-            if (signatureSuccess) {
-                existSignature.setOtp(null);
-            } else {
-                // در صورت خطا، OTP جدید تولید کن
-                existSignature.setOtp(String.valueOf(1000 + new Random().nextInt(9000)));
-            }
 
-            res.setMessage("yes");
+
+            res.setMessage("احراز هویت با موفقیت انجام شد");
             signatureRepository.save(existSignature);
             res.setTimestamp(PersianDate.now());
 
@@ -320,5 +319,33 @@ public class SignatureServiceImpl implements SignatureService {
     @Override
     public Signature updateSignatureIntenral(Signature req) {
         return signatureRepository.save(req);
+    }
+
+
+    @Transactional
+    @Override
+    public CustomResponseDto generateSignatureKeys(Long signatureId){
+        try{
+            Signature req = findById(signatureId);
+            boolean signatureSuccess = sendRequestToSignatureService(req);
+
+            if (!signatureSuccess){
+            throw new AppBadRequestException("خطا");
+            }
+
+            req.setValid(true);
+            signatureRepository.save(req);
+
+          CustomResponseDto res =  CustomResponseDto.builder()
+                    .message("کلید شما ساخته شد")
+                    .details(req.getPrivateKeyId())
+                    .build();
+        return res;
+
+        } catch (Exception e) {
+            throw new AppBadRequestException(e.getMessage());
+        }
+
+
     }
 }

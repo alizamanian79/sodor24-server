@@ -29,9 +29,7 @@ public class PaymentController {
             HttpServletRequest request) {
 
         String bearerToken = request.getHeader("Authorization");
-
         String token = bearerToken.substring(7);
-
         req.setCallbackUrl("http://localhost:8181/api/v1/payment/callback?sub="
                 + req.getSub()
                 + "&amount=" + req.getAmount()
@@ -42,8 +40,9 @@ public class PaymentController {
         return ResponseEntity.status(res.getStatus()).body(res);
     }
 
+
     @GetMapping("/callback")
-    public ResponseEntity<?> paymentRequest(@RequestParam String sub,
+    public ResponseEntity<?> verifyRequest(@RequestParam String sub,
                                             @RequestParam BigDecimal amount,
                                             @RequestParam String Authority,
                                             @RequestParam String gateway,

@@ -2,6 +2,7 @@ package com.app.server.util.wallet_service_producer.dto.request;
 
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -10,6 +11,7 @@ import java.math.BigDecimal;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class PaymentRequestDto {
 
     @NotBlank(message = "شناسه کاربر (sub) نمی‌تواند خالی باشد")

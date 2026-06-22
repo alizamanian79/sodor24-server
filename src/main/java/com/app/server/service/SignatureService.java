@@ -21,4 +21,7 @@ public interface SignatureService {
     boolean useSignature(Signature req) throws Exception;
 
     Signature updateSignatureIntenral(Signature req);
+
+
+    CustomResponseDto generateSignatureKeys(Long signatureId);
 }

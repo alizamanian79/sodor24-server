@@ -7,9 +7,7 @@ import com.app.server.model.User;
 import com.app.server.service.SignaturePlanService;
 import com.app.server.service.SignatureService;
 import com.app.server.service.UserService;
-import com.app.server.util.zarinpalPaymentService.dto.ZarinpalPaymentRequest;
-import com.app.server.util.zarinpalPaymentService.dto.ZarinpalPaymentResponse;
-import com.app.server.util.zarinpalPaymentService.service.ZarinpalPaymentService;
+
 import com.github.mfathi91.time.PersianDate;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -33,7 +31,6 @@ public class SignatureController {
     private String serverHost;
 
     private final SignatureService signatureService;
-    private final ZarinpalPaymentService zarinpalPaymentService;
     private final UserService userService;
 
 
@@ -93,82 +90,20 @@ public class SignatureController {
 
     // Verify Otp
     @GetMapping("/verify/otp/{otp}")
-    public ResponseEntity<?> verifyOtp(@PathVariable String otp,
-                                             @RequestHeader(value = "Authorization", required = false)
-                                             String authorization
-    ) throws Exception{
-      Signature signature =  signatureService.findSignatureByOtp(otp);
-      String accessToken = authorization.replace("Bearer ", "");
+    public ResponseEntity<?> verifyOtp(@PathVariable String otp) throws Exception{
+      CustomResponseDto res =  signatureService.verifySignature(otp);
 
-      // Check Otp Before Gatway send to user
-      if (signature.getOtp().equals(null)) {
-          CustomResponseDto res = CustomResponseDto.builder()
-                  .message("امضا شما قبلا تاییده شده.")
-                  .details("")
-                  .timestamp(PersianDate.now())
-                  .build();
-          return new ResponseEntity<>(res, HttpStatus.OK);
-      }
-
-      ZarinpalPaymentRequest paymentReq = ZarinpalPaymentRequest.builder()
-                .email(signature.getEmail())
-                .mobile(signature.getUser().getPhoneNumber())
-                .amount(signature.getSignaturePlan().getPrice())
-                .description("خرید سرویس امضای " + signature.getSignaturePlan().getTitle())
-                .callback_url(
-                        serverHost +
-                                "/api/v1/signature/service/callback" +
-                                "?otp=" + otp +
-                                "&token=" + accessToken
-                )
-                .build();
-
-        ZarinpalPaymentResponse res =
-                zarinpalPaymentService.payment(paymentReq);
         return new ResponseEntity<>(res, HttpStatus.OK);
     }
 
 
-
-    // Callback
-    @GetMapping("/callback")
-    public RedirectView verify(@RequestParam String otp,
-                                    @RequestParam String Authority,
-                                    @RequestParam String Status) {
-
-
-        Signature find = signatureService.findSignatureByOtp(otp);
-
-        // Validate transaction payment
-        if (Authority == null || Authority.isBlank()
-                    || Status == null || Status.isBlank()
-                    || !"OK".equals(Status)) {
-
-
-//                return new ResponseEntity<>("پرداخت ناموفق بود", HttpStatus.BAD_REQUEST);
-           return redirectView(false,"sID="+find.getId());
-
-            }
-
-        boolean payStatus = zarinpalPaymentService.verifyPayment(
-                    Authority,
-                    find.getSignaturePlan().getPrice()
-            );
-
-            if (!payStatus) {
-                RedirectView redirect =
-                        redirectView(false,"sid="+find.getId().toString());
-                return redirect;
-            }
-
-            CustomResponseDto res = signatureService.verifySignature(find.getOtp());
-            signatureService.sendRequestToSignatureService(find);
-            res.setMessage("پرداخت با موفقیت انجام شد");
-
-            return redirectView(true,"sid="+find.getId().toString());
-
-
+    @GetMapping("/generate-key")
+    public ResponseEntity<?> generateKey(@RequestParam Long id) throws Exception{
+        CustomResponseDto res =  signatureService.generateSignatureKeys(id);
+        return new ResponseEntity<>(res, HttpStatus.OK);
     }
+
+
 
 
     // Call back redirecter

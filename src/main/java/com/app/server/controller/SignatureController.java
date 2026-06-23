@@ -31,9 +31,7 @@ import java.util.Map;
 @RequestMapping("/api/v1/signature/service")
 public class SignatureController {
 
-    private final SignaturePlanService signaturePlanService;
-    @Value("${app.server.host}")
-    private String serverHost;
+
 
     private final SignatureService signatureService;
     private final UserService userService;

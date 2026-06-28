@@ -1,7 +1,7 @@
 {
 	"_type": "export",
 	"__export_format": 3,
-	"__export_date": "2026-05-24T14:22:50.211Z",
+	"__export_date": "2026-06-28T08:58:08.179Z",
 	"__export_source": "insomnia.desktop.app:v6.3.2",
 	"resources": [
 		{
@@ -83,12 +83,12 @@
 			"created": 1777205307455,
 			"description": "",
 			"environment": {
-				"ACCESS_TOKEN": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsInR5cGUiOiJhY2Nlc3MtdG9rZW4iLCJhdXRob3JpdGllcyI6WyJSRUFEIiwiREVMRVRFIiwiUk9MRV9VU0VSIiwiUk9MRV9BRE1JTiIsIkVESVQiLCJXUklURSJdLCJpYXQiOjE3Nzk2MjgyOTEsImV4cCI6MTc3OTYyOTQ5MX0.9zQH3fO4duA-8ZtEESwTcZYuf7QIApHdsYWHr6CybI8",
+				"ACCESS_TOKEN": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsInR5cGUiOiJhY2Nlc3MtdG9rZW4iLCJhdXRob3JpdGllcyI6WyJSRUFEIiwiREVMRVRFIiwiUk9MRV9VU0VSIiwiUk9MRV9BRE1JTiIsIkVESVQiLCJXUklURSJdLCJpYXQiOjE3ODI2MzI1OTksImV4cCI6MTc4MjYzMzc5OX0.WosEzzIE6WlDac3ZuWcWLyrBE5FEGbR2_AqtVpBMsxo",
 				"HOST": "http://localhost:8181",
 				"REFRESH_TOKEN": ""
 			},
 			"metaSortKey": -1777205307455,
-			"modified": 1779628302273,
+			"modified": 1782632618712,
 			"name": "Sodor24 Apis",
 			"parentId": "wrk_e52fe7b4bc94461ca052968010d439ff",
 			"_type": "request_group"
@@ -182,6 +182,17 @@
 			"_type": "request_group"
 		},
 		{
+			"_id": "fld_fbe90e50500445f6bdb9ecfb3c1dbdf7",
+			"created": 1782029743550,
+			"description": "",
+			"environment": {},
+			"metaSortKey": -1777205307383.5,
+			"modified": 1782029747957,
+			"name": "Wallet",
+			"parentId": "fld_c672503a62d14b6b95c45dc5c37854c5",
+			"_type": "request_group"
+		},
+		{
 			"_id": "req_36e55950b1c04eaca996410da653e08d",
 			"authentication": {
 				"disabled": false,
@@ -200,7 +211,7 @@
 						"value": ""
 					},
 					{
-						"fileName": "H:\\Downloads\\Chrome\\salae.p12",
+						"fileName": "H:\\Downloads\\Chrome\\cia.p12",
 						"id": "pair_fc11005070d04aa6906d46e5dc90416e",
 						"name": "privateKeyFile",
 						"type": "file",
@@ -255,7 +266,7 @@
 			"isPrivate": false,
 			"metaSortKey": -1777205307190,
 			"method": "POST",
-			"modified": 1779627223212,
+			"modified": 1779701022934,
 			"name": "Preparation new contract",
 			"parameters": [],
 			"parentId": "fld_3d2a3b16e62644ba8c8535c424baba46",
@@ -649,6 +660,52 @@
 			"_type": "request"
 		},
 		{
+			"_id": "req_8802ace23e764744b90cf57ba39a0ef2",
+			"authentication": {},
+			"body": {},
+			"created": 1781974647409,
+			"description": "",
+			"headers": [],
+			"isPrivate": false,
+			"metaSortKey": -1777205307218.5,
+			"method": "GET",
+			"modified": 1781974668526,
+			"name": "wallet",
+			"parameters": [],
+			"parentId": "fld_d0c0a024ad2e4837897156641a2aa645",
+			"settingDisableRenderRequestBody": false,
+			"settingEncodeUrl": true,
+			"settingMaxTimelineDataSize": 1000,
+			"settingRebuildPath": true,
+			"settingSendCookies": true,
+			"settingStoreCookies": true,
+			"url": "{{HOST}}/api/v1/public/wallet",
+			"_type": "request"
+		},
+		{
+			"_id": "req_ed2e478dbd8b456a905659a82852c766",
+			"authentication": {},
+			"body": {},
+			"created": 1782025944301,
+			"description": "",
+			"headers": [],
+			"isPrivate": false,
+			"metaSortKey": -1777205307215.75,
+			"method": "GET",
+			"modified": 1782025952819,
+			"name": "wallet (Copy)",
+			"parameters": [],
+			"parentId": "fld_d0c0a024ad2e4837897156641a2aa645",
+			"settingDisableRenderRequestBody": false,
+			"settingEncodeUrl": true,
+			"settingMaxTimelineDataSize": 1000,
+			"settingRebuildPath": true,
+			"settingSendCookies": true,
+			"settingStoreCookies": true,
+			"url": "{{HOST}}/api/v1/public/wallet/user-24503990",
+			"_type": "request"
+		},
+		{
 			"_id": "fld_46d932c57a324ab78e8bcc1989cd82ab",
 			"created": 1777205307302,
 			"description": "",
@@ -864,7 +921,7 @@
 			"isPrivate": false,
 			"metaSortKey": -1777205307426,
 			"method": "GET",
-			"modified": 1778069972375,
+			"modified": 1782110872140,
 			"name": "Me",
 			"parameters": [],
 			"parentId": "fld_dc30667755f34a04b2d36ee460c0650b",
@@ -896,7 +953,7 @@
 			"isPrivate": false,
 			"metaSortKey": -1777205307431,
 			"method": "POST",
-			"modified": 1777707713911,
+			"modified": 1782030144297,
 			"name": "Login",
 			"parameters": [],
 			"parentId": "fld_dc30667755f34a04b2d36ee460c0650b",
@@ -914,7 +971,7 @@
 			"authentication": {},
 			"body": {
 				"mimeType": "application/json",
-				"text": "{\r\n    \"username\": \"admin\",\r\n    \"fullName\":\"alizamanian\",\r\n    \"password\": \"admin\",\r\n    \"phoneNumber\": \"09917403979\"\r\n}"
+				"text": "{\n    \"username\": \"admin\",\n    \"fullName\":\"علی زمانیان\",\n    \"password\": \"admin\",\n    \"phoneNumber\": \"09917403979\"\n}"
 			},
 			"created": 1777205307440,
 			"description": "",
@@ -933,7 +990,7 @@
 			"isPrivate": false,
 			"metaSortKey": -1777205307440,
 			"method": "POST",
-			"modified": 1777797515794,
+			"modified": 1782110852805,
 			"name": "Register",
 			"parameters": [],
 			"parentId": "fld_dc30667755f34a04b2d36ee460c0650b",
@@ -944,6 +1001,52 @@
 			"settingSendCookies": true,
 			"settingStoreCookies": true,
 			"url": "{{ HOST  }}/api/v1/auth/register",
+			"_type": "request"
+		},
+		{
+			"_id": "req_ecd8f5b588854b1abf9574b91d788fc8",
+			"authentication": {},
+			"body": {},
+			"created": 1782040654383,
+			"description": "",
+			"headers": [],
+			"isPrivate": false,
+			"metaSortKey": -1782040654383,
+			"method": "GET",
+			"modified": 1782041078040,
+			"name": "Send Otp",
+			"parameters": [],
+			"parentId": "fld_dc30667755f34a04b2d36ee460c0650b",
+			"settingDisableRenderRequestBody": false,
+			"settingEncodeUrl": true,
+			"settingMaxTimelineDataSize": 1000,
+			"settingRebuildPath": true,
+			"settingSendCookies": true,
+			"settingStoreCookies": true,
+			"url": "{{ HOST  }}/api/v1/otp/send?phoneNumber=09917403979",
+			"_type": "request"
+		},
+		{
+			"_id": "req_dda0d437b5d94c9d8260d07df2d35a22",
+			"authentication": {},
+			"body": {},
+			"created": 1782041094115,
+			"description": "",
+			"headers": [],
+			"isPrivate": false,
+			"metaSortKey": -1782035203078.5,
+			"method": "GET",
+			"modified": 1782110939483,
+			"name": "verify Otp",
+			"parameters": [],
+			"parentId": "fld_dc30667755f34a04b2d36ee460c0650b",
+			"settingDisableRenderRequestBody": false,
+			"settingEncodeUrl": true,
+			"settingMaxTimelineDataSize": 1000,
+			"settingRebuildPath": true,
+			"settingSendCookies": true,
+			"settingStoreCookies": true,
+			"url": "{{ HOST  }}/api/v1/otp/verify?phoneNumber=09917403979&code=09491",
 			"_type": "request"
 		},
 		{
@@ -970,6 +1073,69 @@
 			"_type": "request"
 		},
 		{
+			"_id": "fld_4936b147b2134cb6841783dee17f8aed",
+			"created": 1782633464849,
+			"description": "",
+			"environment": {},
+			"metaSortKey": -1782633464849,
+			"modified": 1782633464849,
+			"name": "Payments",
+			"parentId": "fld_fbe90e50500445f6bdb9ecfb3c1dbdf7",
+			"_type": "request_group"
+		},
+		{
+			"_id": "req_79dc89056c1348b2a36917f186eb4d15",
+			"authentication": {
+				"token": "{{ ACCESS_TOKEN  }}",
+				"type": "bearer"
+			},
+			"body": {},
+			"created": 1782029751774,
+			"description": "",
+			"headers": [],
+			"isPrivate": false,
+			"metaSortKey": -1782029751774,
+			"method": "GET",
+			"modified": 1782029823007,
+			"name": "list",
+			"parameters": [],
+			"parentId": "fld_fbe90e50500445f6bdb9ecfb3c1dbdf7",
+			"settingDisableRenderRequestBody": false,
+			"settingEncodeUrl": true,
+			"settingMaxTimelineDataSize": 1000,
+			"settingRebuildPath": true,
+			"settingSendCookies": true,
+			"settingStoreCookies": true,
+			"url": "{{ HOST  }}/api/v1/wallet/user-34694193",
+			"_type": "request"
+		},
+		{
+			"_id": "req_da9141a9c7084047801cd7810ce6634b",
+			"authentication": {
+				"token": "{{ ACCESS_TOKEN  }}",
+				"type": "bearer"
+			},
+			"body": {},
+			"created": 1782029810118,
+			"description": "",
+			"headers": [],
+			"isPrivate": false,
+			"metaSortKey": -1781256027345.5,
+			"method": "GET",
+			"modified": 1782112551254,
+			"name": "Get wallet by id",
+			"parameters": [],
+			"parentId": "fld_fbe90e50500445f6bdb9ecfb3c1dbdf7",
+			"settingDisableRenderRequestBody": false,
+			"settingEncodeUrl": true,
+			"settingMaxTimelineDataSize": 1000,
+			"settingRebuildPath": true,
+			"settingSendCookies": true,
+			"settingStoreCookies": true,
+			"url": "{{ HOST  }}/api/v1/wallet/user-14512051",
+			"_type": "request"
+		},
+		{
 			"_id": "req_80875a97f62a4a4cb668e39d8f2b05d4",
 			"authentication": {
 				"disabled": false,
@@ -984,7 +1150,7 @@
 			"isPrivate": false,
 			"metaSortKey": -1777205307245,
 			"method": "PUT",
-			"modified": 1779516811037,
+			"modified": 1782114629992,
 			"name": "Change Active",
 			"parameters": [],
 			"parentId": "fld_46d932c57a324ab78e8bcc1989cd82ab",
@@ -994,7 +1160,7 @@
 			"settingRebuildPath": true,
 			"settingSendCookies": true,
 			"settingStoreCookies": true,
-			"url": "{{HOST}}/api/v1/signature/plan/active/set?id=2&active=2",
+			"url": "{{HOST}}/api/v1/signature/plan/active/set?id=1&active=1",
 			"_type": "request"
 		},
 		{
@@ -1007,7 +1173,7 @@
 			},
 			"body": {
 				"mimeType": "application/json",
-				"text": "{\n    \"title\": \"امضای حرفه ای طلایی\",\n    \"description\": \"امضای اختصاصی و لوکس طلایی، مناسب برندهای خاص و رسمی\",\n    \"price\": 120000,\n    \"usageCount\": 50,\n    \"period\": 60,\n    \"features\": [\"پشتیبانی 24 ساعته\", \"طراحی اختصاصی\", \"قابلیت ویرایش\"],\n    \"tags\": [\"طلایی\", \"لوکس\", \"رسمی\"]\n}"
+				"text": "{\n    \"title\": \"امضای حرفه ای نقره ای\",\n    \"description\": \"امضای اختصاصی و لوکس طلایی، مناسب برندهای خاص و رسمی\",\n    \"price\": 50000,\n    \"usageCount\": 10,\n    \"period\": 60,\n    \"features\": [\"پشتیبانی 24 ساعته\", \"طراحی اختصاصی\", \"قابلیت ویرایش\"],\n    \"tags\": [\"طلایی\", \"لوکس\", \"رسمی\"]\n}"
 			},
 			"created": 1777205307249,
 			"description": "",
@@ -1021,7 +1187,7 @@
 			"isPrivate": false,
 			"metaSortKey": -1777205307249,
 			"method": "PUT",
-			"modified": 1779516778698,
+			"modified": 1779706620399,
 			"name": "Update Signature Plan",
 			"parameters": [],
 			"parentId": "fld_46d932c57a324ab78e8bcc1989cd82ab",
@@ -1044,7 +1210,7 @@
 			},
 			"body": {
 				"mimeType": "application/json",
-				"text": "{\n    \"title\": \"امضای حرفه ای طلایی\",\n    \"description\": \"امضای اختصاصی و لوکس طلایی، مناسب برندهای خاص و رسمی\",\n    \"price\": 120000,\n    \"usageCount\": 50,\n    \"period\": 60,\n    \"features\": [\"پشتیبانی 24 ساعته\", \"طراحی اختصاصی\", \"قابلیت ویرایش\"],\n    \"tags\": [\"طلایی\", \"لوکس\", \"رسمی\"]\n}"
+				"text": "{\n    \"title\": \"امضای نقره ای\",\n    \"description\": \"امضای اختصاصی و لوکس طلایی، مناسب برندهای خاص و رسمی\",\n    \"price\": 100000,\n    \"usageCount\": 20,\n    \"period\": 60,\n    \"features\": [\"پشتیبانی 24 ساعته\", \"طراحی اختصاصی\", \"قابلیت ویرایش\"],\n    \"tags\": [\"طلایی\", \"لوکس\", \"رسمی\"]\n}"
 			},
 			"created": 1777205307256,
 			"description": "",
@@ -1058,7 +1224,7 @@
 			"isPrivate": false,
 			"metaSortKey": -1777205307256,
 			"method": "POST",
-			"modified": 1779516713153,
+			"modified": 1782029284654,
 			"name": "Generate Signature Plan",
 			"parameters": [],
 			"parentId": "fld_46d932c57a324ab78e8bcc1989cd82ab",
@@ -1326,7 +1492,7 @@
 			"isPrivate": false,
 			"metaSortKey": -1777205307356,
 			"method": "GET",
-			"modified": 1779606866937,
+			"modified": 1782123538967,
 			"name": "Verify Signature Otp",
 			"parameters": [],
 			"parentId": "fld_019a8f4f738f4faeb262d581d3b0752f",
@@ -1336,7 +1502,7 @@
 			"settingRebuildPath": true,
 			"settingSendCookies": true,
 			"settingStoreCookies": true,
-			"url": "{{HOST}}/api/v1/signature/service/verify/otp/6342",
+			"url": "{{HOST}}/api/v1/signature/service/verify/otp/4926",
 			"_type": "request"
 		},
 		{
@@ -1377,7 +1543,7 @@
 			},
 			"body": {
 				"mimeType": "application/json",
-				"text": "{\n  \"signaturePlanId\": 1,\n  \"country\": \"Iran\",\n  \"reason\": \"test request\",\n  \"location\": \"Tehran\",\n  \"organization\": \"Alibaba\",\n  \"department\": \"Technical department\",\n  \"state\": \"Tehran\",\n  \"city\": \"Tehran\",\n  \"email\": \"alizamaniandev@gmail.com\",\n  \"title\": \"Alibaba.ir\",\n  \"signaturePassword\": \"12345678\"\n}\n"
+				"text": "{\n  \"signaturePlanId\": 1,\n  \"country\": \"Iran\",\n  \"reason\": \"test request\",\n  \"location\": \"Tehran\",\n  \"organization\": \"Digikala.com\",\n  \"department\": \"Technical department\",\n  \"state\": \"Tehran\",\n  \"city\": \"Tehran\",\n  \"email\": \"alizamaniandev@gmail.com\",\n  \"title\": \"Alibaba.ir\",\n  \"signaturePassword\": \"12345678\"\n}\n"
 			},
 			"created": 1777205307363,
 			"description": "",
@@ -1391,7 +1557,7 @@
 			"isPrivate": false,
 			"metaSortKey": -1777205307363,
 			"method": "POST",
-			"modified": 1779523601823,
+			"modified": 1782117538341,
 			"name": "Signature Request",
 			"parameters": [],
 			"parentId": "fld_019a8f4f738f4faeb262d581d3b0752f",
@@ -1431,6 +1597,104 @@
 			"settingSendCookies": true,
 			"settingStoreCookies": true,
 			"url": "{{HOST}}/api/v1/signature/service/sandbox/callback?otp=5981&token={{ ACCESS_TOKEN  }}",
+			"_type": "request"
+		},
+		{
+			"_id": "req_80e5741eaabb4c98a8ddf0a1b3f4070d",
+			"authentication": {
+				"disabled": false,
+				"prefix": "",
+				"token": "{{ACCESS_TOKEN}}",
+				"type": "bearer"
+			},
+			"body": {},
+			"created": 1782121004009,
+			"description": "",
+			"headers": [],
+			"isPrivate": false,
+			"metaSortKey": -1777205307346.25,
+			"method": "GET",
+			"modified": 1782123487133,
+			"name": "Buy Signature Service",
+			"parameters": [],
+			"parentId": "fld_019a8f4f738f4faeb262d581d3b0752f",
+			"settingDisableRenderRequestBody": false,
+			"settingEncodeUrl": true,
+			"settingMaxTimelineDataSize": 1000,
+			"settingRebuildPath": true,
+			"settingSendCookies": true,
+			"settingStoreCookies": true,
+			"url": "{{HOST}}/api/v1/signature/service/buy/7",
+			"_type": "request"
+		},
+		{
+			"_id": "req_64918bf5a1d646edb263f04553848cc7",
+			"authentication": {
+				"token": "{{ ACCESS_TOKEN  }}",
+				"type": "bearer"
+			},
+			"body": {
+				"mimeType": "application/json",
+				"text": "{\n\t\"sub\":\"user-14512051\",\n\t\"amount\":500000,\n\t\"process\":\"deposit\",\n\t\"email\":\"alizamaniandev@gmail.com\",\n\t\"phoneNumber\":\"09917403979\",\n\t\"description\":\"sss\",\n\t\"callbackUrl\":\"http://localhost:3000/callback\",\n\t\"paymentServiceName\":\"zarinpal\"\n}\n"
+			},
+			"created": 1782038516855,
+			"description": "",
+			"headers": [
+				{
+					"id": "pair_d6e13b6e59f3463096848ecd2b76cfb6",
+					"name": "Content-Type",
+					"value": "application/json"
+				}
+			],
+			"isPrivate": false,
+			"metaSortKey": -1780869165131.25,
+			"method": "POST",
+			"modified": 1782633470480,
+			"name": "Payment Request",
+			"parameters": [],
+			"parentId": "fld_4936b147b2134cb6841783dee17f8aed",
+			"settingDisableRenderRequestBody": false,
+			"settingEncodeUrl": true,
+			"settingMaxTimelineDataSize": 1000,
+			"settingRebuildPath": true,
+			"settingSendCookies": true,
+			"settingStoreCookies": true,
+			"url": "{{ HOST  }}/api/v1/payment/request",
+			"_type": "request"
+		},
+		{
+			"_id": "req_cdccf0d5b5e14be2b94e025786796a68",
+			"authentication": {
+				"token": "{{ ACCESS_TOKEN  }}",
+				"type": "bearer"
+			},
+			"body": {
+				"mimeType": "application/json",
+				"text": ""
+			},
+			"created": 1782632526058,
+			"description": "",
+			"headers": [
+				{
+					"id": "pair_d6e13b6e59f3463096848ecd2b76cfb6",
+					"name": "Content-Type",
+					"value": "application/json"
+				}
+			],
+			"isPrivate": false,
+			"metaSortKey": -1780869165181.25,
+			"method": "GET",
+			"modified": 1782633473140,
+			"name": "Verify Payment",
+			"parameters": [],
+			"parentId": "fld_4936b147b2134cb6841783dee17f8aed",
+			"settingDisableRenderRequestBody": false,
+			"settingEncodeUrl": true,
+			"settingMaxTimelineDataSize": 1000,
+			"settingRebuildPath": true,
+			"settingSendCookies": true,
+			"settingStoreCookies": true,
+			"url": "{{ HOST  }}/api/v1/payment/callback?sub=user-14512051&amount=500000&Authority=S00000000000000000000000000000vg11nl&paymentMethod=zarinpal&Status=OK?token={{ ACCESS_TOKEN  }}",
 			"_type": "request"
 		}
 	]

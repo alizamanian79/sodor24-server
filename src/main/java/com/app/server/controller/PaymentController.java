@@ -1,5 +1,6 @@
 package com.app.server.controller;
 
+import com.app.server.exception.AppBadRequestException;
 import com.app.server.util.wallet_service_producer.WalletRMQProducer;
 import com.app.server.util.wallet_service_producer.dto.request.PaymentRequestDto;
 import com.app.server.util.wallet_service_producer.dto.request.PaymentVerifierRequestDto;
@@ -30,11 +31,7 @@ public class PaymentController {
 
         String bearerToken = request.getHeader("Authorization");
         String token = bearerToken.substring(7);
-        req.setCallbackUrl("http://localhost:8181/api/v1/payment/callback?sub="
-                + req.getSub()
-                + "&amount=" + req.getAmount()
-                +"&gateway="+req.getPaymentServiceName()
-                + "&token=" + token);
+        req.setCallbackUrl(req.getCallbackUrl());
 
         WalletResponseDto res = walletRMQProducer.paymentRequest(req);
         return ResponseEntity.status(res.getStatus()).body(res);
@@ -45,8 +42,12 @@ public class PaymentController {
     public ResponseEntity<?> verifyRequest(@RequestParam String sub,
                                             @RequestParam BigDecimal amount,
                                             @RequestParam String Authority,
-                                            @RequestParam String gateway,
+                                            @RequestParam String paymentMethod,
                                             @RequestParam String Status){
+
+        if (!Status.equals("OK")){
+            throw new AppBadRequestException("تراکنش ناموفق بود");
+        }
 
         Map<String,Object> dt = new HashMap<String,Object>();
         dt.put("authority",Authority);
@@ -56,7 +57,7 @@ public class PaymentController {
                 .amount(amount)
                 .description("")
                 .callBackUrl("")
-                .paymentServiceName(gateway)
+                .paymentServiceName(paymentMethod)
                 .data(dt)
                 .build();
         WalletResponseDto res = walletRMQProducer.paymentVerifier(req);

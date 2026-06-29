@@ -2,6 +2,7 @@ package com.app.server.controller;
 
 import com.app.server.dto.request.SignatureRequestDto;
 import com.app.server.dto.response.CustomResponseDto;
+import com.app.server.exception.AppBadRequestException;
 import com.app.server.model.Signature;
 import com.app.server.model.User;
 import com.app.server.service.SignaturePlanService;
@@ -107,7 +108,29 @@ public class SignatureController {
 
         Signature existSignature = signatureService.findById(id);
 
-        BigDecimal signaturePrice = new BigDecimal(existSignature.getSignaturePlan().getPrice());
+        BigDecimal signaturePrice = BigDecimal.valueOf(
+                existSignature.getSignaturePlan().getPrice()
+        );
+
+        WalletResponseDto walletResponse =
+                walletRMQProducer.getWalletBySub(
+                        existSignature.getUser().getWalletId()
+                );
+
+        Map<String, Object> data =
+                (Map<String, Object>) walletResponse.getData();
+
+        BigDecimal balance =
+                new BigDecimal(data.get("balance").toString());
+
+        if (balance.compareTo(signaturePrice) < 0) {
+            BigDecimal missingAmount = signaturePrice.subtract(balance);
+
+            throw new AppBadRequestException(
+                    "موجودی کافی نیست. " + missingAmount + " کم دارید.",
+                    "شما می‌توانید با کلیک بر روی ..."
+            );
+        }
 
         PaymentRequestDto paymentReq = PaymentRequestDto
                 .builder()
@@ -116,8 +139,7 @@ public class SignatureController {
                 .process("withdraw")
                 .email(existSignature.getEmail())
                 .phoneNumber(existSignature.getUser().getPhoneNumber())
-                .description("برداشت از حساب مبلغ" + "\s"+ signaturePrice +"\s" +
-                        "از طریق درگاه داخلی"+"\s - \s" + "\s سرویس \s"+existSignature.getSignaturePlan().getTitle())
+                .description("\s خرید سرویس \s"+existSignature.getSignaturePlan().getTitle())
                 .paymentServiceName("internal")
                 .callbackUrl("http://localhost:3000/done")
                 .build();

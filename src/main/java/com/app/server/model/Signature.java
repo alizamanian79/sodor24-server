@@ -78,6 +78,8 @@ public class Signature {
 
 
 
+    private Long totalPrice;
+
 
     @CreationTimestamp
     private LocalDateTime createdAt;

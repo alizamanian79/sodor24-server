@@ -74,7 +74,7 @@ public class SignatureServiceImpl implements SignatureService {
                 .signaturePlan(signaturePlan)
                 .valid(false)
                 .usageCount(signaturePlan.getUsageCount())
-
+                .totalPrice(signaturePlan.getPrice())
                 .status("در انتظار تایید کد")
                 .country(req.getCountry().toString())
                 .reason(req.getReason().toString())

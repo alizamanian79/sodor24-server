@@ -30,7 +30,6 @@ public class PublicController {
     private final SignaturePlanService signaturePlanService;
     private final SignatureRMQProducer signatureRMQProducer;
     private final ContractRMQProducer contractRMQProducer;
-    private final WalletRMQProducer walletRMQProducer;
 
 
     @GetMapping("/signature/plan")
@@ -43,6 +42,13 @@ public class PublicController {
     ) {
         return signaturePlanService.getPageableSignaturesPlan(page, size, search, sortBy, sortDir);
     }
+
+
+    @GetMapping("/signature/plan/{id}")
+    public SignaturePlan getSignaturePlan(@PathVariable Long id){
+        return signaturePlanService.findSignaturePlanById(id);
+    }
+
 
     @GetMapping("/test")
     public ResponseEntity<?> hello(){
@@ -68,24 +74,7 @@ public class PublicController {
 
 
 
-    @GetMapping("/wallet")
-    public ResponseEntity<?> wallet() {
 
-
-            CreateWalletRequestDto req = CreateWalletRequestDto.builder()
-                    .sub("")
-                    .balance(BigDecimal.ZERO)
-                    .currency("IRT")
-                    .build();
-            WalletResponseDto res = walletRMQProducer.createWallet(req);
-            Map<String,Object> data = (Map<String, Object>) res.getData();
-            String sub = data.get("sub").toString();
-
-
-
-
-        return new ResponseEntity<>(sub,HttpStatus.OK);
-    }
 
 
 

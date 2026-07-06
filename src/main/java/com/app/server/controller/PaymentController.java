@@ -44,11 +44,12 @@ public class PaymentController {
 
     @GetMapping("/callback")
     public ResponseEntity<?> verifyRequest(@RequestParam String sub,
-                                           @RequestParam BigDecimal amount,
-                                           @RequestParam String paymentMethod,
+                                           @RequestParam Integer slug,
+                                           @RequestParam String gateway,
                                            @RequestParam String Authority,
                                            @RequestParam String Status,
-                                           @RequestParam(defaultValue = "",required = false) String description
+                                           @RequestParam(defaultValue = "",required = false)
+                                               String description
     ){
 
         if (!Status.equals("OK")){
@@ -65,11 +66,9 @@ public class PaymentController {
 
         PaymentVerifierRequestDto req = PaymentVerifierRequestDto.builder()
                 .sub(sub)
-                .amount(amount)
-                .description(description)
-                .callBackUrl("")
-                .paymentServiceName(paymentMethod)
-                .data(dt)
+                .slug(slug)
+                .gateway(gateway)
+                .callbackUrl("")
                 .build();
         WalletResponseDto res = walletRMQProducer.paymentVerifier(req);
 

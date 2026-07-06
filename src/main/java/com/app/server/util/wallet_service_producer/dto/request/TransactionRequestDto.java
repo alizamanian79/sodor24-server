@@ -30,4 +30,6 @@ public class TransactionRequestDto {
 
     private String status;
 
+    private String gateway;
+
 }

@@ -17,17 +17,10 @@ import java.math.BigDecimal;
 public class PaymentVerifierRequestDto<D> {
     @NotBlank(message = "شناسه کاربر (sub) نمی‌تواند خالی باشد")
     private String sub;
+    private Integer slug;
 
-    @NotNull(message = "مبلغ الزامی است")
-    @DecimalMin(value = "0.01", message = "مبلغ باید بیشتر از 0 باشد")
-    private BigDecimal amount;
-
-
-    @NotBlank(message = "نام سرویس پرداخت نمی‌تواند خالی باشد")
-    private String paymentServiceName;
-
-    private String description;
-    private String callBackUrl;
+    private String callbackUrl;
+    private String gateway;
 
     private D data;
 }

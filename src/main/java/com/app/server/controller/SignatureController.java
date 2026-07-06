@@ -140,7 +140,7 @@ public class SignatureController {
                 .email(existSignature.getEmail())
                 .phoneNumber(existSignature.getUser().getPhoneNumber())
                 .description("\s خرید سرویس \s"+existSignature.getSignaturePlan().getTitle())
-                .paymentServiceName("internal")
+                .gateway("internal")
                 .callbackUrl("http://localhost:3000/done")
                 .build();
         

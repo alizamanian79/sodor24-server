@@ -8,17 +8,17 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 
+@Builder
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
 public class PaymentRequestDto {
 
     @NotBlank(message = "شناسه کاربر (sub) نمی‌تواند خالی باشد")
     private String sub;
 
-    @NotNull(message = "مبلغ الزامی است")
-    @DecimalMin(value = "0.01", message = "مبلغ باید بیشتر از 0 باشد")
+    //    @NotNull(message = "مبلغ الزامی است")
+//    @DecimalMin(value = "0.01", message = "مبلغ باید بیشتر از 0 باشد")
     private BigDecimal amount;
 
     @NotBlank(message = "وضعیت یا process نمی‌تواند خالی باشد(deposit/withdraw)")
@@ -40,5 +40,9 @@ public class PaymentRequestDto {
     private String callbackUrl;
 
     @NotBlank(message = "نام سرویس پرداخت نمی‌تواند خالی باشد")
-    private String paymentServiceName;
+    private String gateway;
+
+    private String status;
+
+
 }

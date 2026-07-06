@@ -52,18 +52,18 @@ Add the following to your `pom.xml`:
     <artifactId>spring-boot-starter-amqp</artifactId>
 </dependency>
 
-<!-- MySQL Driver -->
+        <!-- MySQL Driver -->
 <dependency>
-    <groupId>com.mysql</groupId>
-    <artifactId>mysql-connector-j</artifactId>
-    <scope>runtime</scope>
+<groupId>com.mysql</groupId>
+<artifactId>mysql-connector-j</artifactId>
+<scope>runtime</scope>
 </dependency>
 
-<!-- Lombok -->
+        <!-- Lombok -->
 <dependency>
-    <groupId>org.projectlombok</groupId>
-    <artifactId>lombok</artifactId>
-    <optional>true</optional>
+<groupId>org.projectlombok</groupId>
+<artifactId>lombok</artifactId>
+<optional>true</optional>
 </dependency>
 ```
 
@@ -122,24 +122,42 @@ Add the following to your `application.yml`:
 application:
   wallet-service:
     currency: IRT
-
     payments:
       zarinpal:
-        env: dev
+        env: ${ZARINPAL_ENV:dev}
         name: zarinpal
-        merchant_id: d8234a3a-dbcf-4f30-ab52-b195b0f0f1a3
+        merchant_id: ${ZARINPAL_MERCHANT_ID:d8234a3a-dbcf-4f30-ab52-b195b0f0f1a3}
 
     rabbitmq:
       exchange: wallet.exchange
+      queue:
+        list-wallet: wallet.list.queue
+        create-wallet: wallet.create.queue
+        get-wallet: wallet.get.queue
+        active-wallet: wallet.active.queue
+        delete-wallet: wallet.delete.queue
+        update-sub-wallet: wallet.update.sub.queue
+        payment-request-wallet: wallet.request.payment.queue
+        payment-verifier-wallet: wallet.verifier.payment.queue
+        transaction-list: transaction.list.queue
+        get-transaction-by-slug: get.transaction.by.slug.queue
+        get-transaction-in-date: get.transaction.in.date.queue
+        delete-transaction-by-slug: delete.transaction.by.slug.queue
+
       routing:
-        list-wallet:              wallet.list.routing-key
-        create-wallet:            wallet.create.routing-key
-        get-wallet:               wallet.get.routing-key
-        active-wallet:            wallet.active.routing-key
-        delete-wallet:            wallet.delete.routing-key
-        update-sub-wallet:        wallet.update.sub.routing-key
-        payment-request-wallet:   wallet.request.payment.routing-key
-        payment-verifier-wallet:  wallet.verifier.payment.routing-key
+        list-wallet: wallet.list.routing-key
+        create-wallet: wallet.create.routing-key
+        get-wallet: wallet.get.routing-key
+        active-wallet: wallet.active.routing-key
+        delete-wallet: wallet.delete.routing-key
+        update-sub-wallet: wallet.update.sub.routing-key
+        payment-request-wallet: wallet.request.payment.routing-key
+        payment-verifier-wallet: wallet.verifier.payment.routing-key
+        transaction-list: transaction.list.routing-key
+        get-transaction-by-slug: get.transaction.by.slug.routing-key
+        get-transaction-in-date: get.transaction.in.date.routing-key
+        delete-transaction-by-slug: delete.transaction.by.slug.routing-key
+
 ```
 
 ---
@@ -157,13 +175,21 @@ Place the wallet service integration package inside your main application:
 ```
 server-service/
 └── src/main/java/com/app/server_service/
-    ├── wallet-service-producer/     ← کلاس‌های producer کیف پول را اینجا کپی کنید
+    ├── wallet_service_producer/     ← کلاس‌های producer کیف پول را اینجا کپی کنید
     │   └── WalletRMQProducer.java   ← نقطه ورودی اصلی برای ارسال رویدادهای کیف پول
+    │   └── TransactionRMQProducer.java  ← مدیریت تراکنش ها
     ├── config/                      ← تنظیمات exchange و queue در RabbitMQ
     └── ...
 ```
 
-> **🇮🇷** تمام کلاس‌های پکیج `wallet-service-producer` را در سرویس خود کپی کنید و از `WalletRMQProducer` برای ارسال رویدادهای کیف پول استفاده کنید.
+> **🇮🇷** تمام کلاس‌های پکیج `wallet_service_producer` را در سرویس خود کپی کنید و از `WalletRMQProducer` برای ارسال رویدادهای کیف پول استفاده کنید.
+>
+>
+
+> فایل RabbitMQServiceConfig.java همان تنظیمات rabbitmq شما در سرویس دیگر هست . ترجیحا ان را وارد پوشه تنظیمات خود config/RabbitMQConfig کرده و به نام RabbitMQConfig تغییر دهید
+>
+>
+>
 >
 > **🇬🇧** Copy all classes from the `wallet-service-producer` package into your service. Use `WalletRMQProducer` to publish wallet events from your business logic.
 
@@ -221,4 +247,5 @@ server-service/
 - [ ] MySQL is running and schema is migrated | MySQL در حال اجراست و schema مهاجرت کرده
 - [ ] `wallet-service-producer` classes are copied into your service | کلاس‌های `wallet-service-producer` کپی شده‌اند
 - [ ] `WalletRMQProducer` is injected where needed | `WalletRMQProducer` در جای لازم تزریق شده
+- [ ] `TransactionRMQProducer` is injected where needed | `TransactionRMQProducer` در جای لازم تزریق شده
 - [ ] Wallet is activated before making payment requests | کیف پول قبل از درخواست پرداخت فعال شده است

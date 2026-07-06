@@ -1,19 +1,18 @@
 package com.app.server.util.wallet_service_producer.dto.request;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
-@Builder
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class CreateWalletRequestDto {
+public class TransactionDateRangeRequest {
+
     private String sub;
-    private BigDecimal balance;
-    private String currency;
+    private LocalDateTime from;
+    private LocalDateTime to;
 
 }

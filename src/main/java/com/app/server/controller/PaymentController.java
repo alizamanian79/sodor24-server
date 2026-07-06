@@ -8,6 +8,7 @@ import com.app.server.util.wallet_service_producer.dto.request.PaymentVerifierRe
 import com.app.server.util.wallet_service_producer.dto.response.WalletResponseDto;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -43,37 +44,48 @@ public class PaymentController {
 
 
     @GetMapping("/callback")
-    public ResponseEntity<?> verifyRequest(@RequestParam String sub,
-                                           @RequestParam Integer slug,
-                                           @RequestParam String gateway,
-                                           @RequestParam String Authority,
-                                           @RequestParam String Status,
-                                           @RequestParam(defaultValue = "",required = false)
-                                               String description
-    ){
+    public ResponseEntity<?> verifyRequest(
+            @RequestParam String sub,
+            @RequestParam Integer slug,
+            @RequestParam String gateway,
+            @RequestParam(defaultValue = "",required = false) String Authority,
+            @RequestParam String Status) {
 
-        if (!Status.equals("OK")){
+        if (!"OK".equals(Status)) {
             throw new AppBadRequestException("تراکنش ناموفق بود");
         }
 
-        Map<String,Object> dt = new HashMap<>();
-        dt.put("authority",Authority);
+        if (Authority == null || Authority.isBlank()) {
+            throw new AppBadRequestException("Authority معتبر نیست");
+        }
 
 
-        System.out.println("description is \s =>");
-        System.out.println(description);
+        System.out.println(slug);
 
+        Map<String,Object> bodyData= new HashMap<>();
+        bodyData.put("Authority",Authority);
 
         PaymentVerifierRequestDto req = PaymentVerifierRequestDto.builder()
                 .sub(sub)
                 .slug(slug)
                 .gateway(gateway)
                 .callbackUrl("")
+                .data(bodyData)
                 .build();
+
         WalletResponseDto res = walletRMQProducer.paymentVerifier(req);
 
+        if (res.getStatus() != 200) {
+            return ResponseEntity.status(res.getStatus()).body(res);
+        }
 
-        return ResponseEntity.status(res.getStatus()).body("تراکنش با موفقیت انجام شد");
+        return ResponseEntity.status(res.getStatus()).body(res);
     }
+
+
+//    @GetMapping("/callback")
+//    public ResponseEntity<?> verifyRequest() {
+//        return new ResponseEntity<>("salam", HttpStatus.OK);
+//    }
 
 }

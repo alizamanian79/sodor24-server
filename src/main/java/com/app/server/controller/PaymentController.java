@@ -49,7 +49,7 @@ public class PaymentController {
             @RequestParam Integer slug,
             @RequestParam String gateway,
             @RequestParam(defaultValue = "",required = false) String Authority,
-            @RequestParam String Status) {
+            @RequestParam(defaultValue = "",required = false) String Status) {
 
         if (!"OK".equals(Status)) {
             throw new AppBadRequestException("تراکنش ناموفق بود");

@@ -2,6 +2,7 @@ package com.app.server.util.wallet_service_producer;
 
 import com.app.server.util.wallet_service_producer.dto.request.TransactionDateRangeRequest;
 import com.app.server.util.wallet_service_producer.dto.response.WalletResponseDto;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 public class TransactionRMQProducer {
+
 
 
     @Value("${application.wallet-service.rabbitmq.routing.transaction-list}")
@@ -33,31 +35,36 @@ public class TransactionRMQProducer {
 
 
     private final RabbitTemplate rabbitTemplate;
+    private final ObjectMapper objectMapper;
 
 
+
+    private <T> T send(String routingKey, Object payload, Class<T> responseType) {
+        Object raw = rabbitTemplate.convertSendAndReceive(exchange, routingKey, payload);
+        if (raw == null) return null;
+        return objectMapper.convertValue(raw, responseType);
+    }
 
 
     public WalletResponseDto transactionsList(){
-        WalletResponseDto res = (WalletResponseDto)  rabbitTemplate.convertSendAndReceive(exchange,transactionListRoutingKey,"");
-       return res;
+       return send(transactionListRoutingKey,"",WalletResponseDto.class);
     }
 
 
     public WalletResponseDto getTransactionBySlug(Integer slug){
-        WalletResponseDto res =(WalletResponseDto) rabbitTemplate.convertSendAndReceive(exchange,getTransactionBySlugRoutingKey,slug);
-        return res;
+        return send(getTransactionBySlugRoutingKey,slug,WalletResponseDto.class);
     }
 
 
 
     public WalletResponseDto getTransactionInDateRange(TransactionDateRangeRequest req){
-        WalletResponseDto res = (WalletResponseDto)  rabbitTemplate.convertSendAndReceive(exchange,getTransactionInDateRoutingKey,req);
-        return res;
+        return send(getTransactionInDateRoutingKey,req,WalletResponseDto.class);
     }
 
+
+
     public WalletResponseDto deleteTransactionBySlug(Integer slug) {
-        WalletResponseDto res = (WalletResponseDto)  rabbitTemplate.convertSendAndReceive(exchange,deleteTransactionBySlugRoutingKey,slug);
-        return res;
+       return send(deleteTransactionBySlugRoutingKey,slug,WalletResponseDto.class);
     }
 
 

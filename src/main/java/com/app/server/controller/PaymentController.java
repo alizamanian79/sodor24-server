@@ -48,40 +48,45 @@ public class PaymentController {
             @RequestParam String sub,
             @RequestParam Integer slug,
             @RequestParam String gateway,
-            @RequestParam(defaultValue = "",required = false) String Authority,
-            @RequestParam(defaultValue = "",required = false) String Status) {
+            @RequestParam(required = false, defaultValue = "") String Authority,
+            @RequestParam(required = false, defaultValue = "") String Status) {
 
-        if (!"OK".equals(Status)) {
-            throw new AppBadRequestException("تراکنش ناموفق بود");
-        }
+//        if (!"OK".equals(Status)) {
+//            throw new AppBadRequestException("تراکنش ناموفق بود");
+//        }
 
-        if (Authority == null || Authority.isBlank()) {
-            throw new AppBadRequestException("Authority معتبر نیست");
-        }
+//        if (Authority.isBlank()) {
+//            throw new AppBadRequestException("Authority معتبر نیست");
+//        }
 
 
-        System.out.println(slug);
+        System.out.println("sub =>\s"+ sub);
+        System.out.println("slug =>\s"+ slug);
+        System.out.println("gateway =>\s"+ gateway);
+        System.out.println("Status =>\s"+ Status);
+        System.out.println("Authority => \s" + Authority);
 
-        Map<String,Object> bodyData= new HashMap<>();
-        bodyData.put("Authority",Authority);
+
+        Map<String, Object> object = new HashMap<String,Object>();
+        object.put("authority", Authority);
+
 
         PaymentVerifierRequestDto req = PaymentVerifierRequestDto.builder()
                 .sub(sub)
                 .slug(slug)
                 .gateway(gateway)
                 .callbackUrl("")
-                .data(bodyData)
+                .data(object)
                 .build();
 
         WalletResponseDto res = walletRMQProducer.paymentVerifier(req);
 
-        if (res.getStatus() != 200) {
-            return ResponseEntity.status(res.getStatus()).body(res);
+        if (res == null) {
+            return null;
         }
 
         return ResponseEntity.status(res.getStatus()).body(res);
     }
-
 
 //    @GetMapping("/callback")
 //    public ResponseEntity<?> verifyRequest() {

@@ -9,6 +9,7 @@ import com.app.server.service.SignaturePlanService;
 import com.app.server.service.SignatureService;
 import com.app.server.service.UserService;
 
+import com.app.server.util.wallet_service_producer.TransactionRMQProducer;
 import com.app.server.util.wallet_service_producer.WalletRMQProducer;
 import com.app.server.util.wallet_service_producer.dto.request.PaymentRequestDto;
 import com.app.server.util.wallet_service_producer.dto.response.WalletResponseDto;
@@ -38,6 +39,7 @@ public class SignatureController {
     private final UserService userService;
 
     private final WalletRMQProducer walletRMQProducer;
+    private final TransactionRMQProducer transactionRMQProducer;
 
 
     @PostMapping()
@@ -103,54 +105,29 @@ public class SignatureController {
     }
 
 
-    @GetMapping("/buy/{id}")
-    public ResponseEntity<?> buySignature(@PathVariable Long id) throws Exception{
+    @GetMapping("/buy")
+    public ResponseEntity<?> buySignature(
+            @RequestParam Long sid,@RequestParam Integer slug) throws Exception{
 
-        Signature existSignature = signatureService.findById(id);
+        CustomResponseDto signatured= new CustomResponseDto();
+        Signature existSignature = signatureService.findById(sid);
 
-        BigDecimal signaturePrice = BigDecimal.valueOf(
-                existSignature.getSignaturePlan().getPrice()
-        );
+//        BigDecimal signaturePrice = BigDecimal.valueOf(
+//                existSignature.getSignaturePlan().getPrice()
+//        );
 
         WalletResponseDto walletResponse =
-                walletRMQProducer.getWalletBySub(
-                        existSignature.getUser().getWalletId()
-                );
+                transactionRMQProducer.getTransactionBySlug(slug);
 
         Map<String, Object> data =
                 (Map<String, Object>) walletResponse.getData();
 
-        BigDecimal balance =
-                new BigDecimal(data.get("balance").toString());
 
-        if (balance.compareTo(signaturePrice) < 0) {
-            BigDecimal missingAmount = signaturePrice.subtract(balance);
-
-            throw new AppBadRequestException(
-                    "موجودی کافی نیست. " + missingAmount + " کم دارید.",
-                    "شما می‌توانید با کلیک بر روی ..."
-            );
+        if (data.get("status").equals("Paid")){
+             signatured =  signatureService.generateSignatureKeys(sid);
         }
 
-        PaymentRequestDto paymentReq = PaymentRequestDto
-                .builder()
-                .sub(existSignature.getUser().getWalletId())
-                .amount(signaturePrice)
-                .process("withdraw")
-                .email(existSignature.getEmail())
-                .phoneNumber(existSignature.getUser().getPhoneNumber())
-                .description("\s خرید سرویس \s"+existSignature.getSignaturePlan().getTitle())
-                .gateway("internal")
-                .callbackUrl("http://localhost:3000/done")
-                .build();
-        
-        WalletResponseDto res = walletRMQProducer.paymentRequest(paymentReq);
-
-        if (res.getStatus()==200){
-          CustomResponseDto signatured =  signatureService.generateSignatureKeys(id);
-        }
-
-        return ResponseEntity.status(res.getStatus()).body(res);
+        return ResponseEntity.status(walletResponse.getStatus()).body(signatured);
     }
 
 

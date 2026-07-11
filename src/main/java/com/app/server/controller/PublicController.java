@@ -2,6 +2,7 @@ package com.app.server.controller;
 
 import com.app.server.model.SignaturePlan;
 import com.app.server.service.SignaturePlanService;
+import com.app.server.service.impliment.NiazpardazSMSService;
 import com.app.server.util.signature_service_producer.ContractRMQProducer;
 import com.app.server.util.signature_service_producer.dto.request.RMQContractRequestDto;
 import com.app.server.util.signature_service_producer.dto.request.RMQSignatureRequestDto;
@@ -31,6 +32,8 @@ public class PublicController {
     private final SignatureRMQProducer signatureRMQProducer;
     private final ContractRMQProducer contractRMQProducer;
 
+    private final NiazpardazSMSService smsService;
+
 
     @GetMapping("/signature/plan")
     public Page<SignaturePlan> getSignatures(
@@ -50,30 +53,17 @@ public class PublicController {
     }
 
 
-    @GetMapping("/test")
-    public ResponseEntity<?> hello(){
-        return new ResponseEntity<>("Hello World!", HttpStatus.OK);
+
+
+    @GetMapping("/sms/send")
+    public String sendsms() throws Exception{
+        try {
+            return smsService.sendSms("09917403979","salam");
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
     }
-
-    @PostMapping("/test/signature")
-    public Object sign(@RequestBody RMQSignatureRequestDto req){
-       Object res = signatureRMQProducer.sendAndReceive(req);
-        return new ResponseEntity<>(res, HttpStatus.OK);
-    }
-
-
-
-    @PostMapping(
-            value = "/test/contract",
-            consumes = MediaType.MULTIPART_FORM_DATA_VALUE
-    )
-    public ResponseEntity<?> signContract(@ModelAttribute RMQContractRequestDto req) {
-        RMQContractResponse res = contractRMQProducer.sendAndReceive(req);
-        return ResponseEntity.ok(res);
-    }
-
-
-
 
 
 

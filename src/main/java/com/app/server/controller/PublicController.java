@@ -55,13 +55,13 @@ public class PublicController {
 
 
 
-    @GetMapping("/sms/send")
-    public String sendsms() throws Exception{
-        try {
-            return smsService.sendSms("09917403979","salam");
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+//    @GetMapping("/sms/send")
+//    public String sendsms() throws Exception{
+//        try {
+//            return smsService.sendSms("09917403980","منتظرت بودم نبودی ...  از این که سرویس زیلان رو انتخاب کردی سپاس پ");
+//        } catch (Exception e) {
+//            throw new RuntimeException(e);
+//        }
 
     }
 

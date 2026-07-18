@@ -42,6 +42,7 @@ public class ContractServiceImpl implements ContractService {
         return contracts;
     }
 
+
     @Transactional
     @Override
     public Contract preparationContract(ContractRequestDto req) throws Exception {
@@ -53,7 +54,12 @@ public class ContractServiceImpl implements ContractService {
             contract = signingNewContract(req);
         }else {
             contract = signingContractExist(req);
+            if (contract==null){
+                throw new AppBadRequestException("شما قبلا این قرارداد رو امضا کرده اید");
+            }
         }
+
+
 
 
         // Handle pdf file name
@@ -70,11 +76,11 @@ public class ContractServiceImpl implements ContractService {
                 .country(signature.getCountry())
                 .reason(signature.getReason())
                 .build();
-        Object res =contractProducer.createOrSignedContract(result);
-        Map<String,Object> convertRes = (Map<String, Object>) res;
+        Map<String,Object> res =(Map<String,Object>) contractProducer.createOrSignedContract(result);
+        Map<String,Object> data = (Map<String, Object>) res.get("data");
         System.out.println(res);
-//        contract.setSignedLink(convertRes.getData().getFileName());
-//        contract.setUnSignedLink(convertRes.getData().getFileName());
+        contract.setSlug(data.get("fileName").toString().replace(".pdf",""));
+
         contractRepository.save(contract);
         return contract;
 
@@ -174,30 +180,46 @@ public class ContractServiceImpl implements ContractService {
         contractRepository.save(contract);
 
         // Put it in user contract join table and save
+
         UserContract userContract = UserContract.builder()
                 .user(existUser)
                 .signature(signatureService.findById(req.getSignatureId()))
                 .contract(contract)
                 .build();
+
+
         userContractRepository.save(userContract);
         return contract;
     }
 
     // Contract is exist and new signer want sign
-    public Contract signingContractExist(ContractRequestDto req){
+    public Contract signingContractExist(ContractRequestDto req) {
 
         // Find Contract
-        Contract exitContract = findContractBySlug(req.getSlug());
-        User exitUser = userService.findUserById(req.getUserId());
+        Contract existContract = findContractBySlug(req.getSlug());
+        User existUser = userService.findUserById(req.getUserId());
 
-        UserContract signingBuilder= UserContract.builder()
-                .user(exitUser)
-                .contract(exitContract)
+        if (userContractRepository.existsByContractAndUser(existContract, existUser)) {
+            return null;
+        }
+
+        UserContract userContract = UserContract.builder()
+                .user(existUser)
+                .contract(existContract)
                 .build();
-        userContractRepository.save(signingBuilder);
-        return signingBuilder.getContract();
 
+        userContractRepository.save(userContract);
+
+        return existContract;
     }
+
+
+
+
+
+
+
+
 
     public MultipartFile renameMultipartFile(MultipartFile file, String newFileName) throws IOException {
         return new MockMultipartFile(

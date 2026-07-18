@@ -42,9 +42,6 @@ public class SignatureController {
 
     private final SignatureService signatureService;
     private final UserService userService;
-    private final DownloadFileProducer downloadFileProducer;
-
-    private final WalletRMQProducer walletRMQProducer;
     private final TransactionRMQProducer transactionRMQProducer;
 
 
@@ -138,29 +135,6 @@ public class SignatureController {
 
 
 
-
-    @GetMapping("/download-key/{id}")
-    public ResponseEntity<ByteArrayResource> generateKey(@PathVariable String id) throws Exception {
-
-        DownloadFileRequestDto req = DownloadFileRequestDto.builder()
-                .fileType("p12")
-                .fileName(id)
-                .build();
-
-        DownloadFileResponseDto res = downloadFileProducer.download(req);
-
-        ByteArrayResource resource = new ByteArrayResource(res.getContent());
-
-        return ResponseEntity.ok()
-                .contentLength(res.getContent().length)
-                .contentType(MediaType.APPLICATION_OCTET_STREAM)
-                .header(HttpHeaders.CONTENT_DISPOSITION,
-                        ContentDisposition.attachment()
-                                .filename(res.getFileName())
-                                .build()
-                                .toString())
-                .body(resource);
-    }
 
 
 

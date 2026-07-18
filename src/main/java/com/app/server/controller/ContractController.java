@@ -53,7 +53,7 @@ public class ContractController {
             return new ResponseEntity<>(contract, HttpStatus.OK);
 
         } catch (Exception e) {
-            throw new AppBadRequestException("رمز کیلید شما اشتباه میباشد");
+            throw new AppBadRequestException(e.getMessage());
         }
 
     }

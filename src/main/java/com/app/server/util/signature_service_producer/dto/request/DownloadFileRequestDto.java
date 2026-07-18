@@ -1,4 +1,4 @@
-package com.app.server.util.signature_service_producer.dto.response;
+package com.app.server.util.signature_service_producer.dto.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,10 +9,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ContractData {
+public class DownloadFileRequestDto {
+
+    private String fileType;
     private String fileName;
-    private String unsignedPdf;
-    private String signedPdf;
-    private String message;
 
 }

@@ -54,7 +54,7 @@ public class Signature {
     private int usageCount;
     private int totalUsageCount;
     private String privateKeyId;
-    private String privateKeyIdLink;
+
 
     private String otp;
 

@@ -1,6 +1,5 @@
 package com.app.server.util.signature_service_producer.dto.request;
 
-
 import lombok.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -11,7 +10,8 @@ import org.springframework.web.multipart.MultipartFile;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class RMQContractRequestDto {
+public class ContractRequestDto {
+
     private MultipartFile file;
     private MultipartFile privateKeyFile;
     private String keyPassword;

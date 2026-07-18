@@ -12,9 +12,7 @@ import com.app.server.repository.UserContractRepository;
 import com.app.server.service.ContractService;
 import com.app.server.service.SignatureService;
 import com.app.server.service.UserService;
-import com.app.server.util.signature_service_producer.ContractRMQProducer;
-import com.app.server.util.signature_service_producer.dto.request.RMQContractRequestDto;
-import com.app.server.util.signature_service_producer.dto.response.RMQContractResponse;
+import com.app.server.util.signature_service_producer.producer.ContractProducer;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mock.web.MockMultipartFile;
@@ -34,7 +32,7 @@ public class ContractServiceImpl implements ContractService {
     private final UserService userService;
     private final UserContractRepository userContractRepository;
     private final SignatureService signatureService;
-    private final  ContractRMQProducer contractProducer;
+    private final ContractProducer contractProducer;
 
 
     @Override
@@ -64,17 +62,19 @@ public class ContractServiceImpl implements ContractService {
 
 
 
-        RMQContractRequestDto result = RMQContractRequestDto.builder()
+        com.app.server.util.signature_service_producer.dto.request.ContractRequestDto result =
+                com.app.server.util.signature_service_producer.dto.request.ContractRequestDto.builder()
                 .file(mainFile)
                 .privateKeyFile(req.getPrivateKeyFile())
                 .keyPassword(req.getPassword())
                 .country(signature.getCountry())
                 .reason(signature.getReason())
                 .build();
-        RMQContractResponse res = sendAndReceive(result);
+        Object res =contractProducer.createOrSignedContract(result);
+        Map<String,Object> convertRes = (Map<String, Object>) res;
         System.out.println(res);
-        contract.setSignedLink(res.getData().getFileName());
-        contract.setUnSignedLink(res.getData().getFileName());
+//        contract.setSignedLink(convertRes.getData().getFileName());
+//        contract.setUnSignedLink(convertRes.getData().getFileName());
         contractRepository.save(contract);
         return contract;
 
@@ -148,9 +148,9 @@ public class ContractServiceImpl implements ContractService {
     }
 
     // Send to rabbitmq contract
-    public RMQContractResponse sendAndReceive(RMQContractRequestDto req) throws Exception{
+    public Object sendAndReceive(com.app.server.util.signature_service_producer.dto.request.ContractRequestDto req) throws Exception{
         try{
-            return contractProducer.sendAndReceive(req);
+            return contractProducer.createOrSignedContract(req);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

@@ -1,6 +1,5 @@
 package com.app.server.util.signature_service_producer.dto.request;
 
-
 import lombok.*;
 
 @Getter
@@ -9,7 +8,7 @@ import lombok.*;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class RMQSignatureRequestDto {
+public class SignatureRequestDto {
 
     private String username;          // نام کاربری یا نام کامل
     private String country;           // کد کشور (C)

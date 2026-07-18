@@ -9,6 +9,10 @@ import com.app.server.service.SignaturePlanService;
 import com.app.server.service.SignatureService;
 import com.app.server.service.UserService;
 
+import com.app.server.util.signature_service_producer.dto.request.DownloadFileRequestDto;
+import com.app.server.util.signature_service_producer.dto.response.DownloadFileResponseDto;
+import com.app.server.util.signature_service_producer.producer.DownloadFileProducer;
+import com.app.server.util.signature_service_producer.producer.SignatureProducer;
 import com.app.server.util.wallet_service_producer.TransactionRMQProducer;
 import com.app.server.util.wallet_service_producer.WalletRMQProducer;
 import com.app.server.util.wallet_service_producer.dto.request.PaymentRequestDto;
@@ -17,8 +21,9 @@ import com.github.mfathi91.time.PersianDate;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.http.*;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -37,6 +42,7 @@ public class SignatureController {
 
     private final SignatureService signatureService;
     private final UserService userService;
+    private final DownloadFileProducer downloadFileProducer;
 
     private final WalletRMQProducer walletRMQProducer;
     private final TransactionRMQProducer transactionRMQProducer;
@@ -133,11 +139,28 @@ public class SignatureController {
 
 
 
-//    @GetMapping("/generate-key")
-//    public ResponseEntity<?> generateKey(@RequestParam Long id) throws Exception{
-//        CustomResponseDto res =  signatureService.generateSignatureKeys(id);
-//        return new ResponseEntity<>(res, HttpStatus.OK);
-//    }
+    @GetMapping("/download-key/{id}")
+    public ResponseEntity<ByteArrayResource> generateKey(@PathVariable String id) throws Exception {
+
+        DownloadFileRequestDto req = DownloadFileRequestDto.builder()
+                .fileType("p12")
+                .fileName(id)
+                .build();
+
+        DownloadFileResponseDto res = downloadFileProducer.download(req);
+
+        ByteArrayResource resource = new ByteArrayResource(res.getContent());
+
+        return ResponseEntity.ok()
+                .contentLength(res.getContent().length)
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .header(HttpHeaders.CONTENT_DISPOSITION,
+                        ContentDisposition.attachment()
+                                .filename(res.getFileName())
+                                .build()
+                                .toString())
+                .body(resource);
+    }
 
 
 

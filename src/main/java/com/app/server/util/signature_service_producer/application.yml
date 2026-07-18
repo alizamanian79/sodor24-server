@@ -1,0 +1,8 @@
+application:
+  signature-service:
+    rabbitmq:
+      exchange: signature-service-exchange
+      routing-keys:
+        signature: signature-routing-key
+        contract: contract-routing-key
+        download: download-routing-key

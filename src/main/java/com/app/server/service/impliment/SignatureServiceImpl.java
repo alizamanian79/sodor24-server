@@ -12,8 +12,8 @@ import com.app.server.repository.SignatureRepository;
 import com.app.server.service.SignaturePlanService;
 import com.app.server.service.UserService;
 import com.app.server.service.SignatureService;
-import com.app.server.util.signature_service_producer.dto.request.RMQSignatureRequestDto;
-import com.app.server.util.wallet_service_producer.WalletRMQProducer;
+
+import com.app.server.util.signature_service_producer.producer.SignatureProducer;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.mfathi91.time.PersianDate;
@@ -24,8 +24,6 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.*;
 
-import com.app.server.util.signature_service_producer.SignatureRMQProducer;
-
 @Service
 @RequiredArgsConstructor
 public class SignatureServiceImpl implements SignatureService {
@@ -33,7 +31,7 @@ public class SignatureServiceImpl implements SignatureService {
     private final SignaturePlanService signaturePlanService;
     private final UserService userService;
     private final SignatureRepository signatureRepository;
-    private final SignatureRMQProducer signatureRMQProducer;
+    private final SignatureProducer signatureProducer;
 
 
     @Override
@@ -166,7 +164,7 @@ public class SignatureServiceImpl implements SignatureService {
     @Override
     public boolean sendRequestToSignatureService(Signature req) {
         try {
-            RMQSignatureRequestDto signatureserviceReq = RMQSignatureRequestDto.builder()
+            com.app.server.util.signature_service_producer.dto.request.SignatureRequestDto signatureserviceReq = com.app.server.util.signature_service_producer.dto.request.SignatureRequestDto.builder()
                     .username(req.getUser().getFullName())
                     .country(req.getCountry())
                     .reason(req.getReason())
@@ -182,7 +180,7 @@ public class SignatureServiceImpl implements SignatureService {
                     .signaturePassword(req.getSignaturePassword())
                     .build();
 
-            Object res = signatureRMQProducer.sendAndReceive(signatureserviceReq);
+            Object res = signatureProducer.generateSignature(signatureserviceReq);
             System.out.println("Response from signature service: " + res);
 
             if (res != null) {
@@ -195,8 +193,8 @@ public class SignatureServiceImpl implements SignatureService {
                     Object id = dataMap.get("userId");
 
                     if (id != null && !id.toString().isBlank()) {
-                        req.setPrivateKeyId(id.toString());
-                        req.setPrivateKeyIdLink(p12 != null ? p12.toString() : null);
+                        req.setPrivateKeyId(id.toString()+".p12");
+
                         return true; // موفقیت
                     }
                 }
@@ -249,7 +247,7 @@ public class SignatureServiceImpl implements SignatureService {
 
         findSignature.setValid(false);
         findSignature.setPrivateKeyId(null);
-        findSignature.setPrivateKeyIdLink(null);
+
 
         findSignature.setOtp(String.valueOf(1000 + new Random().nextInt(9000)));
         findSignature.setCountry(req.getCountry());

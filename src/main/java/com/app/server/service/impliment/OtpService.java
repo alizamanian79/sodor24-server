@@ -1,5 +1,6 @@
 package com.app.server.service.impliment;
 
+import com.app.server.dto.response.CustomResponseDto;
 import com.app.server.exception.AppNotFoundException;
 import com.app.server.model.Otp;
 import com.app.server.model.User;
@@ -15,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 @RequiredArgsConstructor
@@ -25,24 +27,41 @@ public class OtpService {
 
     private final OtpRepository  otpRepository;
     private final UserRepository userRepository;
-
     private final WalletRMQProducer walletRMQProducer;
+    private final NiazpardazSMSService smsService;
+
+
+
+
+
+    CompletableFuture<String> otpGeneration(String phoneNumber){
+        return CompletableFuture.supplyAsync(()->{
+            User user = userRepository.findUserByPhoneNumber(phoneNumber)
+                    .orElseThrow(() -> new RuntimeException("کاربر با این شماره یافت نشد."));
+            otpRepository.deleteAllByPhoneNumber(phoneNumber);
+            String code = generateCode();
+            Otp otp  = new Otp(code, user);
+            otpRepository.save(otp);
+            return code;
+        });
+    }
+
+
 
 
     @Transactional
-    public String generateAndSend(String phoneNumber) {
-        User user = userRepository.findUserByPhoneNumber(phoneNumber)
-                .orElseThrow(() -> new RuntimeException("کاربر با این ایمیل یافت نشد."));
+    public CustomResponseDto sendOtp(String phoneNumber, String message) {
 
+        CompletableFuture<String>otpGenerationFeature=otpGeneration(phoneNumber);
+        CompletableFuture.allOf(otpGenerationFeature).join();
 
-        otpRepository.deleteAllByPhoneNumber(phoneNumber);
+        String completeMessage="\s" + otpGenerationFeature +"\s" +"\n"
+                +"\n از همراهی شما سپاسگزاریم.";
+        smsService.sendSms(phoneNumber,message);
 
-        String code = generateCode();
-        Otp    otp  = new Otp(code, user);
-        otpRepository.save(otp);
-
-
-        return code;
+        return CustomResponseDto.builder()
+                .message("کد  به شماره شما فرستاده شد")
+                .build();
 
     }
 
@@ -74,13 +93,17 @@ public class OtpService {
 
 
 
+
+
+
+
+
+
     @Scheduled(fixedRate = 60_000)
     @Transactional
     public void cleanExpiredOtps() {
         otpRepository.deleteExpiredOtps(LocalDateTime.now());
     }
-
-
 
     private String generateCode() {
         SecureRandom random = new SecureRandom();

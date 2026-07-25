@@ -1,5 +1,6 @@
 package com.app.server.controller;
 
+import com.app.server.dto.response.CustomResponseDto;
 import com.app.server.model.User;
 import com.app.server.service.UserService;
 import com.app.server.service.impliment.OtpService;
@@ -19,9 +20,18 @@ public class OtpController {
     private final OtpService otpService;
     private final UserService userService;
 
+
+
+    @GetMapping("/verify-user")
+    public CustomResponseDto verifyUserAccount(@RequestParam String phoneNumber){
+        CustomResponseDto code = otpService.sendOtp(phoneNumber,"");
+        return code;
+    }
+
+
     @GetMapping("/send")
-    public String sendOtp(@RequestParam String phoneNumber){
-        String code = otpService.generateAndSend(phoneNumber);
+    public CustomResponseDto sendOtp(@RequestParam String phoneNumber){
+        CustomResponseDto code = otpService.sendOtp(phoneNumber,"");
         return code;
     }
 

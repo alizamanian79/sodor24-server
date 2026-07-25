@@ -70,6 +70,7 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
     private final WalletRMQProducer walletRMQProducer;
     private final CacheManager cacheManager;
+    private final OtpService otpService;
 
     /**
      * Returns all users sorted by id ascending.
@@ -81,20 +82,26 @@ public class UserServiceImpl implements UserService {
         return userRepository.findAll(Sort.by("id").ascending());
     }
 
+
+
+
+
     /**
      * Builds a new (unsaved) User entity from the registration request, off
      * the calling thread. Password is encoded here so the heavy BCrypt work
      * also happens asynchronously.
      */
-    public CompletableFuture<User> createUser(RegisterRequestDto req) {
-        return CompletableFuture.supplyAsync(() -> User.builder()
+
+    public User createUser(RegisterRequestDto req) {
+        User created = User.builder()
                 .username(req.getUsername())
                 .password(passwordEncoder.encode(req.getPassword()))
                 .fullName(req.getFullName())
                 .phoneNumber(req.getPhoneNumber())
                 .roles(Set.of(Role.USER))
                 .walletId(null)
-                .build());
+                .build();
+        return userRepository.save(created);
     }
 
     /**
@@ -109,21 +116,22 @@ public class UserServiceImpl implements UserService {
     @Override
     public RegisterResponseDto registerUser(RegisterRequestDto req) {
 
-        // Kick off wallet creation and user-entity creation concurrently
+        User user = createUser(req);
         CompletableFuture<String> walletFuture = createWalletAysnc();
-        CompletableFuture<User> userFuture = createUser(req);
-
-        // Wait for both to complete before proceeding
-        CompletableFuture.allOf(userFuture, walletFuture).join();
-
-        User user = userFuture.join();
-        String wallet = walletFuture.join();
-
-        user.setWalletId(wallet);
+        String walletId = walletFuture.join();
+        user.setWalletId(walletId);
         userRepository.save(user);
 
+
+        String msg="به صدور24 خوش آمدید.\n" +
+                "ثبت نام شما با موفقیت انجام شد.\n" +
+                "کد تأیید شما:";
+
+        otpService.sendOtp(user.getPhoneNumber(),msg);
+
+
         return RegisterResponseDto.builder()
-                .message("با موفقیت ایجاد شد " + user.getUsername() + " کاربر")
+                .message("کاربر " + user.getUsername() + " با موفقیت ایجاد شد")
                 .status(HttpStatus.CREATED.value())
                 .details("خوش آمدید")
                 .timestamp(new Date())

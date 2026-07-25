@@ -1,9 +1,10 @@
 package com.app.server.service.impliment;
 
-import com.app.server.config.RedisHealthChecker;
 import com.app.server.dto.request.RegisterRequestDto;
 import com.app.server.dto.request.UpdateUserRequestDto;
+import com.app.server.dto.response.CustomResponseDto;
 import com.app.server.dto.response.RegisterResponseDto;
+import com.app.server.exception.AppNotFoundException;
 import com.app.server.exception.AppUnAuthorizedException;
 import com.app.server.model.Role;
 import com.app.server.model.User;
@@ -16,8 +17,8 @@ import com.github.mfathi91.time.PersianDate;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
@@ -27,45 +28,98 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
+    /*
+     * IMPORTANT CACHE DESIGN NOTE
+     * ----------------------------------------------------------------------
+     * Three SEPARATE cache regions are used instead of one shared "userCached"
+     * region:
+     *   - "userById"            -> key: user id      -> value: User
+     *   - "userByUsername"      -> key: username      -> value: User
+     *   - "userExistsByUsername"-> key: username      -> value: Boolean
+     *
+     * Previously, findUserByUsername (returns User) and existUserByUsername
+     * (returns Boolean) both wrote into the SAME cache name with the SAME key
+     * ("userCached" / #username). That causes cache key collisions:
+     * whichever method runs first "poisons" the cache entry for the other one
+     * (best case: constant cache misses, worst case: ClassCastException when
+     * Spring tries to hand back a Boolean where a User was cached, or vice
+     * versa).
+     *
+     * Also, because username can change via updateUser(), we cannot reliably
+     * evict the OLD username-keyed entry using a simple SpEL key expression
+     * (the new username is in the request, not the old one). So mutation
+     * methods (update/changeRole/delete) evict caches manually through
+     * CacheManager, using the username value fetched BEFORE the mutation.
+     */
+
+    private static final String CACHE_USER_BY_ID = "userById";
+    private static final String CACHE_USER_BY_USERNAME = "userByUsername";
+    private static final String CACHE_USER_EXISTS_BY_USERNAME = "userExistsByUsername";
 
     @Value("${application.wallet-service.currency}")
     private String currency;
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final RedisHealthChecker redisHealthChecker;
     private final WalletRMQProducer walletRMQProducer;
+    private final CacheManager cacheManager;
 
-
-
+    /**
+     * Returns all users sorted by id ascending.
+     * Not cached: this is a bulk/listing query and caching it would require
+     * invalidating on every single-user mutation, which defeats the purpose.
+     */
     @Override
     public List<User> getAllUsers() {
         return userRepository.findAll(Sort.by("id").ascending());
     }
 
-    @Transactional
-    @Override
-    public RegisterResponseDto registerUser(RegisterRequestDto req) {
-
-        // Register user
-        User user = User.builder()
+    /**
+     * Builds a new (unsaved) User entity from the registration request, off
+     * the calling thread. Password is encoded here so the heavy BCrypt work
+     * also happens asynchronously.
+     */
+    public CompletableFuture<User> createUser(RegisterRequestDto req) {
+        return CompletableFuture.supplyAsync(() -> User.builder()
                 .username(req.getUsername())
                 .password(passwordEncoder.encode(req.getPassword()))
                 .fullName(req.getFullName())
                 .phoneNumber(req.getPhoneNumber())
                 .roles(Set.of(Role.USER))
-                .walletId(createWallet())
-                .build();
+                .walletId(null)
+                .build());
+    }
 
+    /**
+     * Registers a new user: creates the wallet (via RabbitMQ RPC) and builds
+     * the User entity concurrently, links the returned wallet id, then
+     * persists the user.
+     * NOTE: previously `CompletableFuture.allOf(...)` was called but its
+     * result was discarded (dead code); replaced with a proper `.join()` so
+     * both futures are actually awaited together before continuing.
+     */
+    @Transactional
+    @Override
+    public RegisterResponseDto registerUser(RegisterRequestDto req) {
+
+        // Kick off wallet creation and user-entity creation concurrently
+        CompletableFuture<String> walletFuture = createWalletAysnc();
+        CompletableFuture<User> userFuture = createUser(req);
+
+        // Wait for both to complete before proceeding
+        CompletableFuture.allOf(userFuture, walletFuture).join();
+
+        User user = userFuture.join();
+        String wallet = walletFuture.join();
+
+        user.setWalletId(wallet);
         userRepository.save(user);
-
-        clearAllUserCache();
-
 
         return RegisterResponseDto.builder()
                 .message("با موفقیت ایجاد شد " + user.getUsername() + " کاربر")
@@ -75,37 +129,33 @@ public class UserServiceImpl implements UserService {
                 .build();
     }
 
+    /**
+     * Finds a user by username. Cached in its OWN region ("userByUsername")
+     * so it never collides with the id-keyed or exists-keyed caches.
+     */
+    @Cacheable(value = CACHE_USER_BY_USERNAME, key = "#username")
     @Override
     public User findUserByUsername(String username) {
-
-        if (redisHealthChecker.isRedisAvailable()) {
-            return findUserByUsernameCached(username);
-        } else {
-            return userRepository.findUserByUsername(username)
-                    .orElseThrow(() -> new AppUnAuthorizedException(
-                            "کاربر با این نام کاربری پیدا نشد",
-                            ""));
-        }
-    }
-
-
-    @Cacheable(value = "userByUsername", key = "#username")
-    public User findUserByUsernameCached(String username) {
         return userRepository.findUserByUsername(username)
-                .orElseThrow(() -> new AppUnAuthorizedException(
-                        "کاربر با این نام کاربری پیدا نشد",
-                        "لیست کاربران را مجدد بررسی نمایید"));
+                .orElseThrow(() -> new AppNotFoundException("کاربر با این نام کاربری پیدا نشد"));
     }
 
-
-
+    /**
+     * Checks whether a username exists. Cached in a DEDICATED region
+     * ("userExistsByUsername") separate from the User-object caches, since
+     * this returns a Boolean, not a User.
+     */
+    @Cacheable(value = CACHE_USER_EXISTS_BY_USERNAME, key = "#username")
     @Override
     public Boolean existUserByUsername(String username) {
         return userRepository.findUserByUsername(username).isPresent();
     }
 
+    /**
+     * Finds a user by id. Cached in its own region ("userById").
+     */
     @Override
-    @Cacheable(value = "userById", key = "#id")
+    @Cacheable(value = CACHE_USER_BY_ID, key = "#id")
     public User findUserById(Long id) {
         return userRepository.findUserById(id)
                 .orElseThrow(() -> new AppUnAuthorizedException(
@@ -114,50 +164,65 @@ public class UserServiceImpl implements UserService {
                 ));
     }
 
-
-
-
+    /**
+     * Updates a user's profile fields.
+     * Because the username itself can change here, we capture the OLD
+     * username before mutating, then manually evict every cache entry tied
+     * to both the old and the new username plus the id, and repopulate the
+     * id/username caches with the fresh entity. Explicit save() is used
+     * instead of relying purely on JPA dirty-checking, to make persistence
+     * intent explicit.
+     */
     @Override
     @Transactional
-    @CachePut(value = "userById", key = "#id") // 🟡 آپدیت کش بعد از تغییر
     public User updateUser(UpdateUserRequestDto req, Long id) {
         User existUser = findUserById(id);
+        String oldUsername = existUser.getUsername();
+
         existUser.setUsername(req.getUsername());
         existUser.setPassword(passwordEncoder.encode(req.getPassword()));
-        existUser.setRoles(existUser.getRoles());
-        clearAllUserCache();
-        return userRepository.save(existUser);
+        existUser.setFullName(req.getFullName());
+        existUser.setPhoneNumber(req.getPhoneNumber());
+        // Roles are intentionally left untouched here; use changeUserRole() for that.
+
+        User saved = userRepository.save(existUser);
+
+        evictUserCaches(oldUsername, saved.getUsername(), id);
+        putUserCaches(saved);
+
+        return saved;
     }
 
+    /**
+     * Changes a user's roles. Username is unaffected here, so only the
+     * id/username caches for the current username need refreshing (no old
+     * username to worry about).
+     */
     @Transactional
     @Override
     public User changeUserRole(Long id, Set<Role> roles) {
         User existUser = findUserById(id);
         existUser.setRoles(roles);
+        User saved = userRepository.save(existUser);
 
-        User savedUser = userRepository.save(existUser);
+        evictUserCaches(saved.getUsername(), saved.getUsername(), id);
+        putUserCaches(saved);
 
-        if (redisHealthChecker.isRedisAvailable()) {
-            updateUserCache(savedUser);
-        }
-
-        return savedUser;
+        return saved;
     }
 
-    @CachePut(value = "userById", key = "#user.id")
-    public User updateUserCache(User user) {
-        return user;
-    }
-
-
+    /**
+     * Deletes a user by id and evicts every cache entry associated with
+     * them (id, username, and exists-by-username).
+     */
     @Override
-    @CacheEvict(value = { "userById", "userByUsername" }, key = "#id")
-    public Object deleteUserById(Long id) {
+    public CustomResponseDto deleteUserById(Long id) {
         User user = findUserById(id);
         userRepository.delete(user);
-        clearAllUserCache();
 
-        return com.app.server.dto.response.CustomResponseDto.builder()
+        evictUserCaches(user.getUsername(), user.getUsername(), id);
+
+        return CustomResponseDto.builder()
                 .message("کاربر با موفقیت حذف شد")
                 .details("")
                 .status(200)
@@ -165,35 +230,97 @@ public class UserServiceImpl implements UserService {
                 .build();
     }
 
-    @CacheEvict(value = { "users" }, allEntries = true)
-    public void clearAllUserCache() {
-        System.out.println("Clearing all users cache...");
-    }
-
+    /**
+     * Extracts the authenticated User principal from the Authentication
+     * object, if present.
+     */
     @Override
-    public User convertUserFromAuthentication(Authentication auth){
-        User user = (User) auth.getPrincipal();
-        if (user==null) {
+    public User convertUserFromAuthentication(Authentication auth) {
+        if (auth == null) {
+            return null;
+        }
+        Object principal = auth.getPrincipal();
+        if (!(principal instanceof User user)) {
             return null;
         }
         return user;
     }
 
-    public String createWallet(){
+    /**
+     * Async wrapper around createWallet(), so wallet creation can run
+     * concurrently with building the local User entity during registration.
+     */
+    public CompletableFuture<String> createWalletAysnc() {
+        return CompletableFuture.supplyAsync(this::createWallet);
+    }
+
+    /**
+     * Requests a new wallet from the wallet-service over RabbitMQ RPC and
+     * returns the created wallet's subject/id. Throws explicitly instead of
+     * risking a silent NullPointerException if the response is malformed.
+     */
+    public String createWallet() {
         CreateWalletRequestDto req = CreateWalletRequestDto.builder()
                 .sub("")
                 .balance(BigDecimal.ZERO)
                 .currency(currency)
                 .build();
+
         WalletResponseDto res = walletRMQProducer.createWallet(req);
-        Map<String,Object> data = (Map<String, Object>) res.getData();
-        String sub = data.get("sub").toString();
-        return sub;
+        if (res == null || res.getData() == null) {
+            throw new AppNotFoundException("پاسخ معتبری از سرویس کیف پول دریافت نشد");
+        }
+
+        Map<String, Object> data = (Map<String, Object>) res.getData();
+        Object sub = data.get("sub");
+        if (sub == null) {
+            throw new AppNotFoundException("شناسه کیف پول در پاسخ سرویس یافت نشد");
+        }
+        return sub.toString();
     }
 
+    /**
+     * Manually evicts all cache entries related to a user across the three
+     * dedicated cache regions. Handles the case where the username changed
+     * (oldUsername != newUsername) by clearing both keys.
+     */
+    private void evictUserCaches(String oldUsername, String newUsername, Long id) {
+        evictFromCache(CACHE_USER_BY_ID, id);
+        evictFromCache(CACHE_USER_BY_USERNAME, oldUsername);
+        evictFromCache(CACHE_USER_EXISTS_BY_USERNAME, oldUsername);
+        if (newUsername != null && !newUsername.equals(oldUsername)) {
+            evictFromCache(CACHE_USER_BY_USERNAME, newUsername);
+            evictFromCache(CACHE_USER_EXISTS_BY_USERNAME, newUsername);
+        }
+    }
 
+    /**
+     * Re-populates the id and username caches with a freshly saved entity,
+     * so the very next read hits a warm, correct cache instead of a miss.
+     */
+    private void putUserCaches(User user) {
+        putIntoCache(CACHE_USER_BY_ID, user.getId(), user);
+        putIntoCache(CACHE_USER_BY_USERNAME, user.getUsername(), user);
+        putIntoCache(CACHE_USER_EXISTS_BY_USERNAME, user.getUsername(), Boolean.TRUE);
+    }
 
+    private void evictFromCache(String cacheName, Object key) {
+        if (key == null) {
+            return;
+        }
+        Cache cache = cacheManager.getCache(cacheName);
+        if (cache != null) {
+            cache.evict(key);
+        }
+    }
 
-
-
+    private void putIntoCache(String cacheName, Object key, Object value) {
+        if (key == null) {
+            return;
+        }
+        Cache cache = cacheManager.getCache(cacheName);
+        if (cache != null) {
+            cache.put(key, value);
+        }
+    }
 }

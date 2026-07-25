@@ -1,6 +1,7 @@
 package com.app.server.dto.response;
 
 import com.github.mfathi91.time.PersianDate;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,11 +15,14 @@ import java.util.Date;
 @NoArgsConstructor
 @Data
 @Builder
-public class CustomResponseDto {
+public class CustomResponseDto<d> {
+    private d data;
     private String message;
     private String details;
     private PersianDate timestamp;
     private int status;
+
+
 
     public String getTimestamp() {
         if (timestamp == null) return null;

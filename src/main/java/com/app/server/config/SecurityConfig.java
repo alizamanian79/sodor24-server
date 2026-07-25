@@ -6,10 +6,8 @@ import com.app.server.exception.CustomAuthEntryPoint;
 import com.app.server.filter.JwtAccessTokenFilter;
 import com.app.server.filter.JwtAccessTokenQueryParamFilter;
 import com.app.server.filter.JwtRefreshTokenFilter;
-import com.app.server.filter.RequestInfoFilter;
 import com.app.server.provider.UsernamePasswordProvider;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
@@ -36,7 +34,7 @@ import java.util.List;
 @EnableMethodSecurity(securedEnabled = true, jsr250Enabled = true)
 public class SecurityConfig {
 
-    @Value("${app.client.host}")
+    @Value("${application.client.service}")
     private String clientHost;
 
 
@@ -44,21 +42,20 @@ public class SecurityConfig {
     private final JwtAccessTokenFilter jwtAccessTokenFilter;
     private final JwtRefreshTokenFilter jwtRefreshTokenFilter;
     private final CustomAuthEntryPoint unauthorizedHandler;
-    private final RequestInfoFilter requestInfoFilter;
+
     private final JwtAccessTokenQueryParamFilter jwtAccessTokenQueryParamFilter;
 
     public SecurityConfig(@Lazy UsernamePasswordProvider usernamePasswordProvider,
                           @Lazy JwtAccessTokenFilter jwtAccessTokenFilter,
                           @Lazy JwtRefreshTokenFilter jwtRefreshTokenFilter,
                           @Lazy CustomAuthEntryPoint unauthorizedHandler,
-                          @Lazy RequestInfoFilter requestInfoFilter,
                           @Lazy JwtAccessTokenQueryParamFilter jwtAccessTokenQueryParamFilter
     ) {
         this.usernamePasswordProvider = usernamePasswordProvider;
         this.jwtRefreshTokenFilter = jwtRefreshTokenFilter;
         this.jwtAccessTokenFilter = jwtAccessTokenFilter;
         this.unauthorizedHandler = unauthorizedHandler;
-        this.requestInfoFilter = requestInfoFilter;
+
         this.jwtAccessTokenQueryParamFilter = jwtAccessTokenQueryParamFilter;
     }
 
@@ -126,15 +123,6 @@ public class SecurityConfig {
     @Bean
     public RestTemplate restTemplate() {
         return new RestTemplate();
-    }
-
-    @Bean
-    public FilterRegistrationBean<RequestInfoFilter> requestInfoFilterRegistration() {
-        FilterRegistrationBean<RequestInfoFilter> registration = new FilterRegistrationBean<>();
-        registration.setFilter(requestInfoFilter);
-        registration.addUrlPatterns("/*");
-        registration.setOrder(1);
-        return registration;
     }
 
 

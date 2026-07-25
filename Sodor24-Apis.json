@@ -1,7 +1,7 @@
 {
 	"_type": "export",
 	"__export_format": 3,
-	"__export_date": "2026-07-09T11:24:01.120Z",
+	"__export_date": "2026-07-18T10:58:00.188Z",
 	"__export_source": "insomnia.desktop.app:v6.3.2",
 	"resources": [
 		{
@@ -83,12 +83,12 @@
 			"created": 1777205307455,
 			"description": "",
 			"environment": {
-				"ACCESS_TOKEN": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJyaW1hIiwidHlwZSI6ImFjY2Vzcy10b2tlbiIsImF1dGhvcml0aWVzIjpbIlJFQUQiLCJERUxFVEUiLCJST0xFX1VTRVIiLCJST0xFX0FETUlOIiwiRURJVCIsIldSSVRFIl0sImlhdCI6MTc4MzU5MzkyMiwiZXhwIjoxNzgzNTk1MTIyfQ.Uz5-V8835URi3CTbacEqe5NtrnmM5NouE6ADKQ5RvQ0",
+				"ACCESS_TOKEN": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsInR5cGUiOiJhY2Nlc3MtdG9rZW4iLCJhdXRob3JpdGllcyI6WyJSRUFEIiwiREVMRVRFIiwiUk9MRV9VU0VSIiwiUk9MRV9BRE1JTiIsIkVESVQiLCJXUklURSJdLCJpYXQiOjE3ODQzNzAwMjMsImV4cCI6MTc4NDM3MTIyM30.LKYlxco34Iy64GxXz55xnbNj2WL6kNsWPsDVOQvgo_Y",
 				"HOST": "http://localhost:8181",
 				"REFRESH_TOKEN": ""
 			},
 			"metaSortKey": -1777205307455,
-			"modified": 1783593936271,
+			"modified": 1784370039090,
 			"name": "Sodor24 Apis",
 			"parentId": "wrk_e52fe7b4bc94461ca052968010d439ff",
 			"_type": "request_group"
@@ -193,14 +193,14 @@
 				"mimeType": "multipart/form-data",
 				"params": [
 					{
-						"fileName": "H:\\Downloads\\Chrome\\contract.pdf",
+						"fileName": "C:\\Users\\MEHR GOSTAR\\Downloads\\signed-contract-634030.pdf",
 						"id": "pair_c4bce0e3c9b64d6590ef73b40f006406",
 						"name": "pdfFile",
 						"type": "file",
 						"value": ""
 					},
 					{
-						"fileName": "H:\\Downloads\\Chrome\\cia.p12",
+						"fileName": "C:\\Users\\MEHR GOSTAR\\Downloads\\rima-CIA-Team Lead.p12",
 						"id": "pair_fc11005070d04aa6906d46e5dc90416e",
 						"name": "privateKeyFile",
 						"type": "file",
@@ -255,7 +255,7 @@
 			"isPrivate": false,
 			"metaSortKey": -1777205307190,
 			"method": "POST",
-			"modified": 1779701022934,
+			"modified": 1784370096476,
 			"name": "Preparation new contract",
 			"parameters": [],
 			"parentId": "fld_3d2a3b16e62644ba8c8535c424baba46",
@@ -307,7 +307,7 @@
 			"isPrivate": false,
 			"metaSortKey": -1777329757315.5,
 			"method": "GET",
-			"modified": 1779180870568,
+			"modified": 1784362000005,
 			"name": "Get by slug",
 			"parameters": [],
 			"parentId": "fld_3d2a3b16e62644ba8c8535c424baba46",
@@ -317,7 +317,7 @@
 			"settingRebuildPath": true,
 			"settingSendCookies": true,
 			"settingStoreCookies": true,
-			"url": "{{ HOST  }}/api/v1/contract/slug/48771",
+			"url": "{{ HOST  }}/api/v1/contract/slug/822502",
 			"_type": "request"
 		},
 		{
@@ -431,14 +431,14 @@
 				"mimeType": "multipart/form-data",
 				"params": [
 					{
-						"fileName": "H:\\Downloads\\Chrome\\contract.pdf",
+						"fileName": "C:\\Users\\MEHR GOSTAR\\Downloads\\signed-contract-634030.pdf",
 						"id": "pair_c4bce0e3c9b64d6590ef73b40f006406",
 						"name": "pdfFile",
 						"type": "file",
 						"value": ""
 					},
 					{
-						"fileName": "H:\\Downloads\\Chrome\\car.p12",
+						"fileName": "C:\\Users\\MEHR GOSTAR\\Downloads\\rima-CIA-Team Lead.p12",
 						"id": "pair_fc11005070d04aa6906d46e5dc90416e",
 						"name": "privateKeyFile",
 						"type": "file",
@@ -447,7 +447,7 @@
 					{
 						"id": "pair_74fa3e1209624868830b6958ff87690d",
 						"name": "password",
-						"value": "123456"
+						"value": "12345678"
 					},
 					{
 						"id": "pair_c198dc57c38f4164b46aa6336a392683",
@@ -472,7 +472,7 @@
 					{
 						"id": "pair_a15b397e23034e89a50c0d0fef2c162e",
 						"name": "slug",
-						"value": "29908"
+						"value": "858724"
 					},
 					{
 						"id": "pair_ab64489e204c44429b418b958e94cf2b",
@@ -493,7 +493,7 @@
 			"isPrivate": false,
 			"metaSortKey": -1776320476889,
 			"method": "POST",
-			"modified": 1779626148903,
+			"modified": 1784370160090,
 			"name": "Preparation exist contract",
 			"parameters": [],
 			"parentId": "fld_3d2a3b16e62644ba8c8535c424baba46",
@@ -504,6 +504,58 @@
 			"settingSendCookies": true,
 			"settingStoreCookies": true,
 			"url": "{{HOST}}/api/v1/contract/preparation",
+			"_type": "request"
+		},
+		{
+			"_id": "req_3687940f01894182b21b5c55c2fc7842",
+			"authentication": {
+				"token": "{{ ACCESS_TOKEN  }}",
+				"type": "bearer"
+			},
+			"body": {},
+			"created": 1784362613622,
+			"description": "",
+			"headers": [],
+			"isPrivate": false,
+			"metaSortKey": -1777423094722.125,
+			"method": "GET",
+			"modified": 1784363797159,
+			"name": "Download signed-contract by slug",
+			"parameters": [],
+			"parentId": "fld_3d2a3b16e62644ba8c8535c424baba46",
+			"settingDisableRenderRequestBody": false,
+			"settingEncodeUrl": true,
+			"settingMaxTimelineDataSize": 1000,
+			"settingRebuildPath": true,
+			"settingSendCookies": true,
+			"settingStoreCookies": true,
+			"url": "{{ HOST  }}/api/v1/download/contract/signed/822502",
+			"_type": "request"
+		},
+		{
+			"_id": "req_0ba7603a48be4a8f9b7891323b5485e3",
+			"authentication": {
+				"token": "{{ ACCESS_TOKEN  }}",
+				"type": "bearer"
+			},
+			"body": {},
+			"created": 1784362687155,
+			"description": "",
+			"headers": [],
+			"isPrivate": false,
+			"metaSortKey": -1777407538487.6875,
+			"method": "GET",
+			"modified": 1784362697615,
+			"name": "Download unsigned-contract by slug (Copy)",
+			"parameters": [],
+			"parentId": "fld_3d2a3b16e62644ba8c8535c424baba46",
+			"settingDisableRenderRequestBody": false,
+			"settingEncodeUrl": true,
+			"settingMaxTimelineDataSize": 1000,
+			"settingRebuildPath": true,
+			"settingSendCookies": true,
+			"settingStoreCookies": true,
+			"url": "{{ HOST  }}/api/v1/download/contract/unsigned/822502",
 			"_type": "request"
 		},
 		{
@@ -542,7 +594,7 @@
 			"authentication": {},
 			"body": {
 				"mimeType": "",
-				"text": "{\r\n  \"username\": \"rima\",\r\n  \"country\": \"IR\",\r\n  \"reason\": \"تأیید قرارداد فروش\",\r\n  \"location\": \"دفتر مرکزی\",\r\n  \"organization\": \"alibaba.ir\",\r\n  \"department\": \"واحد فنی\",\r\n  \"state\": \"تهران\",\r\n  \"city\": \"تهران\",\r\n  \"email\": \"alizamaniandev@example.com\",\r\n  \"title\": \"واحد فنی برنامه نویسی\",\r\n  \"userId\": \"\",\r\n  \"signatureExpired\": 11,\r\n  \"signaturePassword\":\"5588\"\r\n}\r\n"
+				"text": "{\n  \"username\": \"rima\",\n  \"country\": \"IR\",\n  \"reason\": \"تأیید قرارداد فروش\",\n  \"location\": \"دفتر مرکزی\",\n  \"organization\": \"alibaba.ir\",\n  \"department\": \"واحد فنی\",\n  \"state\": \"تهران\",\n  \"city\": \"تهران\",\n  \"email\": \"alizamaniandev@example.com\",\n  \"title\": \"واحد فنی برنامه نویسی\",\n  \"userId\": \"\",\n  \"signatureExpired\": 11,\n  \"signaturePassword\":\"5588\"\n}\n"
 			},
 			"created": 1777205307224,
 			"description": "",
@@ -550,7 +602,7 @@
 			"isPrivate": false,
 			"metaSortKey": -1777205307224,
 			"method": "POST",
-			"modified": 1779518647747,
+			"modified": 1783754478120,
 			"name": "Test Signature",
 			"parameters": [],
 			"parentId": "fld_d0c0a024ad2e4837897156641a2aa645",
@@ -584,6 +636,29 @@
 			"settingSendCookies": true,
 			"settingStoreCookies": true,
 			"url": "{{HOST}}/api/v1/public/signature/plan/1",
+			"_type": "request"
+		},
+		{
+			"_id": "req_c900fdc5dabb49d2baf4c6c31ea53b77",
+			"authentication": {},
+			"body": {},
+			"created": 1783754488572,
+			"description": "",
+			"headers": [],
+			"isPrivate": false,
+			"metaSortKey": -1783754488572,
+			"method": "GET",
+			"modified": 1783754503962,
+			"name": "sms",
+			"parameters": [],
+			"parentId": "fld_d0c0a024ad2e4837897156641a2aa645",
+			"settingDisableRenderRequestBody": false,
+			"settingEncodeUrl": true,
+			"settingMaxTimelineDataSize": 1000,
+			"settingRebuildPath": true,
+			"settingSendCookies": true,
+			"settingStoreCookies": true,
+			"url": "{{HOST}}/api/v1/public/sms/send",
 			"_type": "request"
 		},
 		{
@@ -632,7 +707,7 @@
 			"isPrivate": false,
 			"metaSortKey": -1777205307381,
 			"method": "PUT",
-			"modified": 1783521655945,
+			"modified": 1784356101246,
 			"name": "Set User Role",
 			"parameters": [],
 			"parentId": "fld_5ff8548e47a74d00b678cedecc597edb",
@@ -642,7 +717,7 @@
 			"settingRebuildPath": true,
 			"settingSendCookies": true,
 			"settingStoreCookies": true,
-			"url": "{{HOST}}/api/v1/users/4/role",
+			"url": "{{HOST}}/api/v1/users/1/role",
 			"_type": "request"
 		},
 		{
@@ -821,7 +896,7 @@
 			"authentication": {},
 			"body": {
 				"mimeType": "application/json",
-				"text": "{\n    \"username\": \"rima\",\n    \"password\": \"rima\",\n    \"refresh_token\": true\n}"
+				"text": "{\n    \"username\": \"admin\",\n    \"password\": \"admin\",\n    \"refresh_token\": true\n}"
 			},
 			"created": 1777205307431,
 			"description": "",
@@ -835,7 +910,7 @@
 			"isPrivate": false,
 			"metaSortKey": -1777205307431,
 			"method": "POST",
-			"modified": 1783521616669,
+			"modified": 1784356049979,
 			"name": "Login",
 			"parameters": [],
 			"parentId": "fld_dc30667755f34a04b2d36ee460c0650b",
@@ -895,7 +970,7 @@
 			"isPrivate": false,
 			"metaSortKey": -1782040654383,
 			"method": "GET",
-			"modified": 1783427005983,
+			"modified": 1784368954764,
 			"name": "Send Otp",
 			"parameters": [],
 			"parentId": "fld_dc30667755f34a04b2d36ee460c0650b",
@@ -918,7 +993,7 @@
 			"isPrivate": false,
 			"metaSortKey": -1782035203078.5,
 			"method": "GET",
-			"modified": 1783427021739,
+			"modified": 1784368967920,
 			"name": "verify Otp",
 			"parameters": [],
 			"parentId": "fld_dc30667755f34a04b2d36ee460c0650b",
@@ -928,7 +1003,7 @@
 			"settingRebuildPath": true,
 			"settingSendCookies": true,
 			"settingStoreCookies": true,
-			"url": "{{ HOST  }}/api/v1/otp/verify?phoneNumber=09121248701&code=94483",
+			"url": "{{ HOST  }}/api/v1/otp/verify?phoneNumber=09121248701&code=27292",
 			"_type": "request"
 		},
 		{
@@ -1020,7 +1095,7 @@
 			"isPrivate": false,
 			"metaSortKey": -1777205307245,
 			"method": "PUT",
-			"modified": 1782714861396,
+			"modified": 1784356197786,
 			"name": "Change Active",
 			"parameters": [],
 			"parentId": "fld_46d932c57a324ab78e8bcc1989cd82ab",
@@ -1030,7 +1105,7 @@
 			"settingRebuildPath": true,
 			"settingSendCookies": true,
 			"settingStoreCookies": true,
-			"url": "{{HOST}}/api/v1/signature/plan/active/set?id=4&active=1",
+			"url": "{{HOST}}/api/v1/signature/plan/active/set?id=1&active=1",
 			"_type": "request"
 		},
 		{
@@ -1080,7 +1155,7 @@
 			},
 			"body": {
 				"mimeType": "application/json",
-				"text": "{\n    \"title\": \"امضای پلاتینیوم\",\n    \"description\": \"پلن حرفه ای با امکانات کامل و ظرفیت بالا\",\n    \"price\": 300000,\n    \"usageCount\": 100,\n    \"period\": 180,\n    \"features\": [\n      \"پشتیبانی VIP\",\n      \"طراحی اختصاصی\",\n      \"ویرایش نامحدود\",\n      \"اولویت پردازش\"\n    ],\n    \"tags\": [\n      \"پلاتینیوم\",\n      \"ویژه\",\n      \"پریمیوم\"\n    ]\n  }"
+				"text": "{\n    \"title\": \"امضای پلاتینیوم\",\n    \"description\": \"پلن حرفه ای با امکانات کامل و ظرفیت بالا\",\n    \"price\": 300000,\n    \"usageCount\": 100,\n    \"period\": 180,\n    \"features\": [\n      \"پشتیبانی VIP\",\n      \"طراحی اختصاصی\",\n      \"ویرایش نامحدود\",\n      \"اولویت پردازش\"\n    ],\n    \"tags\": [\n      \"پلاتینیوم\",\n      \"ویژه\",\n      \"پریمیوم\"\n    ]\n  }\n\n\n"
 			},
 			"created": 1777205307256,
 			"description": "",
@@ -1094,7 +1169,7 @@
 			"isPrivate": false,
 			"metaSortKey": -1777205307256,
 			"method": "POST",
-			"modified": 1782714841698,
+			"modified": 1784356188022,
 			"name": "Generate Signature Plan",
 			"parameters": [],
 			"parentId": "fld_46d932c57a324ab78e8bcc1989cd82ab",
@@ -1362,7 +1437,7 @@
 			"isPrivate": false,
 			"metaSortKey": -1777205307356,
 			"method": "GET",
-			"modified": 1783591137050,
+			"modified": 1784356238406,
 			"name": "Verify Signature Otp",
 			"parameters": [],
 			"parentId": "fld_019a8f4f738f4faeb262d581d3b0752f",
@@ -1372,7 +1447,7 @@
 			"settingRebuildPath": true,
 			"settingSendCookies": true,
 			"settingStoreCookies": true,
-			"url": "{{HOST}}/api/v1/signature/service/verify/otp/6776",
+			"url": "{{HOST}}/api/v1/signature/service/verify/otp/2155",
 			"_type": "request"
 		},
 		{
@@ -1484,7 +1559,7 @@
 			"isPrivate": false,
 			"metaSortKey": -1777205307346.25,
 			"method": "GET",
-			"modified": 1783594643048,
+			"modified": 1784356271832,
 			"name": "Buy Signature Service",
 			"parameters": [],
 			"parentId": "fld_019a8f4f738f4faeb262d581d3b0752f",
@@ -1494,7 +1569,35 @@
 			"settingRebuildPath": true,
 			"settingSendCookies": true,
 			"settingStoreCookies": true,
-			"url": "{{HOST}}/api/v1/signature/service/buy?sid=16&slug=252259",
+			"url": "{{HOST}}/api/v1/signature/service/buy?sid=1&slug=252259",
+			"_type": "request"
+		},
+		{
+			"_id": "req_62ef7f8a29f8400c900e16d27e1d71c8",
+			"authentication": {
+				"disabled": false,
+				"prefix": "",
+				"token": "{{ACCESS_TOKEN}}",
+				"type": "bearer"
+			},
+			"body": {},
+			"created": 1784356835476,
+			"description": "",
+			"headers": [],
+			"isPrivate": false,
+			"metaSortKey": -1777205307358,
+			"method": "GET",
+			"modified": 1784362727098,
+			"name": "Download Key",
+			"parameters": [],
+			"parentId": "fld_019a8f4f738f4faeb262d581d3b0752f",
+			"settingDisableRenderRequestBody": false,
+			"settingEncodeUrl": true,
+			"settingMaxTimelineDataSize": 1000,
+			"settingRebuildPath": true,
+			"settingSendCookies": true,
+			"settingStoreCookies": true,
+			"url": "{{HOST}}/api/v1/download/signature/user-11f15a4a-bc5a-4c28-bfb0-3d90e69fbc5b.p12",
 			"_type": "request"
 		},
 		{
@@ -1678,7 +1781,7 @@
 			"isPrivate": false,
 			"metaSortKey": -1783227062435.625,
 			"method": "POST",
-			"modified": 1783417732584,
+			"modified": 1783775007187,
 			"name": "Get transaction in date rage",
 			"parameters": [],
 			"parentId": "fld_0292e46632f04e129a5193f24eea4e08",

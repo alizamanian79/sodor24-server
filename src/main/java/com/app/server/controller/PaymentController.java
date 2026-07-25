@@ -51,13 +51,7 @@ public class PaymentController {
             @RequestParam(required = false, defaultValue = "") String Authority,
             @RequestParam(required = false, defaultValue = "") String Status) {
 
-//        if (!"OK".equals(Status)) {
-//            throw new AppBadRequestException("تراکنش ناموفق بود");
-//        }
 
-//        if (Authority.isBlank()) {
-//            throw new AppBadRequestException("Authority معتبر نیست");
-//        }
 
 
         System.out.println("sub =>\s"+ sub);

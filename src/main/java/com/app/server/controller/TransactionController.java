@@ -6,6 +6,7 @@ import com.app.server.util.wallet_service_producer.dto.response.WalletResponseDt
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -15,11 +16,14 @@ public class TransactionController {
 
     private final TransactionRMQProducer transactionRMQProducer;
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
     public ResponseEntity<?> list(){
         WalletResponseDto res = transactionRMQProducer.transactionsList();
         return ResponseEntity.status(res.getStatus()).body(res);
     }
+
+
 
     @GetMapping("/{slug}")
     public ResponseEntity<?> getBySlug(@PathVariable Integer slug){
@@ -27,6 +31,7 @@ public class TransactionController {
         return ResponseEntity.status(res.getStatus()).body(res);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/get-date")
     public ResponseEntity<?> getTransactionInDateRange(@RequestBody TransactionDateRangeRequest req){
         WalletResponseDto res = transactionRMQProducer.getTransactionInDateRange(req);
@@ -34,6 +39,7 @@ public class TransactionController {
     }
 
 
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{slug}")
     public ResponseEntity<?> deleteTransactionBySlug(@PathVariable Integer slug){
         WalletResponseDto res = transactionRMQProducer.deleteTransactionBySlug(slug);

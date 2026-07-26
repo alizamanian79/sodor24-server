@@ -50,6 +50,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<User> getAllUsers() {
+        clearAllUserCache();
         return userRepository.findAll(Sort.by("id").ascending());
     }
 
@@ -86,6 +87,7 @@ public class UserServiceImpl implements UserService {
         User user = createUserFuture.join();
         String walletId = createWalletFuture.join();
         user.setWalletId(walletId);
+        userRepository.save(user);
 
 
 
@@ -189,9 +191,10 @@ public class UserServiceImpl implements UserService {
     @CacheEvict(value = { "userById", "userByUsername" }, key = "#id")
     public Object deleteUserById(Long id) {
         User user = findUserById(id);
+        String sub = user.getWalletId();
         userRepository.delete(user);
         clearAllUserCache();
-
+        walletRMQProducer.deleteWalletBySub(sub);
         return Sodor24ResponseDto.response(
                 "",
                     "کاربر با موفقیت حذف شد"

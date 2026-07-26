@@ -10,7 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import javax.management.Notification;
 
 @RestController
 @RequiredArgsConstructor
@@ -29,7 +28,7 @@ public class NotificationController {
 
         NotificationService service = notificationFactory.getService(type);
         service.sendNotification(receiver,message);
-        return Sodor24ResponseDto.response("","پیام از طریق \s" +type.toString()+"\s رسال شد","","", HttpStatus.ACCEPTED);
+        return Sodor24ResponseDto.response("","پیام از طریق \s" +type.toString()+"\s رسال شد","","", HttpStatus.OK);
 
     }
 

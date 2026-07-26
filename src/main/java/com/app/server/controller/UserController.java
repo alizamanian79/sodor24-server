@@ -108,23 +108,30 @@ public class UserController {
        Map<String,Object> response = new HashMap<>();
 
 
-       response.put("username",user.getUsername());
+
+        response.put("username",user.getUsername());
        response.put("roles",roles);
        response.put("authorities",authorities);
 
 
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        return Sodor24ResponseDto.response(response,"نقشهای کاربری" ,"","",HttpStatus.OK);
     }
 
 
     // set user roles
     @PutMapping("/{id}/role")
     public ResponseEntity<?> changeUserRole(
+            Authentication authentication,
             @PathVariable Long id,
             @Valid @RequestBody RoleChangeRequest request
     ) {
+        Map<String,Object> response = new HashMap<>();
         User updatedUser = userService.changeUserRole(id, request.getRoles());
-        return ResponseEntity.ok(updatedUser);
+
+        String accessToken = jwtService.generateAccessToken(updatedUser.getUsername(), authentication.getAuthorities());
+        response.put("acccess_token",accessToken);
+        response.put("roles",updatedUser.getRoles());
+        return Sodor24ResponseDto.response(response,"نقش کاربر با موفقیت تخصیص داده شد","","",HttpStatus.OK);
     }
 
 

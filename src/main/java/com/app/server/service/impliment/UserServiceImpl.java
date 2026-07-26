@@ -16,7 +16,7 @@ import com.app.server.service.UserService;
 import com.app.server.util.wallet_service_producer.WalletRMQProducer;
 import com.app.server.util.wallet_service_producer.dto.request.CreateWalletRequestDto;
 import com.app.server.util.wallet_service_producer.dto.response.WalletResponseDto;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
@@ -27,6 +27,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 
 import java.math.BigDecimal;
 import java.util.*;
@@ -53,6 +54,7 @@ public class UserServiceImpl implements UserService {
     }
 
 
+
     CompletableFuture<User> createUser(RegisterRequestDto req){
         return CompletableFuture.supplyAsync(()->{
             User user = User.builder()
@@ -67,11 +69,12 @@ public class UserServiceImpl implements UserService {
         });
     }
 
+
     CompletableFuture<String> createWalletSub(){
         return CompletableFuture.supplyAsync(()->createWallet());
     }
 
-    @Transactional
+    @jakarta.transaction.Transactional(rollbackOn = Exception.class)
     @Override
     public RegisterResponseDto registerUser(RegisterRequestDto req) {
 

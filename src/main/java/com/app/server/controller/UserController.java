@@ -3,10 +3,13 @@ package com.app.server.controller;
 import com.app.server.dto.request.RoleChangeRequest;
 import com.app.server.dto.request.UpdateUserRequestDto;
 import com.app.server.dto.response.LoginResponseDto;
+import com.app.server.dto.response.Sodor24ResponseDto;
+import com.app.server.exception.AppBadRequestException;
 import com.app.server.model.User;
 import com.app.server.service.JwtService;
 import com.app.server.service.UserService;
 import com.github.mfathi91.time.PersianDate;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,7 +31,7 @@ public class UserController {
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
 
-    // Retrerieve all users
+    // List
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
     public ResponseEntity<?> getAllUsers() {
@@ -36,16 +39,15 @@ public class UserController {
             return new ResponseEntity<>(users, HttpStatus.OK);
     }
 
-    // Retrerieve by id
-    @PreAuthorize("hasRole('ADMIN')")
+    // get by id
+    @PreAuthorize("hasRole('ADMIN') or #id == authentication.principal.id")
     @GetMapping("/{id}")
     public ResponseEntity<?> getUserById(@PathVariable Long id) {
        User user = userService.findUserById(id);
        return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
-
-
+    // delete by id
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteUserById(@PathVariable Long id) {
@@ -55,34 +57,40 @@ public class UserController {
 
 
 
-    // Update user
+    // update user by id
     @PreAuthorize("hasRole('ADMIN') or #id == authentication.principal.id")
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateUser(Authentication authentication,
-                                            @PathVariable Long id,
-                                            @RequestBody UpdateUserRequestDto user) {
-        User changedUser = userService.updateUser(user,id);
+    public ResponseEntity<?> updateUser(
+            Authentication authentication,
+            @PathVariable Long id,
+            @Valid @RequestBody UpdateUserRequestDto user) {
 
-        Authentication newAuth = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(changedUser.getUsername(), user.getPassword())
-        );
+        try{
+
+            User changedUser = userService.updateUser(user,id);
+            String accessToken = jwtService.generateAccessToken(changedUser.getUsername(), authentication.getAuthorities());
+
+            Map<String,Object>data=new HashMap<>();
+            data.put("user",changedUser);
+            data.put("access_token",accessToken);
+
+            return Sodor24ResponseDto.response(
+                    data,
+                    "اطلاعات شما بروزرسانی شد",
+                    "",
+                    "",
+                    HttpStatus.ACCEPTED
+            );
+
+        } catch (Exception e) {
+            throw new AppBadRequestException(e.getMessage());
+        }
 
 
-        String accessToken = jwtService.generateAccessToken(changedUser.getUsername(), authentication.getAuthorities());
-        String refreshToken = jwtService.generateRefreshToken(changedUser.getUsername(), authentication.getAuthorities());
 
-
-        LoginResponseDto response = LoginResponseDto.builder()
-                .message("اطلاعات با موفقیت به روزرسانی شد")
-                .access_token(accessToken)
-                .refresh_token(refreshToken)
-                .timestamp(PersianDate.now())
-                .build();
-
-        return ResponseEntity.ok(response);
     }
 
-    // Retrerieve user roles
+    // get user roles
     @PreAuthorize("hasRole('ADMIN') or #id == authentication.principal.id")
     @GetMapping("/{id}/role")
     public ResponseEntity<?> getUserRole(@PathVariable Long id) {
@@ -109,11 +117,11 @@ public class UserController {
     }
 
 
-    // Set user roles
+    // set user roles
     @PutMapping("/{id}/role")
     public ResponseEntity<?> changeUserRole(
             @PathVariable Long id,
-            @RequestBody RoleChangeRequest request
+            @Valid @RequestBody RoleChangeRequest request
     ) {
         User updatedUser = userService.changeUserRole(id, request.getRoles());
         return ResponseEntity.ok(updatedUser);

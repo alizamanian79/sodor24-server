@@ -1,6 +1,5 @@
 package com.app.server.config;
 
-
 import com.app.server.exception.CustomAccessDeniedHandler;
 import com.app.server.exception.CustomAuthEntryPoint;
 import com.app.server.filter.JwtAccessTokenFilter;

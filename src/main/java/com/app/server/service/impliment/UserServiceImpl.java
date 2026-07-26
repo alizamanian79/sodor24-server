@@ -27,6 +27,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 @RequiredArgsConstructor
@@ -48,23 +49,37 @@ public class UserServiceImpl implements UserService {
         return userRepository.findAll(Sort.by("id").ascending());
     }
 
+
+    CompletableFuture<User> createUser(RegisterRequestDto req){
+        return CompletableFuture.supplyAsync(()->{
+            User user = User.builder()
+                    .username(req.getUsername())
+                    .password(passwordEncoder.encode(req.getPassword()))
+                    .fullName(req.getFullName())
+                    .phoneNumber(req.getPhoneNumber())
+                    .roles(Set.of(Role.USER))
+                    .walletId(null)
+                    .build();
+            return userRepository.save(user);
+        });
+    }
+
+    CompletableFuture<String> createWalletSub(){
+        return CompletableFuture.supplyAsync(()->createWallet());
+    }
+
     @Transactional
     @Override
     public RegisterResponseDto registerUser(RegisterRequestDto req) {
 
         // Register user
-        User user = User.builder()
-                .username(req.getUsername())
-                .password(passwordEncoder.encode(req.getPassword()))
-                .fullName(req.getFullName())
-                .phoneNumber(req.getPhoneNumber())
-                .roles(Set.of(Role.USER))
-                .walletId(createWallet())
-                .build();
+        CompletableFuture<User> createUserFuture=createUser(req);
+        CompletableFuture<String> createWalletFuture=createWalletSub();
 
-        userRepository.save(user);
-
-        clearAllUserCache();
+        CompletableFuture.allOf(createUserFuture,createWalletFuture).join();
+        User user = createUserFuture.join();
+        String walletId = createWalletFuture.join();
+        user.setWalletId(walletId);
 
 
         return RegisterResponseDto.builder()
@@ -124,6 +139,8 @@ public class UserServiceImpl implements UserService {
         User existUser = findUserById(id);
         existUser.setUsername(req.getUsername());
         existUser.setPassword(passwordEncoder.encode(req.getPassword()));
+        existUser.setFullName(req.getFullName());
+        existUser.setPhoneNumber(req.getPhoneNumber());
         existUser.setRoles(existUser.getRoles());
         clearAllUserCache();
         return userRepository.save(existUser);

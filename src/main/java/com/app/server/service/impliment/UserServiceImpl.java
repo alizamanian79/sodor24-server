@@ -119,7 +119,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    @CachePut(value = "userById", key = "#id") // 🟡 آپدیت کش بعد از تغییر
+    @CachePut(value = "userById", key = "#id")
     public User updateUser(UpdateUserRequestDto req, Long id) {
         User existUser = findUserById(id);
         existUser.setUsername(req.getUsername());

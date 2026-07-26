@@ -4,15 +4,18 @@ import com.app.server.config.RedisHealthChecker;
 import com.app.server.dto.request.RegisterRequestDto;
 import com.app.server.dto.request.UpdateUserRequestDto;
 import com.app.server.dto.response.RegisterResponseDto;
+import com.app.server.dto.response.Sodor24ResponseDto;
+import com.app.server.exception.AppNotFoundException;
 import com.app.server.exception.AppUnAuthorizedException;
+import com.app.server.model.NotificationType;
 import com.app.server.model.Role;
 import com.app.server.model.User;
 import com.app.server.repository.UserRepository;
+import com.app.server.service.NotificationService;
 import com.app.server.service.UserService;
 import com.app.server.util.wallet_service_producer.WalletRMQProducer;
 import com.app.server.util.wallet_service_producer.dto.request.CreateWalletRequestDto;
 import com.app.server.util.wallet_service_producer.dto.response.WalletResponseDto;
-import com.github.mfathi91.time.PersianDate;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -33,7 +36,6 @@ import java.util.concurrent.CompletableFuture;
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
-
     @Value("${application.wallet-service.currency}")
     private String currency;
 
@@ -41,7 +43,8 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
     private final RedisHealthChecker redisHealthChecker;
     private final WalletRMQProducer walletRMQProducer;
-
+    private final NotificationFactory notificationFactory;
+    private final OtpService otpService;
 
 
     @Override
@@ -80,6 +83,14 @@ public class UserServiceImpl implements UserService {
         User user = createUserFuture.join();
         String walletId = createWalletFuture.join();
         user.setWalletId(walletId);
+
+
+
+        NotificationService service = notificationFactory.getService(NotificationType.SMS);
+        service.sendNotification(user.getPhoneNumber(),"به صدور24 خوش آمدید.\n" +
+                "ثبت\u200Cنام شما با موفقیت انجام شد.\n" +
+                "کد تأیید شما:" +"\s"+otpService.generateAndSend(user.getPhoneNumber())+"\s"+"\n"+
+                "از همراهی شما سپاسگزاریم.");
 
 
         return RegisterResponseDto.builder()
@@ -129,7 +140,11 @@ public class UserServiceImpl implements UserService {
                 ));
     }
 
-
+    @Cacheable(value = "userByPhoneNumber",key = "#phoneNumber")
+    @Override
+    public User findUserByPhoneNumber(String phoneNumber) {
+        return userRepository.findUserByPhoneNumber(phoneNumber).orElseThrow(()->new AppNotFoundException("شماره تماس شما اشتباه میباشد"));
+    }
 
 
     @Override
@@ -174,12 +189,15 @@ public class UserServiceImpl implements UserService {
         userRepository.delete(user);
         clearAllUserCache();
 
-        return com.app.server.dto.response.CustomResponseDto.builder()
-                .message("کاربر با موفقیت حذف شد")
-                .details("")
-                .status(200)
-                .timestamp(PersianDate.now())
-                .build();
+        return Sodor24ResponseDto.response(
+                "",
+                    "کاربر با موفقیت حذف شد"
+                ,""
+                ,"",
+                HttpStatus.OK
+        );
+
+
     }
 
     @CacheEvict(value = { "users" }, allEntries = true)

@@ -114,7 +114,7 @@ public class UserController {
        response.put("authorities",authorities);
 
 
-        return Sodor24ResponseDto.response(response,"نقشهای کاربری" ,"","",HttpStatus.OK);
+        return Sodor24ResponseDto.response(response,"نقشهای کاربر با موفقیت فراخوانی شد" ,"","",HttpStatus.OK);
     }
 
 
@@ -131,7 +131,7 @@ public class UserController {
         String accessToken = jwtService.generateAccessToken(updatedUser.getUsername(), authentication.getAuthorities());
         response.put("acccess_token",accessToken);
         response.put("roles",updatedUser.getRoles());
-        return Sodor24ResponseDto.response(response,"نقش کاربر با موفقیت تخصیص داده شد","","",HttpStatus.OK);
+        return Sodor24ResponseDto.response(response,"نقشهای کاربر با موفقیت تخصیص داده شدند","","",HttpStatus.OK);
     }
 
 

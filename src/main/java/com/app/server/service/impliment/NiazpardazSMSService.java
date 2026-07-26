@@ -28,7 +28,8 @@ public class NiazpardazSMSService {
         SendBatchSmsResult result = client.send(sender, phoneNumber, message);
 
         if (result.isSuccessful()) {
-            System.out.println("BatchSmsId: " + result.getBatchSmsId());
+//            System.out.println("BatchSmsId: " + result.getBatchSmsId());
+            System.out.println(message);
             Long res =(Long) result.getBatchSmsId();
             return res.toString();
         } else {

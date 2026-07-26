@@ -18,6 +18,7 @@ public interface UserService {
     Boolean existUserByUsername(String username);
     User updateUser(UpdateUserRequestDto req , Long id);
     User findUserById(Long id);
+    User findUserByPhoneNumber(String phoneNumber);
 
     User changeUserRole(Long id, Set<Role> roles);
     Object deleteUserById(Long id);

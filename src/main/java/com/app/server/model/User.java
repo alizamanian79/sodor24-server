@@ -77,7 +77,11 @@ public class User implements UserDetails, Serializable {
 
 
     @JsonIgnore
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(
+            mappedBy = "user",
+            cascade = CascadeType.REMOVE,
+            orphanRemoval = true
+    )
     private List<Otp> otps = new ArrayList<>();
 
     @Override

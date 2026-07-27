@@ -195,13 +195,7 @@ public class UserServiceImpl implements UserService {
         userRepository.delete(user);
         clearAllUserCache();
         walletRMQProducer.deleteWalletBySub(sub);
-        return Sodor24ResponseDto.response(
-                "",
-                    "کاربر با موفقیت حذف شد"
-                ,""
-                ,"",
-                HttpStatus.OK
-        );
+        return"کاربر با موفقیت حذف شد";
 
 
     }

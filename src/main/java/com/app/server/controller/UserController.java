@@ -52,7 +52,7 @@ public class UserController {
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteUserById(@PathVariable Long id) {
         Object res = userService.deleteUserById(id);
-        return new ResponseEntity<>(res, HttpStatus.OK);
+        return Sodor24ResponseDto.response(res,res.toString(),"","",HttpStatus.OK);
     }
 
 
@@ -61,21 +61,17 @@ public class UserController {
     @PreAuthorize("hasRole('ADMIN') or #id == authentication.principal.id")
     @PutMapping("/{id}")
     public ResponseEntity<?> updateUser(
-            Authentication authentication,
+
             @PathVariable Long id,
             @Valid @RequestBody UpdateUserRequestDto user) {
 
         try{
 
             User changedUser = userService.updateUser(user,id);
-            String accessToken = jwtService.generateAccessToken(changedUser.getUsername(), authentication.getAuthorities());
 
-            Map<String,Object>data=new HashMap<>();
-            data.put("user",changedUser);
-            data.put("access_token",accessToken);
 
             return Sodor24ResponseDto.response(
-                    data,
+                    changedUser,
                     "اطلاعات شما بروزرسانی شد",
                     "",
                     "",
@@ -109,6 +105,8 @@ public class UserController {
 
 
 
+
+
         response.put("username",user.getUsername());
        response.put("roles",roles);
        response.put("authorities",authorities);
@@ -128,8 +126,6 @@ public class UserController {
         Map<String,Object> response = new HashMap<>();
         User updatedUser = userService.changeUserRole(id, request.getRoles());
 
-        String accessToken = jwtService.generateAccessToken(updatedUser.getUsername(), authentication.getAuthorities());
-        response.put("acccess_token",accessToken);
         response.put("roles",updatedUser.getRoles());
         return Sodor24ResponseDto.response(response,"نقشهای کاربر با موفقیت تخصیص داده شدند","","",HttpStatus.OK);
     }

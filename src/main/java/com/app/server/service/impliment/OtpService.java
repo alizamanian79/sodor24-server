@@ -25,7 +25,6 @@ public class OtpService {
 
     private final OtpRepository  otpRepository;
     private final UserRepository userRepository;
-
     private final WalletRMQProducer walletRMQProducer;
 
 
@@ -34,14 +33,11 @@ public class OtpService {
         User user = userRepository.findUserByPhoneNumber(phoneNumber)
                 .orElseThrow(() -> new RuntimeException("کاربر با این ایمیل یافت نشد."));
 
-
         otpRepository.deleteAllByPhoneNumber(phoneNumber);
 
         String code = generateCode();
-        Otp    otp  = new Otp(code, user);
+        Otp otp= new Otp(code, user);
         otpRepository.save(otp);
-
-
         return code;
 
     }
@@ -49,7 +45,7 @@ public class OtpService {
 
 
     @Transactional
-    public Object verify(String phoneNumber, String code) {
+    public boolean verify(String phoneNumber, String code) {
         Otp otp = otpRepository
                 .findActiveOtpByPhoneNumber(phoneNumber, LocalDateTime.now())
                 .orElseThrow(() -> new AppNotFoundException("کد OTP معتبر یا فعالی وجود ندارد."));

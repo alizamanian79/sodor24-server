@@ -77,12 +77,7 @@ public class User implements UserDetails, Serializable {
 
 
     @JsonIgnore
-    @OneToMany(
-            mappedBy = "user",
-            cascade = CascadeType.REMOVE,
-            orphanRemoval = true
-    )
-    private List<Otp> otps = new ArrayList<>();
+    private String otp;
 
     @Override
     public String getPassword() {

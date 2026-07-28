@@ -15,15 +15,15 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/otp")
+@RequestMapping("/api/v1")
 public class VerifiyAccountController {
 
     private final OtpService otpService;
     private final NotificationFactory notificationFactory;
 
-    @GetMapping("/generate/account/{phoneNumber}")
+    @GetMapping("/otp/generate/account/{phoneNumber}")
     public ResponseEntity<Sodor24ResponseDto<Object>> generateOtpForAccount(@PathVariable String phoneNumber){
-        String code =otpService.generateAndSend(phoneNumber);
+        String code =otpService.generate(0);
         NotificationService sendSMS = notificationFactory.getService(NotificationType.SMS);
         sendSMS.sendNotification(phoneNumber,"به صدور24 خوش آمدید.\n" +
                 "ثبت\u200Cنام شما با موفقیت انجام شد.\n" +
@@ -32,19 +32,37 @@ public class VerifiyAccountController {
         return Sodor24ResponseDto.response(null,"کد تایید حساب به شماره شما فرستاده شد","","", HttpStatus.OK);
     }
 
-    @GetMapping("/verify/account/{phoneNumber}/{code}")
-    public ResponseEntity<Sodor24ResponseDto<Object>> verifyOtpForAccount(
-            @PathVariable String phoneNumber,
-            @PathVariable String code) {
+//    @GetMapping("/otp/verify/account/{phoneNumber}/{code}")
+//    public ResponseEntity<Sodor24ResponseDto<Object>> verifyOtpForAccount(
+//            @PathVariable String phoneNumber,
+//            @PathVariable String code) {
+//
+//        boolean res = otpService.verify(phoneNumber, code);
+//        return Sodor24ResponseDto.response(
+//                res,
+//                "حساب شما با موفقیت تایید شد",
+//                "",
+//                "",
+//                HttpStatus.OK
+//        );
+//    }
+//
+//
+//
+//    @GetMapping("/generate/account/{phoneNumber}")
+//    public ResponseEntity<Sodor24ResponseDto<Object>> generateOtpForSignature(@PathVariable String phoneNumber){
+//        String code =otpService.generateAndSend(phoneNumber);
+//
+//
+//        NotificationService sendSMS = notificationFactory.getService(NotificationType.SMS);
+//        sendSMS.sendNotification(phoneNumber,"به صدور24 خوش آمدید.\n" +
+//                "ثبت\u200Cنام شما با موفقیت انجام شد.\n" +
+//                "کد تأیید شما:" +"\s"+code+"\s"+"\n"+
+//                "از همراهی شما سپاسگزاریم.");
+//        return Sodor24ResponseDto.response(null,"کد تایید حساب به شماره شما فرستاده شد","","", HttpStatus.OK);
+//    }
 
-        boolean res = otpService.verify(phoneNumber, code);
-        return Sodor24ResponseDto.response(
-                res,
-                "حساب شما با موفقیت تایید شد",
-                "",
-                "",
-                HttpStatus.OK
-        );
-    }
+
+
 
 }

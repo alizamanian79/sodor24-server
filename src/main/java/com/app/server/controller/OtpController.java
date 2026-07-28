@@ -17,19 +17,19 @@ import org.springframework.web.bind.annotation.RestController;
 public class OtpController {
 
     private final OtpService otpService;
-    private final UserService userService;
 
-    @GetMapping("/send")
-    public String sendOtp(@RequestParam String phoneNumber){
-        String code = otpService.generateAndSend(phoneNumber);
+    @GetMapping("/generate")
+    public String sendOtp(){
+        String code = otpService.generate(0);
         return code;
     }
 
-    @GetMapping("/verify")
-    public Object verifyOtp(@RequestParam String phoneNumber, @RequestParam String code){
-        Object res = otpService.verify(phoneNumber,code);
-        return res;
-    }
+
+//    @GetMapping("/verify")
+//    public Object verifyOtp(@RequestParam String phoneNumber, @RequestParam String code){
+//        Object res = otpService.verify(phoneNumber,code);
+//        return res;
+//    }
 
 
 }

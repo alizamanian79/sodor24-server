@@ -12,7 +12,7 @@ public interface SignatureService {
     List<Signature> findAll();
     Signature findById(Long id);
     Signature findSignatureByOtp(String otp) ;
-    CustomResponseDto verifySignature(String otp) ;
+//    CustomResponseDto verifySignature(String otp) ;
     CustomResponseDto deleteSignature(Long id);
     Signature updateSignature(Long id , SignatureRequestDto req);
 

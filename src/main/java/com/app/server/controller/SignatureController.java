@@ -98,12 +98,12 @@ public class SignatureController {
 
 
     // Verify Otp
-    @GetMapping("/verify/otp/{otp}")
-    public ResponseEntity<?> verifyOtp(@PathVariable String otp) throws Exception{
-      CustomResponseDto res =  signatureService.verifySignature(otp);
-
-        return new ResponseEntity<>(res, HttpStatus.OK);
-    }
+//    @GetMapping("/verify/otp/{otp}")
+//    public ResponseEntity<?> verifyOtp(@PathVariable String otp) throws Exception{
+//      CustomResponseDto res =  signatureService.verifySignature(otp);
+//
+//        return new ResponseEntity<>(res, HttpStatus.OK);
+//    }
 
 
     @GetMapping("/buy")
@@ -155,17 +155,17 @@ public class SignatureController {
 
 
 
-    @GetMapping("/verify/callback")
-    public ResponseEntity<?> testCallback(@RequestParam String otp) {
-        Signature find = signatureService.findSignatureByOtp(otp);
-
-        try {
-            CustomResponseDto res = signatureService.verifySignature(otp);
-            return new ResponseEntity<>(res,HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(e,HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
+//    @GetMapping("/verify/callback")
+//    public ResponseEntity<?> testCallback(@RequestParam String otp) {
+//        Signature find = signatureService.findSignatureByOtp(otp);
+//
+//        try {
+//            CustomResponseDto res = signatureService.verifySignature(otp);
+//            return new ResponseEntity<>(res,HttpStatus.OK);
+//        } catch (Exception e) {
+//            return new ResponseEntity<>(e,HttpStatus.INTERNAL_SERVER_ERROR);
+//        }
+//    }
 
 
 

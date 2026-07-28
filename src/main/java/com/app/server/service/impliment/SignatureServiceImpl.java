@@ -2,6 +2,7 @@ package com.app.server.service.impliment;
 
 import com.app.server.dto.request.SignatureRequestDto;
 import com.app.server.dto.response.CustomResponseDto;
+import com.app.server.dto.response.Sodor24ResponseDto;
 import com.app.server.exception.AppBadRequestException;
 import com.app.server.exception.AppConflicException;
 import com.app.server.exception.AppNotFoundException;
@@ -93,69 +94,50 @@ public class SignatureServiceImpl implements SignatureService {
 
 
 
-
-
-
-
-
-
     // Verify Transaction from signature
-    @Transactional
-    @Override
-    public CustomResponseDto verifySignature(String otp) {
-        CustomResponseDto res = new CustomResponseDto();
-        Optional<Signature> find = signatureRepository.findByOtp(otp);
+//    @Transactional
+//    @Override
+//    public Object verifySignature(String otp) {
+//
+//        Optional<Signature> find = signatureRepository.findByOtp(otp);
+//        Signature existSignature = find.get();
+//
+//        try {
+//            if (existSignature.getOtp().equals(otp)) {
+//                existSignature.setValid(true);
+//                existSignature.setStatus("در انتظار پرداخت");
+//                existSignature.setOtp(null);
+//                signatureRepository.save(existSignature);
+//                return existSignature;
+//            }
+//
+//
+//            else if (existSignature.equals(null)){
+//                existSignature.setValid(false);
+//                existSignature.setOtp(String.valueOf(1000 + new Random().nextInt(9000)));
+//                existSignature.setStatus("عدم احراز هویت");
+//                res.setStatus(HttpStatus.BAD_GATEWAY.value());
+//                res.setMessage("SERVER");
+//            }
+//
+//
+//
+//
+//            res.setMessage("احراز هویت با موفقیت انجام شد");
+//            signatureRepository.save(existSignature);
+//            res.setTimestamp(PersianDate.now());
+//
+//            return Sodor24ResponseDto;
+//
+//        } catch (Exception e) {
+//            throw new AppBadRequestException("کد تایید شما اشتباه میباشد");
+//        }
+//    }
 
-        if (find.isEmpty()) {
-            res.setStatus(HttpStatus.NOT_FOUND.value());
-            res.setMessage("OTP نامعتبر است");
-            res.setTimestamp(PersianDate.now());
-            return res;
-        }
-
-        Signature existSignature = find.get();
-
-        try {
-            // ابتدا درخواست به سرویس امضا
-//            boolean signatureSuccess = sendRequestToSignatureService(existSignature);
-
-            if (existSignature.getOtp().equals(otp)) {
-
-                existSignature.setValid(false);
-                existSignature.setStatus("در انتظار پرداخت");
-                res.setStatus(HttpStatus.OK.value());
-                existSignature.setOtp(null);
-                res.setMessage("OK");
-
-            } else {
-                existSignature.setValid(false);
-                existSignature.setOtp(String.valueOf(1000 + new Random().nextInt(9000)));
-                existSignature.setStatus("عدم احراز هویت");
-                res.setStatus(HttpStatus.BAD_GATEWAY.value());
-                res.setMessage("SERVER");
-            }
 
 
 
 
-            res.setMessage("احراز هویت با موفقیت انجام شد");
-            signatureRepository.save(existSignature);
-            res.setTimestamp(PersianDate.now());
-
-            return res;
-
-        } catch (Exception e) {
-            existSignature.setOtp(String.valueOf(1000 + new Random().nextInt(9000)));
-            existSignature.setStatus("عدم تایید احراز هویت");
-            existSignature.setValid(false);
-            signatureRepository.save(existSignature);
-
-            res.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
-            res.setMessage("ERROR");
-            res.setTimestamp(PersianDate.now());
-            return res;
-        }
-    }
 
 
 

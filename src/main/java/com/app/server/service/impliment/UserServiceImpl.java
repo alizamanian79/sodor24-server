@@ -27,8 +27,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-
 import java.math.BigDecimal;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -37,8 +35,6 @@ import java.util.concurrent.CompletableFuture;
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
-    @Value("${application.wallet-service.currency}")
-    private String currency;
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
@@ -91,12 +87,12 @@ public class UserServiceImpl implements UserService {
 
 
 
-        NotificationService service = notificationFactory.getService(NotificationType.SMS);
-        service.sendNotification(user.getPhoneNumber(),"به صدور24 خوش آمدید.\n" +
-                "ثبت\u200Cنام شما با موفقیت انجام شد.\n" +
-                "کد تأیید شما:" +"\s"+otpService.generateAndSend(user.getPhoneNumber())+"\s"+"\n"+
-                "از همراهی شما سپاسگزاریم.");
-
+//        NotificationService service = notificationFactory.getService(NotificationType.SMS);
+//        service.sendNotification(user.getPhoneNumber(),"به صدور24 خوش آمدید.\n" +
+//                "ثبت\u200Cنام شما با موفقیت انجام شد.\n" +
+//                "کد تأیید شما:" +"\s"+otpService.generateAndSend(user.getPhoneNumber())+"\s"+"\n"+
+//                "از همراهی شما سپاسگزاریم.");
+//
 
         return RegisterResponseDto.builder()
                 .message("با موفقیت ایجاد شد " + user.getUsername() + " کاربر")
@@ -218,7 +214,7 @@ public class UserServiceImpl implements UserService {
         CreateWalletRequestDto req = CreateWalletRequestDto.builder()
                 .sub("")
                 .balance(BigDecimal.ZERO)
-                .currency(currency)
+                .currency("IRT")
                 .build();
         WalletResponseDto res = walletRMQProducer.createWallet(req);
         Map<String,Object> data = (Map<String, Object>) res.getData();

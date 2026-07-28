@@ -277,45 +277,7 @@ public class SignatureServiceImpl implements SignatureService {
     }
 
 
-    // Using Signature
-    @Transactional
-    @Override
-    public boolean useSignature(Signature req) {
-        Signature signature = findById(req.getId());
 
-        // pre signing
-        if (!signature.isValid()) {
-            throw new AppBadRequestException("امضای شما معتبر نمی‌باشد.");
-        }
-        if (LocalDateTime.now().isAfter(signature.getSignatureExpired())) {
-            signature.setValid(false);
-            signatureRepository.save(signature);
-            throw new AppBadRequestException("تاریخ امضای شما به پایان رسیده است.");
-        }
-        if (signature.getUsageCount() <= 0) {
-            signature.setValid(false);
-            signature.setStatus("پایان اعتبار");
-            signatureRepository.save(signature);
-            throw new AppBadRequestException("تعداد استفاده این پلن امضا به پایان رسیده است.");
-        }
-
-        signature.setUsageCount(signature.getUsageCount() - 1);
-
-        if (signature.getUsageCount() == 0) {
-            signature.setValid(false);
-        }
-
-        Signature signed =signatureRepository.save(signature);
-
-        // after using signature
-        if (signed.getUsageCount()-1<=0){
-            signature.setValid(false);
-            signature.setStatus("");
-           signatureRepository.save(signature);
-        }
-
-        return true;
-    }
 
     @Transactional
     @Override

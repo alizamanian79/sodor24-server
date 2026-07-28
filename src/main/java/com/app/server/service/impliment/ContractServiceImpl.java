@@ -35,6 +35,7 @@ public class ContractServiceImpl implements ContractService {
     private final ContractProducer contractProducer;
 
 
+
     @Override
     public List<Contract> contractList() {
         List<Contract> contracts = contractRepository.findAll();
@@ -65,8 +66,6 @@ public class ContractServiceImpl implements ContractService {
         // Handle pdf file name
         String pdfName = contract.getSignedLink().equals("")?contract.getSlug()+".pdf":contract.getSignedLink();
         MultipartFile mainFile = renameMultipartFile(req.getPdfFile(),pdfName);
-
-
 
         com.app.server.util.signature_service_producer.dto.request.ContractRequestDto result =
                 com.app.server.util.signature_service_producer.dto.request.ContractRequestDto.builder()
@@ -149,7 +148,17 @@ public class ContractServiceImpl implements ContractService {
         }
 
         exitSignature.setUsageCount(exitSignature.getUsageCount()-1);
-        return signatureService.updateSignatureIntenral(exitSignature);
+        Signature siged = signatureService.updateSignatureIntenral(exitSignature);
+
+
+        if (siged.getUsageCount()-1<=0){
+            siged.setStatus("حجم امضا به پایان رسیده");
+            siged.setValid(false);
+            signatureService.updateSignatureIntenral(siged);
+        }
+
+
+        return siged;
 
     }
 

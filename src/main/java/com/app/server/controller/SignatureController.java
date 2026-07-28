@@ -84,8 +84,6 @@ public class SignatureController {
 
 
 
-
-
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
     public List<Signature> signatureList(){
@@ -157,7 +155,7 @@ public class SignatureController {
 
 
 
-    @GetMapping("/sandbox/callback")
+    @GetMapping("/verify/callback")
     public ResponseEntity<?> testCallback(@RequestParam String otp) {
         Signature find = signatureService.findSignatureByOtp(otp);
 

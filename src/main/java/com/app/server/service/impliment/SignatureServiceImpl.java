@@ -19,20 +19,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.mfathi91.time.PersianDate;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.cache.Cache;
-import org.springframework.cache.CacheManager;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
-
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Random;
+import java.util.*;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
 public class SignatureServiceImpl implements SignatureService {
@@ -41,92 +32,47 @@ public class SignatureServiceImpl implements SignatureService {
     private final UserService userService;
     private final SignatureRepository signatureRepository;
     private final SignatureProducer signatureProducer;
-    private final CacheManager cacheManager;
-    private final ObjectMapper objectMapper;
 
-    public static final String SIGNATURE_BY_ID_CACHE = "signatureById";
-    public static final String SIGNATURE_BY_OTP_CACHE = "signatureByOtp";
-
-    // ---------------------------------------------------------------
-    // Reads
-    // ---------------------------------------------------------------
 
     @Override
     public List<Signature> findAll() {
-        return signatureRepository.findAll();
+        List<Signature> list = signatureRepository.findAll();
+        Collections.reverse(list);
+        return list;
     }
 
-    @Cacheable(value = SIGNATURE_BY_ID_CACHE, key = "#id")
     @Override
     public Signature findById(Long id) {
-        return signatureRepository.findById(id)
-                .orElseThrow(() -> new AppNotFoundException("امضا پیدا نشد"));
+        return signatureRepository.findById(id).orElseThrow(()-> new AppNotFoundException("امضا پیدا نشد"));
     }
 
-    @Cacheable(value = SIGNATURE_BY_OTP_CACHE, key = "#otp")
     @Override
     public Signature findSignatureByOtp(String otp) {
-        return signatureRepository.findByOtp(otp)
-                .orElseThrow(() -> new AppNotFoundException("کد وارد شده نامعتبر میباشد"));
+        Signature signature = signatureRepository.findByOtp(otp).orElseThrow(()->new AppNotFoundException("کد وارد شده نامعتبر میباشد"));
+        return signature;
     }
 
-    // ---------------------------------------------------------------
-    // Cache-safe write helpers
-    // ---------------------------------------------------------------
 
-    /**
-     * همه‌ی ذخیره‌سازی‌ها از این متد عبور می‌کنن تا کش همیشه consistent باشه.
-     * چون otp یک فیلد mutable و امنیتی هست (هر بار عوض میشه یا null میشه)،
-     * به جای key کردن دستی و ناقص، کل کش OTP رو با هر save پاک می‌کنیم تا
-     * هیچ‌وقت داده‌ی stale برنگرده.
-     */
-    private Signature persist(Signature signature) {
-        Signature saved = signatureRepository.save(signature);
 
-        Cache idCache = cacheManager.getCache(SIGNATURE_BY_ID_CACHE);
-        if (idCache != null) {
-            idCache.put(saved.getId(), saved);
-        }
-        Cache otpCache = cacheManager.getCache(SIGNATURE_BY_OTP_CACHE);
-        if (otpCache != null) {
-            otpCache.clear();
-        }
-        return saved;
-    }
-
-    private void evictAfterDelete(Long id) {
-        Cache idCache = cacheManager.getCache(SIGNATURE_BY_ID_CACHE);
-        if (idCache != null) {
-            idCache.evict(id);
-        }
-        Cache otpCache = cacheManager.getCache(SIGNATURE_BY_OTP_CACHE);
-        if (otpCache != null) {
-            otpCache.clear();
-        }
-    }
-
-    // ---------------------------------------------------------------
-    // Writes
-    // ---------------------------------------------------------------
 
     @Transactional
     @Override
     public Signature generateSignature(SignatureRequestDto req) {
-        User user = userService.findUserById(req.getUserId());
-        SignaturePlan plan = signaturePlanService.findSignaturePlanById(req.getSignaturePlanId());
+        User existUser = userService.findUserById(req.getUserId());
+        SignaturePlan signaturePlan = signaturePlanService.findSignaturePlanById(req.getSignaturePlanId());
 
-        if (!plan.isActive()) {
-            throw new AppConflicException(
-                    "اعتبار این پلن از امضا تایید نشده",
+        if (!signaturePlan.isActive()){
+            throw new AppConflicException("اعتبار این پلن از امضا تایید نشده",
                     "به محض تعویض وضعیت این پلن به شما اطلاع خواهیم داد");
         }
 
+
         Signature signature = Signature.builder()
-                .user(user)
-                .signaturePlan(plan)
+                .user(existUser)
+                .signaturePlan(signaturePlan)
                 .valid(false)
-                .usageCount(plan.getUsageCount())
-                .totalPrice(plan.getPrice())
+                .usageCount(signaturePlan.getUsageCount())
+                .totalPrice(signaturePlan.getPrice())
                 .status("در انتظار تایید کد")
                 .country(req.getCountry().toString())
                 .reason(req.getReason().toString())
@@ -138,192 +84,235 @@ public class SignatureServiceImpl implements SignatureService {
                 .email(req.getEmail().toString())
                 .title(req.getTitle().toString())
                 .signaturePassword(req.getSignaturePassword())
-                .signatureExpired(LocalDateTime.now().plusDays(plan.getPeriod()))
+                .signatureExpired(LocalDateTime.now().plusDays(signaturePlan.getPeriod()))
                 .build();
-
-        return persist(signature);
+        Signature saved = signatureRepository.save(signature);
+        return saved;
     }
 
-    /**
-     * تایید OTP.
-     * نکته‌ی مهم: چون signature از طریق findByOtp(otp) پیدا شده بود، شرط
-     * existSignature.getOtp().equals(otp) همیشه true بود و شاخه‌ی else
-     * (کد نامعتبر) در عمل هرگز اجرا نمی‌شد — این منطق مرده حذف شد.
-     * اگه نیاز به expiry واقعی برای OTP هست، باید یک فیلد otpExpiredAt
-     * به Entity اضافه بشه و اینجا چک بشه.
-     */
+
+
+
+
+
+
+
+
+
+    // Verify Transaction from signature
     @Transactional
     @Override
     public CustomResponseDto verifySignature(String otp) {
-        Optional<Signature> found = signatureRepository.findByOtp(otp);
+        CustomResponseDto res = new CustomResponseDto();
+        Optional<Signature> find = signatureRepository.findByOtp(otp);
 
-        if (found.isEmpty()) {
-            return CustomResponseDto.builder()
-                    .status(HttpStatus.NOT_FOUND.value())
-                    .message("OTP نامعتبر است")
-                    .timestamp(PersianDate.now())
-                    .build();
+        if (find.isEmpty()) {
+            res.setStatus(HttpStatus.NOT_FOUND.value());
+            res.setMessage("OTP نامعتبر است");
+            res.setTimestamp(PersianDate.now());
+            return res;
         }
 
-        Signature signature = found.get();
+        Signature existSignature = find.get();
 
         try {
-            signature.setValid(false);
-            signature.setStatus("در انتظار پرداخت");
-            signature.setOtp(null);
-            persist(signature);
+            // ابتدا درخواست به سرویس امضا
+//            boolean signatureSuccess = sendRequestToSignatureService(existSignature);
 
-            return CustomResponseDto.builder()
-                    .status(HttpStatus.OK.value())
-                    .message("احراز هویت با موفقیت انجام شد")
-                    .timestamp(PersianDate.now())
-                    .build();
+            if (existSignature.getOtp().equals(otp)) {
+
+                existSignature.setValid(false);
+                existSignature.setStatus("در انتظار پرداخت");
+                res.setStatus(HttpStatus.OK.value());
+                existSignature.setOtp(null);
+                res.setMessage("OK");
+
+            } else {
+                existSignature.setValid(false);
+                existSignature.setOtp(String.valueOf(1000 + new Random().nextInt(9000)));
+                existSignature.setStatus("عدم احراز هویت");
+                res.setStatus(HttpStatus.BAD_GATEWAY.value());
+                res.setMessage("SERVER");
+            }
+
+
+
+
+            res.setMessage("احراز هویت با موفقیت انجام شد");
+            signatureRepository.save(existSignature);
+            res.setTimestamp(PersianDate.now());
+
+            return res;
 
         } catch (Exception e) {
-            log.error("خطا در verifySignature برای signature id={}", signature.getId(), e);
-            signature.setOtp(String.valueOf(1000 + new Random().nextInt(9000)));
-            signature.setStatus("عدم تایید احراز هویت");
-            signature.setValid(false);
-            persist(signature);
+            existSignature.setOtp(String.valueOf(1000 + new Random().nextInt(9000)));
+            existSignature.setStatus("عدم تایید احراز هویت");
+            existSignature.setValid(false);
+            signatureRepository.save(existSignature);
 
-            return CustomResponseDto.builder()
-                    .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
-                    .message("ERROR")
-                    .timestamp(PersianDate.now())
-                    .build();
+            res.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            res.setMessage("ERROR");
+            res.setTimestamp(PersianDate.now());
+            return res;
         }
     }
+
+
+
+
 
     @Override
     public boolean sendRequestToSignatureService(Signature req) {
         try {
-            com.app.server.util.signature_service_producer.dto.request.SignatureRequestDto signatureServiceReq =
-                    com.app.server.util.signature_service_producer.dto.request.SignatureRequestDto.builder()
-                            .username(req.getUser().getFullName())
-                            .country(req.getCountry())
-                            .reason(req.getReason())
-                            .location(req.getLocation())
-                            .organization(req.getOrganization())
-                            .department(req.getDepartment())
-                            .state(req.getState())
-                            .city(req.getCity())
-                            .email(req.getEmail())
-                            .title(req.getTitle())
-                            .userId("")
-                            .signatureExpired(req.getSignaturePlan().getPeriod())
-                            .signaturePassword(req.getSignaturePassword())
-                            .build();
+            com.app.server.util.signature_service_producer.dto.request.SignatureRequestDto signatureserviceReq = com.app.server.util.signature_service_producer.dto.request.SignatureRequestDto.builder()
+                    .username(req.getUser().getFullName())
+                    .country(req.getCountry())
+                    .reason(req.getReason())
+                    .location(req.getLocation())
+                    .organization(req.getOrganization())
+                    .department(req.getDepartment())
+                    .state(req.getState())
+                    .city(req.getCity())
+                    .email(req.getEmail())
+                    .title(req.getTitle())
+                    .userId("")
+                    .signatureExpired(req.getSignaturePlan().getPeriod())
+                    .signaturePassword(req.getSignaturePassword())
+                    .build();
 
-            Object res = signatureProducer.generateSignature(signatureServiceReq);
-            log.info("Response from signature service: {}", res);
+            Object res = signatureProducer.generateSignature(signatureserviceReq);
+            System.out.println("Response from signature service: " + res);
 
-            if (res == null) {
-                return false;
-            }
+            if (res != null) {
+                ObjectMapper mapper = new ObjectMapper();
+                Map<String, Object> convert = mapper.convertValue(res, new TypeReference<Map<String, Object>>() {});
 
-            Map<String, Object> converted = objectMapper.convertValue(res, new TypeReference<>() {});
-            Object dataObj = converted.get("data");
+                Object dataObj = convert.get("data");
+                if (dataObj instanceof Map<?, ?> dataMap) {
+                    Object p12 = dataMap.get("p12");
+                    Object id = dataMap.get("userId");
 
-            if (dataObj instanceof Map<?, ?> dataMap) {
-                Object id = dataMap.get("userId");
-                if (id != null && !id.toString().isBlank()) {
-                    req.setPrivateKeyId(id + ".p12");
-                    return true;
+                    if (id != null && !id.toString().isBlank()) {
+                        req.setPrivateKeyId(id.toString()+".p12");
+
+                        return true; // موفقیت
+                    }
                 }
             }
-            return false;
+            return false; // عدم موفقیت
 
         } catch (Exception e) {
-            log.error("Error in sendRequestToSignatureService", e);
+            System.err.println("Error in sendRequestToSignatureService: " + e.getMessage());
+            e.printStackTrace();
             return false;
         }
     }
+
+
+
 
     @Transactional
     @Override
     public CustomResponseDto deleteSignature(Long id) {
-        Signature existing = findById(id);
-        signatureRepository.delete(existing);
-        evictAfterDelete(id);
-
-        return CustomResponseDto.builder()
+        Signature existSignature = findById(id);
+        signatureRepository.delete(existSignature);
+        CustomResponseDto res = CustomResponseDto.builder()
                 .message("امضا حذف شد")
                 .status(HttpStatus.OK.value())
                 .timestamp(PersianDate.now())
                 .build();
+        return res;
     }
 
     @Transactional
     @Override
-    public Signature updateSignature(Long id, SignatureRequestDto req) {
-        Signature existing = findById(id);
+    public Signature updateSignature(Long id , SignatureRequestDto req)  {
 
-        if (existing.isValid()) {
-            // به جای برگردوندن null بی‌صدا (که caller ممکنه چک نکنه و NPE بگیره)،
-            // یک خطای معنادار پرتاب می‌کنیم.
-            throw new AppConflicException(
-                    "امضای معتبر قابل ویرایش نیست",
-                    "برای ویرایش، ابتدا امضا را غیرفعال کنید");
+
+
+        Signature findSignature = findById(id);
+
+        if (findSignature.isValid()) {
+            return null;
         }
 
-        SignaturePlan plan = signaturePlanService.findSignaturePlanById(req.getSignaturePlanId());
-        User user = userService.findUserById(req.getUserId());
+        SignaturePlan findPlan = signaturePlanService.findSignaturePlanById(req.getSignaturePlanId());
+        User findUser = userService.findUserById(req.getUserId());
 
-        existing.setSignaturePlan(plan);
-        existing.setUser(user);
-        existing.setUsageCount(plan.getUsageCount());
-        existing.setTotalUsageCount(plan.getUsageCount());
-        existing.setValid(false);
-        existing.setPrivateKeyId(null);
-        existing.setOtp(String.valueOf(1000 + new Random().nextInt(9000)));
-        existing.setCountry(req.getCountry());
-        existing.setReason(req.getReason());
-        existing.setLocation(req.getLocation());
-        existing.setOrganization(req.getOrganization());
-        existing.setDepartment(req.getDepartment());
-        existing.setState(req.getState());
-        existing.setCity(req.getCity());
-        existing.setEmail(req.getEmail());
-        existing.setTitle(req.getTitle());
-        existing.setSignatureExpired(LocalDateTime.now().plusDays(plan.getPeriod()));
+        findSignature.setSignaturePlan(findPlan);
+        findSignature.setUser(findUser);
 
-        return persist(existing);
+        findSignature.setUsageCount(findPlan.getUsageCount());
+        findSignature.setTotalUsageCount(findPlan.getUsageCount());
+
+        findSignature.setValid(false);
+        findSignature.setPrivateKeyId(null);
+
+
+        findSignature.setOtp(String.valueOf(1000 + new Random().nextInt(9000)));
+        findSignature.setCountry(req.getCountry());
+        findSignature.setReason(req.getReason());
+        findSignature.setLocation(req.getLocation());
+        findSignature.setOrganization(req.getOrganization());
+        findSignature.setDepartment(req.getDepartment());
+        findSignature.setState(req.getState());
+        findSignature.setCity(req.getCity());
+        findSignature.setEmail(req.getEmail());
+        findSignature.setTitle(req.getTitle());
+        findSignature.setSignatureExpired(LocalDateTime.now().plusDays(findPlan.getPeriod()));
+
+        return signatureRepository.save(findSignature);
+
+
     }
+
 
     @Transactional
     @Override
-    public Signature changeSignatureValid(Long id, boolean valid) {
+    public Signature changeSignatureValid(Long id,boolean valid) {
         Signature signature = findById(id);
         signature.setValid(valid);
-        return persist(signature);
+        Signature saved = signatureRepository.save(signature);
+        return saved;
     }
 
+
+    // Using Signature
     @Transactional
     @Override
     public boolean useSignature(Signature req) {
         Signature signature = findById(req.getId());
 
+        // pre signing
         if (!signature.isValid()) {
             throw new AppBadRequestException("امضای شما معتبر نمی‌باشد.");
         }
-
         if (LocalDateTime.now().isAfter(signature.getSignatureExpired())) {
             signature.setValid(false);
-            persist(signature);
+            signatureRepository.save(signature);
             throw new AppBadRequestException("تاریخ امضای شما به پایان رسیده است.");
         }
-
         if (signature.getUsageCount() <= 0) {
             signature.setValid(false);
-            persist(signature);
+            signature.setStatus("پایان اعتبار");
+            signatureRepository.save(signature);
             throw new AppBadRequestException("تعداد استفاده این پلن امضا به پایان رسیده است.");
         }
 
         signature.setUsageCount(signature.getUsageCount() - 1);
+
         if (signature.getUsageCount() == 0) {
             signature.setValid(false);
         }
-        persist(signature);
+
+        Signature signed =signatureRepository.save(signature);
+
+        // after using signature
+        if (signed.getUsageCount()-1<=0){
+            signature.setValid(false);
+            signature.setStatus("");
+           signatureRepository.save(signature);
+        }
 
         return true;
     }
@@ -331,26 +320,35 @@ public class SignatureServiceImpl implements SignatureService {
     @Transactional
     @Override
     public Signature updateSignatureIntenral(Signature req) {
-        return persist(req);
+        return signatureRepository.save(req);
     }
+
 
     @Transactional
     @Override
-    public CustomResponseDto generateSignatureKeys(Long signatureId) {
-        Signature signature = findById(signatureId);
+    public CustomResponseDto generateSignatureKeys(Long signatureId){
+        try{
+            Signature req = findById(signatureId);
+            boolean signatureSuccess = sendRequestToSignatureService(req);
 
-        boolean success = sendRequestToSignatureService(signature);
-        if (!success) {
-            throw new AppBadRequestException("خطا در ارتباط با سرویس امضا");
+            if (!signatureSuccess){
+                throw new AppBadRequestException("خطا");
+            }
+
+            req.setValid(true);
+            req.setStatus("معتبر");
+            signatureRepository.save(req);
+
+            CustomResponseDto res =  CustomResponseDto.builder()
+                    .message("کلید شما ساخته شد")
+                    .details(req.getPrivateKeyId())
+                    .build();
+            return res;
+
+        } catch (Exception e) {
+            throw new AppBadRequestException(e.getMessage());
         }
 
-        signature.setValid(true);
-        signature.setStatus("معتبر");
-        persist(signature);
 
-        return CustomResponseDto.builder()
-                .message("کلید شما ساخته شد")
-                .details(signature.getPrivateKeyId())
-                .build();
     }
 }

@@ -29,6 +29,8 @@ public class Otp {
     private Long id;
 
     private String code;
+    private String receiver;
+
 
     @CreationTimestamp
     private LocalDateTime createdAt;

@@ -6,6 +6,8 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -17,4 +19,7 @@ public interface UserRepository extends JpaRepository<User, Long>{
     boolean existsByPhoneNumber(@NotBlank(message = "شماره تماس نمی‌تواند خالی باشد") @Pattern(regexp = "\\d{11}", message = "شماره تماس باید دقیقا 11 رقم باشد (0912xxxxxxx)") String phoneNumber);
 
     boolean existsByUsername(String username);
+
+    Optional<User>  findUserByOtp(String otp);
+
 }

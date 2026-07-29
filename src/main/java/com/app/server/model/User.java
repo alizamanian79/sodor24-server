@@ -76,8 +76,9 @@ public class User implements UserDetails, Serializable {
     }
 
 
-    @JsonIgnore
+
     private String otp;
+    private boolean isValid;
 
     @Override
     public String getPassword() {

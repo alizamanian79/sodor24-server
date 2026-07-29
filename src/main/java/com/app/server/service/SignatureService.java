@@ -15,12 +15,8 @@ public interface SignatureService {
 //    CustomResponseDto verifySignature(String otp) ;
     CustomResponseDto deleteSignature(Long id);
     Signature updateSignature(Long id , SignatureRequestDto req);
-
     Signature changeSignatureValid(Long id,boolean valid);
     boolean sendRequestToSignatureService(Signature req);
-
     Signature updateSignatureIntenral(Signature req);
-
-
     CustomResponseDto generateSignatureKeys(Long signatureId);
 }

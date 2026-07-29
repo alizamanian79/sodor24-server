@@ -4,21 +4,20 @@ import com.app.server.config.RedisHealthChecker;
 import com.app.server.dto.request.RegisterRequestDto;
 import com.app.server.dto.request.UpdateUserRequestDto;
 import com.app.server.dto.response.RegisterResponseDto;
-import com.app.server.dto.response.Sodor24ResponseDto;
 import com.app.server.exception.AppNotFoundException;
 import com.app.server.exception.AppUnAuthorizedException;
-import com.app.server.model.NotificationType;
+import com.app.server.model.OtpType;
 import com.app.server.model.Role;
 import com.app.server.model.User;
 import com.app.server.repository.UserRepository;
-import com.app.server.service.NotificationService;
+import com.app.server.service.OtpService;
 import com.app.server.service.UserService;
+import com.app.server.service.impliment.OtpFactory.OtpFactory;
 import com.app.server.util.wallet_service_producer.WalletRMQProducer;
 import com.app.server.util.wallet_service_producer.dto.request.CreateWalletRequestDto;
 import com.app.server.util.wallet_service_producer.dto.response.WalletResponseDto;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
@@ -40,8 +39,7 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
     private final RedisHealthChecker redisHealthChecker;
     private final WalletRMQProducer walletRMQProducer;
-    private final NotificationFactory notificationFactory;
-    private final OtpService otpService;
+    private final OtpFactory otpFactory;
 
 
     @Override
@@ -71,6 +69,8 @@ public class UserServiceImpl implements UserService {
         return CompletableFuture.supplyAsync(()->createWallet());
     }
 
+
+
     @jakarta.transaction.Transactional(rollbackOn = Exception.class)
     @Override
     public RegisterResponseDto registerUser(RegisterRequestDto req) {
@@ -85,6 +85,8 @@ public class UserServiceImpl implements UserService {
         user.setWalletId(walletId);
         userRepository.save(user);
 
+        OtpService otpService = otpFactory.getService(OtpType.USER);
+        otpService.generateOtp(user.getPhoneNumber());
 
 
 //        NotificationService service = notificationFactory.getService(NotificationType.SMS);
@@ -209,6 +211,10 @@ public class UserServiceImpl implements UserService {
         }
         return user;
     }
+
+
+
+
 
     public String createWallet(){
         CreateWalletRequestDto req = CreateWalletRequestDto.builder()

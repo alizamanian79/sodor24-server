@@ -13,6 +13,7 @@ import com.app.server.service.OtpService;
 import com.app.server.service.impliment.NotificationFactory;
 import com.app.server.service.impliment.RandomCodeGenerator;
 import com.app.server.util.wallet_service_producer.WalletRMQProducer;
+import com.app.server.util.wallet_service_producer.dto.request.ActivityRequestDto;
 import com.app.server.util.wallet_service_producer.dto.request.CreateWalletRequestDto;
 import com.app.server.util.wallet_service_producer.dto.response.WalletResponseDto;
 import jakarta.transaction.Transactional;
@@ -62,9 +63,19 @@ public class UserOtpServiceImpl implements OtpService {
                 .balance(BigDecimal.ZERO)
                 .currency(currency)
                 .build();
+
         WalletResponseDto res = walletRMQProducer.createWallet(req);
         Map<String,Object> data = (Map<String, Object>) res.getData();
         String sub = data.get("sub").toString();
+
+        ActivityRequestDto actReq= ActivityRequestDto.builder()
+                .sub(sub)
+                .value(true)
+                .build();
+
+        walletRMQProducer.setActive(actReq);
+
+
         return sub;
     }
 
@@ -156,7 +167,9 @@ public class UserOtpServiceImpl implements OtpService {
         userRepository.save(user);
         otpRepository.delete(otp);
 
-      return false;
+
+
+      return user.isValid();
     }
 
 

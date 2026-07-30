@@ -6,14 +6,17 @@ import com.app.server.dto.response.Sodor24ResponseDto;
 import com.app.server.exception.AppBadRequestException;
 import com.app.server.exception.AppConflicException;
 import com.app.server.exception.AppNotFoundException;
+import com.app.server.model.OtpType;
 import com.app.server.model.SignaturePlan;
 import com.app.server.model.User;
 import com.app.server.model.Signature;
 import com.app.server.repository.SignatureRepository;
+import com.app.server.service.OtpService;
 import com.app.server.service.SignaturePlanService;
 import com.app.server.service.UserService;
 import com.app.server.service.SignatureService;
 
+import com.app.server.service.impliment.OtpFactory.OtpFactory;
 import com.app.server.util.signature_service_producer.producer.SignatureProducer;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -24,6 +27,8 @@ import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 
 @Service
 @RequiredArgsConstructor
@@ -33,6 +38,9 @@ public class SignatureServiceImpl implements SignatureService {
     private final UserService userService;
     private final SignatureRepository signatureRepository;
     private final SignatureProducer signatureProducer;
+    private final OtpFactory otpFactory;
+
+    private final Executor taskExecutor;
 
 
     @Override
@@ -55,40 +63,57 @@ public class SignatureServiceImpl implements SignatureService {
 
 
 
+    private CompletableFuture<Signature> generateSignatureAsync(
+            User existUser,
+            SignaturePlan signaturePlan,
+            SignatureRequestDto req) {
+
+        return CompletableFuture.supplyAsync(() -> {
+
+            Signature signature = Signature.builder()
+                    .user(existUser)
+                    .signaturePlan(signaturePlan)
+                    .valid(false)
+                    .usageCount(signaturePlan.getUsageCount())
+                    .totalPrice(signaturePlan.getPrice())
+                    .status("در انتظار تایید کد")
+                    .country(req.getCountry())
+                    .reason(req.getReason())
+                    .location(req.getLocation())
+                    .organization(req.getOrganization())
+                    .department(req.getDepartment())
+                    .state(req.getState())
+                    .city(req.getCity())
+                    .email(req.getEmail())
+                    .title(req.getTitle())
+                    .signaturePassword(req.getSignaturePassword())
+                    .signatureExpired(LocalDateTime.now().plusDays(signaturePlan.getPeriod()))
+                    .build();
+
+            Signature saved = signatureRepository.save(signature);
+
+            OtpService otpService = otpFactory.getService(OtpType.SIGNATURE);
+            otpService.generateOtp(saved.getId().toString());
+
+            return saved;
+        },taskExecutor);
+    }
+
 
     @Transactional
     @Override
     public Signature generateSignature(SignatureRequestDto req) {
+
+
+
         User existUser = userService.findUserById(req.getUserId());
-        SignaturePlan signaturePlan = signaturePlanService.findSignaturePlanById(req.getSignaturePlanId());
+        SignaturePlan signaturePlan =
+                signaturePlanService.findSignaturePlanById(req.getSignaturePlanId());
 
-        if (!signaturePlan.isActive()){
-            throw new AppConflicException("اعتبار این پلن از امضا تایید نشده",
-                    "به محض تعویض وضعیت این پلن به شما اطلاع خواهیم داد");
-        }
+        CompletableFuture<Signature> future =
+                generateSignatureAsync(existUser, signaturePlan, req);
 
-
-        Signature signature = Signature.builder()
-                .user(existUser)
-                .signaturePlan(signaturePlan)
-                .valid(false)
-                .usageCount(signaturePlan.getUsageCount())
-                .totalPrice(signaturePlan.getPrice())
-                .status("در انتظار تایید کد")
-                .country(req.getCountry().toString())
-                .reason(req.getReason().toString())
-                .location(req.getLocation().toString())
-                .organization(req.getOrganization().toString())
-                .department(req.getDepartment().toString())
-                .state(req.getState().toString())
-                .city(req.getCity().toString())
-                .email(req.getEmail().toString())
-                .title(req.getTitle().toString())
-                .signaturePassword(req.getSignaturePassword())
-                .signatureExpired(LocalDateTime.now().plusDays(signaturePlan.getPeriod()))
-                .build();
-        Signature saved = signatureRepository.save(signature);
-        return saved;
+        return future.join();
     }
 
 
@@ -196,9 +221,12 @@ public class SignatureServiceImpl implements SignatureService {
     @Transactional
     @Override
     public CustomResponseDto deleteSignature(Long id) {
-        Signature existSignature = findById(id);
-        signatureRepository.delete(existSignature);
+
+        Signature existSignature = signatureRepository.findSignatureById(id).orElseThrow(()->new AppNotFoundException("امضا پیدا نشد"));
+        signatureRepository.deleteSignatureById(id);
+
         CustomResponseDto res = CustomResponseDto.builder()
+
                 .message("امضا حذف شد")
                 .status(HttpStatus.OK.value())
                 .timestamp(PersianDate.now())

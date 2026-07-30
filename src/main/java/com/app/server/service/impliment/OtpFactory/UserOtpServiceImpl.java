@@ -43,15 +43,8 @@ public class UserOtpServiceImpl implements OtpService {
     private final OtpRepository otpRepository;
     private final NotificationFactory notificationFactory;
     private final WalletRMQProducer walletRMQProducer;
-
-
-    @Autowired
-    public RandomCodeGenerator randomcode;
-
-
+    private final RandomCodeGenerator randomcode;
     private final UserRepository userRepository;
-
-
 
 
 
@@ -140,7 +133,7 @@ public class UserOtpServiceImpl implements OtpService {
 
         NotificationService service = notificationFactory.getService(NotificationType.SMS);
         service.sendNotification(user.getPhoneNumber(),"به صدور24 خوش آمدید.\n" +
-                "ثبت\u200Cنام شما با موفقیت انجام شد.\n" +
+                "ثبت نام شما با موفقیت انجام شد.\n" +
                 "کد تأیید شما:" +"\s"+code+"\s"+"\n"+
                 "از همراهی شما سپاسگزاریم.");
 

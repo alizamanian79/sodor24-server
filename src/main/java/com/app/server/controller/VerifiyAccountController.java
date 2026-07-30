@@ -50,6 +50,39 @@ public class VerifiyAccountController {
 
 
 
+    @GetMapping("/generate/signature/{sid}")
+    public ResponseEntity<Sodor24ResponseDto<Object>> generateOtpForSignature(
+            @PathVariable String sid) {
+        OtpService otpService= otpFactory.getService(OtpType.SIGNATURE);
+        Object res = otpService.generateOtp(sid);
+
+        return Sodor24ResponseDto.response(
+                res,
+                "کد تایید برای شما فرستاده شد",
+                "",
+                "",
+                HttpStatus.OK
+        );
+    }
+
+    @GetMapping("/verify/signature/{sid}/{code}")
+    public ResponseEntity<Sodor24ResponseDto<Object>> verifyOtpForSignature(
+            @PathVariable String sid,
+            @PathVariable String code) {
+
+        OtpService otpService= otpFactory.getService(OtpType.SIGNATURE);
+        Object res = otpService.verifyOtp(sid,code,null);
+
+        return Sodor24ResponseDto.response(
+                res,
+                "امضای شما با موفقیت با شماره تماس شما احراز هویت شد",
+                "",
+                "",
+                HttpStatus.OK
+        );
+    }
+
+
 //
 //
 //

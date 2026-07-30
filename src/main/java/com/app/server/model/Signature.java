@@ -47,17 +47,20 @@ public class Signature implements Serializable {
 
 
     @JsonBackReference
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(
+            cascade = CascadeType.ALL,
+            fetch = FetchType.EAGER,
+            orphanRemoval = true)
     private List<UserContract> contractList = new ArrayList<>();
 
 
+    private String otp;
     private boolean valid;
+
     private int usageCount;
     private int totalUsageCount;
     private String privateKeyId;
 
-
-    private String otp;
 
     private String country;
     private String reason;
@@ -68,11 +71,10 @@ public class Signature implements Serializable {
     private String city;
     private String email;
     private String title;
-
     private String status;
 
 
-    private LocalDateTime signatureExpired;
+
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String signaturePassword;
@@ -88,11 +90,7 @@ public class Signature implements Serializable {
     @CreationTimestamp
     private LocalDateTime updatedAt;
 
+    private LocalDateTime signatureExpired;
 
-    @PrePersist
-    public void prePersist() {
-        this.totalUsageCount=usageCount;
-        this.otp = String.valueOf(1000 + new Random().nextInt(9000));
 
-    }
 }

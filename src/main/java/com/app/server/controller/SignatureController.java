@@ -49,25 +49,23 @@ public class SignatureController {
      ResponseEntity<?> signatureRequest(
             @Valid @RequestBody SignatureRequestDto req,
             Authentication auth,
-            @RequestHeader(value = "Authorization", required = false) String authorization
+            @RequestHeader(value = "Authorization",
+                    required = false) String authorization
     ) {
-        if (authorization == null || !authorization.startsWith("Bearer ")) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body("Access Token ارسال نشده است");
-        }
-
 
         User user = userService.convertUserFromAuthentication(auth);
         req.setUserId(user.getId());
+
+
         Signature signature = signatureService.generateSignature(req);
 
-        if (signature.isValid()) {
-            return ResponseEntity.ok(
-                    CustomResponseDto.builder()
-                            .message("این امضا خریداری شده است و هنوز اعتبار دارد")
-                            .build()
-            );
-        }
+//        if (signature.isValid()) {
+//            return ResponseEntity.ok(
+//                    CustomResponseDto.builder()
+//                            .message("این امضا خریداری شده است و هنوز اعتبار دارد")
+//                            .build()
+//            );
+//        }
 
         if (signature != null) {
             CustomResponseDto res =CustomResponseDto.builder()
@@ -90,11 +88,18 @@ public class SignatureController {
         return signatureService.findAll();
     }
 
+
+
+
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/{id}")
     public Signature get(@PathVariable Long id){
         return signatureService.findById(id);
     }
+
+
+
+
 
 
     // Verify Otp

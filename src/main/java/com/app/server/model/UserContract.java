@@ -44,7 +44,7 @@ public class UserContract {
 
 
     @JsonManagedReference
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.EAGER,cascade = CascadeType.ALL,optional = true)
     @JoinColumn(name = "signature_id")
     @JsonIdentityReference(alwaysAsId = true)
     private Signature signature;

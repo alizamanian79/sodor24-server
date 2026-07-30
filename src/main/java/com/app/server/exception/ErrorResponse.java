@@ -21,6 +21,7 @@ public class ErrorResponse {
     private String details;
     private PersianDate timestamp;
     private int status;
+    private String redirect;
 
     public String getTimestamp() {
         if (timestamp == null) return null;

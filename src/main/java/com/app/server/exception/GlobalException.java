@@ -7,9 +7,6 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestControllerAdvice
@@ -27,6 +24,41 @@ public class GlobalException {
 
         return new ResponseEntity<>(errorResponse, HttpStatus.CONFLICT);
     }
+
+
+    // Forbidden Conflict
+    @ExceptionHandler(AppForbiddenException.class)
+    public ResponseEntity<?> handleAppForbiddenException(AppForbiddenException e) {
+        ErrorResponse errorResponse = ErrorResponse.builder()
+                .message(e.getMessage() != null ? e.getMessage() : "دسترسی غیرمجاز")
+                .details(e.getDetails() != null ? e.getDetails() : "دسترسی غیر مجاز")
+                .redirect(e.getRedirect().equals(null)?"":e.getRedirect())
+                .status(HttpStatus.FORBIDDEN.value())
+                .timestamp(PersianDate.now())
+                .build();
+
+        return new ResponseEntity<>(errorResponse, HttpStatus.FORBIDDEN);
+    }
+
+
+
+    // Internal Conflict
+    @ExceptionHandler(AppInternalException.class)
+    public ResponseEntity<?> handleAppInternalException(AppInternalException e) {
+        ErrorResponse errorResponse = ErrorResponse.builder()
+                .message(e.getMessage() != null ? e.getMessage() : "خطای سرور")
+                .details(e.getDetails() != null ? e.getDetails() : "خطای سرور")
+                .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
+                .timestamp(PersianDate.now())
+                .build();
+
+        return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+
+
+
+
 
     // ✅ 404 Not Found
     @ExceptionHandler(AppNotFoundException.class)

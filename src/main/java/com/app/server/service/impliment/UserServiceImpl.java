@@ -65,9 +65,6 @@ public class UserServiceImpl implements UserService {
     }
 
 
-    CompletableFuture<String> createWalletSub(){
-        return CompletableFuture.supplyAsync(()->createWallet());
-    }
 
 
 
@@ -77,12 +74,7 @@ public class UserServiceImpl implements UserService {
 
         // Register user
         CompletableFuture<User> createUserFuture=createUser(req);
-        CompletableFuture<String> createWalletFuture=createWalletSub();
-
-        CompletableFuture.allOf(createUserFuture,createWalletFuture).join();
         User user = createUserFuture.join();
-        String walletId = createWalletFuture.join();
-        user.setWalletId(walletId);
         userRepository.save(user);
 
         OtpService otpService = otpFactory.getService(OtpType.USER);
@@ -210,22 +202,6 @@ public class UserServiceImpl implements UserService {
             return null;
         }
         return user;
-    }
-
-
-
-
-
-    public String createWallet(){
-        CreateWalletRequestDto req = CreateWalletRequestDto.builder()
-                .sub("")
-                .balance(BigDecimal.ZERO)
-                .currency("IRT")
-                .build();
-        WalletResponseDto res = walletRMQProducer.createWallet(req);
-        Map<String,Object> data = (Map<String, Object>) res.getData();
-        String sub = data.get("sub").toString();
-        return sub;
     }
 
 

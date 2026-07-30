@@ -12,16 +12,22 @@ import com.app.server.service.NotificationService;
 import com.app.server.service.OtpService;
 import com.app.server.service.impliment.NotificationFactory;
 import com.app.server.service.impliment.RandomCodeGenerator;
+import com.app.server.util.wallet_service_producer.WalletRMQProducer;
+import com.app.server.util.wallet_service_producer.dto.request.CreateWalletRequestDto;
+import com.app.server.util.wallet_service_producer.dto.response.WalletResponseDto;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
@@ -30,8 +36,12 @@ import java.util.concurrent.CompletableFuture;
 @Slf4j
 public class UserOtpServiceImpl implements OtpService {
 
+    @Value("${application.wallet-service.currency}")
+    public String currency;
+
     private final OtpRepository otpRepository;
     private final NotificationFactory notificationFactory;
+    private final WalletRMQProducer walletRMQProducer;
 
 
     @Autowired
@@ -39,6 +49,29 @@ public class UserOtpServiceImpl implements OtpService {
 
 
     private final UserRepository userRepository;
+
+
+
+
+
+
+
+    public String createWallet(){
+        CreateWalletRequestDto req = CreateWalletRequestDto.builder()
+                .sub("")
+                .balance(BigDecimal.ZERO)
+                .currency(currency)
+                .build();
+        WalletResponseDto res = walletRMQProducer.createWallet(req);
+        Map<String,Object> data = (Map<String, Object>) res.getData();
+        String sub = data.get("sub").toString();
+        return sub;
+    }
+
+    CompletableFuture<String> createWalletSub(){
+        return CompletableFuture.supplyAsync(()->createWallet());
+    }
+
 
 
     CompletableFuture<Otp> getOtpCode(String code){
@@ -80,9 +113,6 @@ public class UserOtpServiceImpl implements OtpService {
         User user = userFuture.join();
         String code = generateCodeFuture.join();
 
-
-
-
         // Otp builder
         Otp otpBuilder = Otp.builder()
                 .code(code)
@@ -113,13 +143,16 @@ public class UserOtpServiceImpl implements OtpService {
 
         CompletableFuture<User> userFuture=getUserByPhoneNumber(receiver);
         CompletableFuture<Otp> otpFuture = getOtpCode(code);
+        CompletableFuture<String> subWallet = createWalletSub();
         CompletableFuture.allOf(userFuture,otpFuture);
 
         User user = userFuture.join();
         Otp otp= otpFuture.join();
+        String wallet= subWallet.join();
 
-         user.setValid(true);
+        user.setValid(true);
         user.setOtp(null);
+        user.setWalletId(wallet);
         userRepository.save(user);
         otpRepository.delete(otp);
 
@@ -138,7 +171,11 @@ public class UserOtpServiceImpl implements OtpService {
 
             if (user != null) {
                 user.setOtp(null);
+                user.setValid(false);
+                walletRMQProducer.deleteWalletBySub(user.getWalletId());
+                user.setWalletId(null);
                 userRepository.save(user);
+
             }
         }
 

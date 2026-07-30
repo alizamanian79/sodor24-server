@@ -1,5 +1,6 @@
 package com.app.server.controller;
 
+import com.app.server.annotation.VerifiedUser;
 import com.app.server.dto.request.LoginRequestDto;
 import com.app.server.dto.request.RegisterRequestDto;
 import com.app.server.dto.response.LoginResponseDto;
@@ -35,6 +36,8 @@ public class AuthController {
         return ResponseEntity.status(HttpStatus.CREATED).body(user);
     }
 
+
+    @VerifiedUser
     @PostMapping("/login")
     public ResponseEntity<?> loginUser(@Valid @RequestBody LoginRequestDto req) {
         try {

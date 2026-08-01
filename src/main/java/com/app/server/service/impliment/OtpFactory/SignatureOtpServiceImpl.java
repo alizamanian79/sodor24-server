@@ -84,8 +84,13 @@ public class SignatureOtpServiceImpl implements OtpService {
         CompletableFuture<Signature> findSignature = getSignatureById(receiver);
         CompletableFuture.allOf(generateCodeFuture,findSignature);
 
+
+
+
+
         String code = generateCodeFuture.join();
         Signature signature = findSignature.join();
+
 
 
         // Otp builder
@@ -100,6 +105,7 @@ public class SignatureOtpServiceImpl implements OtpService {
 
         // update signature
         signature.setOtp(code);
+        signature.setVerified(false);
         signature.setValid(false);
         signatureRepository.save(signature);
 
@@ -140,8 +146,9 @@ public class SignatureOtpServiceImpl implements OtpService {
         }
 
         signature.setOtp(null);
-        signature.setValid(true);
-        signature.setStatus("احراز هویت شده");
+        signature.setValid(false);
+        signature.setVerified(true);
+        signature.setStatus("در انتظار پرداخت");
         signatureRepository.save(signature);
         otpRepository.delete(otpCode);
 
@@ -171,18 +178,43 @@ public class SignatureOtpServiceImpl implements OtpService {
 
 
 
-//    @Scheduled(fixedRate = 120000)
-//    @Transactional
-//    public void removeExpiredOtps() {
-//
-//        List<Signature> signatures =signatureRepository.getSignatureByValid(false);
-//
-//        for (Signature signature : signatures) {
-//            signatureRepository.deleteSignatureById(signature.getId());
-//        }
-//
-//        log.info("invalid signatures deleted successful;y");
-//    }
+    @Scheduled(fixedRate = 120_000)
+    @Transactional
+    public void removeExpiredOtps() {
+        LocalDateTime now = LocalDateTime.now();
+        List<Otp> expiredOtps = otpRepository.findByExpiresAtBefore(now);
+
+        for (Otp otp : expiredOtps) {
+            Signature signature = signatureRepository.findSignatureByOtp(otp.getCode()).get();
+
+            if (signature != null) {
+                signature.setOtp(null);
+                signature.setValid(false);
+                signature.setVerified(false);
+                signatureRepository.save(signature);
+
+            }
+        }
+
+        long deleted = otpRepository.deleteByExpiresAtBefore(now);
+
+        log.info("Deleted {} expired OTPs", deleted);
+    }
+
+
+    // deleted after 24 hours
+    @Scheduled(fixedRate = 86400_000)
+    @Transactional
+    public void deletedSignatureExpired() {
+
+        List<Signature> signatures = signatureRepository.findSignatureByValid(false);
+
+        for (Signature signature : signatures) {
+            log.info("Deleted signature id-> \s", signature.getId());
+            signatureRepository.deleteSignatureById(signature.getId());
+        }
+
+    }
 
 
 

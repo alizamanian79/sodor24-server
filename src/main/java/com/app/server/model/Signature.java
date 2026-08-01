@@ -56,6 +56,7 @@ public class Signature implements Serializable {
 
     private String otp;
     private boolean valid;
+    private boolean verified;
 
     private int usageCount;
     private int totalUsageCount;

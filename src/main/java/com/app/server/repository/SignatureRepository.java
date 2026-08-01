@@ -15,7 +15,7 @@ import java.util.Optional;
 public interface SignatureRepository extends JpaRepository<Signature, Long> {
  Optional<Signature> findByOtp(String otp);
  Optional<Signature> findSignatureById(Long id);
-
+ Optional<Signature> findSignatureByOtp(String otp);
 
  @Transactional
  @Modifying
@@ -23,4 +23,8 @@ public interface SignatureRepository extends JpaRepository<Signature, Long> {
  void deleteSignatureById(@Param("id") Long id);
 
  List<Signature> getSignatureByValid(boolean valid);
+
+ List<Signature> findSignatureByValid(boolean valid);
+
+ List<Signature> findSignatureByVerified(boolean verified);
 }

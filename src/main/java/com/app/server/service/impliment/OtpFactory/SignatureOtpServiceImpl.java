@@ -207,7 +207,7 @@ public class SignatureOtpServiceImpl implements OtpService {
     @Transactional
     public void deletedSignatureExpired() {
 
-        List<Signature> signatures = signatureRepository.findSignatureByValid(false);
+        List<Signature> signatures = signatureRepository.findSignatureByVerified(false);
 
         for (Signature signature : signatures) {
             log.info("Deleted signature id-> \s", signature.getId());

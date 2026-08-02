@@ -40,8 +40,6 @@ public class SignatureServiceImpl implements SignatureService {
     private final SignatureProducer signatureProducer;
     private final OtpFactory otpFactory;
 
-    private final Executor taskExecutor;
-
 
     @Override
     public List<Signature> findAll() {
@@ -96,7 +94,7 @@ public class SignatureServiceImpl implements SignatureService {
 //            otpService.generateOtp(saved.getId().toString());
 
             return saved;
-        },taskExecutor);
+        });
     }
 
 

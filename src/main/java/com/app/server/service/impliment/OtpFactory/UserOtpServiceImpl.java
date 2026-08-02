@@ -173,7 +173,8 @@ public class UserOtpServiceImpl implements OtpService {
         List<Otp> expiredOtps = otpRepository.findByExpiresAtBefore(now);
 
         for (Otp otp : expiredOtps) {
-            User user = userRepository.findUserByOtp(otp.getCode()).get();
+            User user = userRepository.findUserByOtp(otp.getCode()).orElseThrow(() ->
+                    new RuntimeException("otp not found"));;
 
             if (user != null) {
                 user.setOtp(null);

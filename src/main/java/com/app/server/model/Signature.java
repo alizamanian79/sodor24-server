@@ -54,7 +54,9 @@ public class Signature implements Serializable {
     private List<UserContract> contractList = new ArrayList<>();
 
 
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String otp;
+
     private boolean valid;
     private boolean verified;
 

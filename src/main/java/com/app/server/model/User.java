@@ -77,9 +77,12 @@ public class User implements UserDetails, Serializable {
     }
 
 
-
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String otp;
+
     private boolean isValid;
+
+
 
     @Override
     public String getPassword() {

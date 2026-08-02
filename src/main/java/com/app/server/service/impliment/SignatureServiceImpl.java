@@ -92,8 +92,8 @@ public class SignatureServiceImpl implements SignatureService {
 
             Signature saved = signatureRepository.save(signature);
 
-            OtpService otpService = otpFactory.getService(OtpType.SIGNATURE);
-            otpService.generateOtp(saved.getId().toString());
+//            OtpService otpService = otpFactory.getService(OtpType.SIGNATURE);
+//            otpService.generateOtp(saved.getId().toString());
 
             return saved;
         },taskExecutor);
@@ -103,8 +103,6 @@ public class SignatureServiceImpl implements SignatureService {
     @Transactional
     @Override
     public Signature generateSignature(SignatureRequestDto req) {
-
-
 
         User existUser = userService.findUserById(req.getUserId());
         SignaturePlan signaturePlan =

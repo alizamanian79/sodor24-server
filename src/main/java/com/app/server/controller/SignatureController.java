@@ -55,8 +55,6 @@ public class SignatureController {
 
         User user = userService.convertUserFromAuthentication(auth);
         req.setUserId(user.getId());
-
-
         Signature signature = signatureService.generateSignature(req);
 
 //        if (signature.isValid()) {
@@ -69,7 +67,7 @@ public class SignatureController {
 
         if (signature != null) {
             CustomResponseDto res =CustomResponseDto.builder()
-                    .message("کد تایید به شماره تماس شما فرستاده شد")
+                    .message("درخواست شما با موفقیت ثبت شد")
                     .details("")
                     .timestamp(PersianDate.now())
                     .build();
@@ -171,24 +169,6 @@ public class SignatureController {
 //            return new ResponseEntity<>(e,HttpStatus.INTERNAL_SERVER_ERROR);
 //        }
 //    }
-
-
-
-    public RedirectView redirectView(boolean value, String queryPrefix) {
-        String url = value
-                ? "http://localhost:3000/transaction/payed?" + queryPrefix
-                : "http://localhost:3000/transaction/error?" + queryPrefix;
-
-        RedirectView redirectView = new RedirectView(url);
-        redirectView.setStatusCode(HttpStatus.FOUND); // 302
-        redirectView.setContextRelative(false); // عدم استفاده از context path
-        redirectView.setHttp10Compatible(false); // استفاده از HTTP 1.1
-        redirectView.setExposeModelAttributes(false); // عدم expose مدل attributes
-        redirectView.setExposePathVariables(false); // عدم expose path variables
-
-        return redirectView;
-    }
-
 
 
 //    @GetMapping("/use/{id}")

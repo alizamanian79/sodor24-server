@@ -1,131 +1,258 @@
+version: "3.9"
+
 services:
 
-  sodor24-server:
-    container_name: sodor24-server
-    image: alizamanian/sodor24-server:v2.0.0
-#    build:
-#      context: .
-#      dockerfile: Dockerfile
-    environment:
-
-      # ✅ Server Config
-      SPRING_PROFILES_ACTIVE: docker
-      SPRING_DATASOURCE_URL: jdbc:mysql://sodor24-db:3306/sodor24db?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
-      SPRING_DATASOURCE_USERNAME: root
-      SPRING_DATASOURCE_PASSWORD: 1234
-      SERVER_PORT: 8181
-
-      # ✅ RabbitMQ Config
-      SPRING_RABBITMQ_HOST: rabbitmq
-      SPRING_RABBITMQ_PORT: 5672
-      SPRING_RABBITMQ_USERNAME: guest
-      SPRING_RABBITMQ_PASSWORD: guest
-      SPRING_REDIS_HOST: redis
-
-      # ✅ App Config
-      APP_SERVER_HOST: http://sodor24-server:${SERVER_PORT}
-      APP_CLIENT_HOST: http://localhost:3000
-
-      # ✅ Zarinpal Config
-      ZARINPAL_SERVER_HOST: https://sandbox.zarinpal.com
-      ZARINPAL_MERCHANT_ID: 7007f58a-3ec5-4ea6-a414-5849591ba0a7
-
-    depends_on:
-      sodor24-db:
-        condition: service_healthy
-      redis:
-        condition: service_started
-      rabbitmq:
-        condition: service_healthy
-
-    ports:
-      - "8181:8181"
+  # ======================================
+  # MySQL
+  # ======================================
+  sodor24-database-service:
+    image: mysql:8.4.6
+    container_name: sodor24-db-service
     restart: unless-stopped
-    networks:
-      - sodor24-network
 
-  redis:
-    image: redis:7-alpine
-    container_name: redis
-    ports:
-      - "6379:6379"
-    restart: unless-stopped
-    networks:
-      - sodor24-network
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
-  sodor24-db:
-    image: mysql:8.0
-    container_name: sodor24-db
     environment:
+      TZ: Asia/Tehran
+      MYSQL_ROOT_PASSWORD: zamanian1379
       MYSQL_DATABASE: sodor24db
-      MYSQL_ROOT_PASSWORD: 1234
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: zamanian1379
+
+#    command:
+#      - --default-authentication-plugin=mysql_native_password
+#      - --character-set-server=utf8mb4
+#      - --collation-server=utf8mb4_unicode_ci
+
     ports:
       - "3307:3306"
+
     volumes:
-      - sodor24-db:/var/lib/mysql
+      - sodor24-db-volume:/var/lib/mysql
+      - ./mysql/init.sql:/docker-entrypoint-initdb.d/init.sql
+
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uadmin", "-pzamanian1379"]
       interval: 10s
       timeout: 5s
-      retries: 5
-    restart: unless-stopped
-    networks:
-      - sodor24-network
+      retries: 20
+      start_period: 40s
 
-  rabbitmq:
-    image: rabbitmq:3.10.5-management
-    container_name: sodor24-rabbitmq
+    networks:
+      - app-network
+
+  # ======================================
+  # RabbitMQ
+  # ======================================
+  rabbitmq-service:
+    image: rabbitmq:3.13-management
+    container_name: rabbitmq-service
+    restart: unless-stopped
+
+    environment:
+      TZ: Asia/Tehran
+      RABBITMQ_DEFAULT_USER: admin
+      RABBITMQ_DEFAULT_PASS: zamanian1379
+
     ports:
       - "5672:5672"
       - "15672:15672"
-    environment:
-      RABBITMQ_DEFAULT_USER: guest
-      RABBITMQ_DEFAULT_PASS: guest
+
     volumes:
-      - sodor24-rabbitmq:/var/lib/rabbitmq
-    restart: unless-stopped
+      - rabbitmq-volume:/var/lib/rabbitmq
+
     healthcheck:
-      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
       interval: 10s
       timeout: 5s
-      retries: 5
+      retries: 20
+      start_period: 30s
+
     networks:
-      - sodor24-network
+      - app-network
 
-  signature-service:
-    image: alizamanian/signature-service:v1.0.0
-    container_name: signature-service
+  # ======================================
+  # Redis
+  # ======================================
+  redis-service:
+    image: redis:7-alpine
+    container_name: redis-service
+    restart: unless-stopped
+
+    command: redis-server --appendonly yes --requirepass zamanian1379
+
     ports:
-      - "8585:8585"
-    depends_on:
-      sodor24-db:
-        condition: service_healthy
-      rabbitmq:
-        condition: service_healthy
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://sodor24-db:3306/signaturedb?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
-      SPRING_DATASOURCE_USERNAME: root
-      SPRING_DATASOURCE_PASSWORD: 1234
+      - "6379:6379"
 
-      # ✅ RabbitMQ (FIXED)
-      SPRING_RABBITMQ_HOST: sodor24-rabbitmq
-      SPRING_RABBITMQ_PORT: 5672
-      SPRING_RABBITMQ_USERNAME: guest
-      SPRING_RABBITMQ_PASSWORD: guest
+    volumes:
+      - redis-volume:/data
+
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "zamanian1379", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+      start_period: 20s
+
+    networks:
+      - app-network
+
+  # ======================================
+  # Sodor24 server
+  # ======================================
+  sodor24-server:
+    image: alizamanian/sodor24-server:latest
+    container_name: sodor24-server
 
     restart: unless-stopped
+    pull_policy: always
+
+    ports:
+      - "8181:8181"
+
+    environment:
+      TZ: Asia/Tehran
+
+      SERVER_PORT: 8181
+      APP_ENV: dev
+      APP_CLIENT_HOST: http://localhost:3000
+      CURRENCY: IRT
+
+      SPRING_DATASOURCE_URL: jdbc:mysql://sodor24-database-service:3306/sodor24db?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Tehran
+      SPRING_DATASOURCE_USERNAME: admin
+      SPRING_DATASOURCE_PASSWORD: zamanian1379
+
+      SPRING_RABBITMQ_HOST: rabbitmq-service
+      SPRING_RABBITMQ_PORT: 5672
+      SPRING_RABBITMQ_USERNAME: admin
+      SPRING_RABBITMQ_PASSWORD: zamanian1379
+
+      SPRING_CACHE_TYPE: redis
+      SPRING_DATA_REDIS_HOST: redis-service
+      SPRING_DATA_REDIS_PORT: 6379
+      SPRING_DATA_REDIS_PASSWORD: zamanian1379
+
+    depends_on:
+      sodor24-database-service:
+        condition: service_healthy
+
+      rabbitmq-service:
+        condition: service_healthy
+
+      redis-service:
+        condition: service_healthy
+
+    healthcheck:
+      test: ["CMD-SHELL", "wget --spider -q http://localhost:8181/actuator/health || exit 1"]
+      interval: 20s
+      timeout: 10s
+      retries: 10
+      start_period: 60s
+
     networks:
-      - sodor24-network
+      - app-network
 
+  # ======================================
+  # Wallet Service
+  # ======================================
+  wallet-service:
+    image: alizamanian/wallet-service:latest
+    container_name: wallet-service
+
+    restart: unless-stopped
+    pull_policy: always
+
+    ports:
+      - "8489:8489"
+
+    environment:
+      TZ: Asia/Tehran
+
+      SERVER_PORT: 8489
+
+      DB_RESOURCE: jdbc:mysql://sodor24-database-service:3306/walletdb?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Tehran
+      DB_USER: admin
+      DB_PASSWORD: zamanian1379
+
+      SPRING_RABBITMQ_HOST: rabbitmq-service
+      SPRING_RABBITMQ_PORT: 5672
+      SPRING_RABBITMQ_USERNAME: admin
+      SPRING_RABBITMQ_PASSWORD: zamanian1379
+
+      ZARINPAL_ENV: dev
+      ZARINPAL_MERCHANT_ID: d8234a3a-dbcf-4f30-ab52-b195b0f0f1a3
+
+    depends_on:
+      sodor24-database-service:
+        condition: service_healthy
+
+      rabbitmq-service:
+        condition: service_healthy
+
+    healthcheck:
+      test: ["CMD-SHELL", "wget --spider -q http://localhost:8489/actuator/health || exit 1"]
+      interval: 20s
+      timeout: 10s
+      retries: 10
+      start_period: 60s
+
+    networks:
+      - app-network
+
+  # ======================================
+  # Signature Service
+  # ======================================
+  signature-service:
+    image: alizamanian/signature-service:latest
+    container_name: signature-service
+
+    restart: unless-stopped
+    pull_policy: always
+
+    ports:
+      - "8585:8585"
+
+    environment:
+      TZ: Asia/Tehran
+
+      SERVER_PORT: 8585
+      SPRING_PROFILES_ACTIVE: prod
+
+      SPRING_RABBITMQ_HOST: rabbitmq-service
+      SPRING_RABBITMQ_PORT: 5672
+      SPRING_RABBITMQ_USERNAME: admin
+      SPRING_RABBITMQ_PASSWORD: zamanian1379
+
+    volumes:
+      - signature_storage:/app/storage
+
+    depends_on:
+      rabbitmq-service:
+        condition: service_healthy
+      sodor24-server:
+        condition: service_healthy
+
+    healthcheck:
+      test: ["CMD-SHELL", "wget --spider -q http://localhost:8585/actuator/health || exit 1"]
+      interval: 20s
+      timeout: 10s
+      retries: 10
+      start_period: 60s
+
+    networks:
+      - app-network
+
+# ======================================
+# Volumes
+# ======================================
 volumes:
-  sodor24-db:
-  sodor24-rabbitmq:
+  sodor24-db-volume:
+  rabbitmq-volume:
+  redis-volume:
+  signature_storage:
 
+# ======================================
+# Networks
+# ======================================
 networks:
-  sodor24-network:
+  app-network:
+    name: app-network
     driver: bridge

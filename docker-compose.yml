@@ -2,9 +2,7 @@ version: "3.9"
 
 services:
 
-  # ======================================
-  # MySQL
-  # ======================================
+
   sodor24-database-service:
     image: mysql:8.4.6
     container_name: sodor24-db-service
@@ -16,11 +14,6 @@ services:
       MYSQL_DATABASE: sodor24db
       MYSQL_USER: admin
       MYSQL_PASSWORD: zamanian1379
-
-#    command:
-#      - --default-authentication-plugin=mysql_native_password
-#      - --character-set-server=utf8mb4
-#      - --collation-server=utf8mb4_unicode_ci
 
     ports:
       - "3307:3306"
@@ -39,9 +32,7 @@ services:
     networks:
       - app-network
 
-  # ======================================
-  # RabbitMQ
-  # ======================================
+
   rabbitmq-service:
     image: rabbitmq:3.13-management
     container_name: rabbitmq-service
@@ -69,9 +60,8 @@ services:
     networks:
       - app-network
 
-  # ======================================
-  # Redis
-  # ======================================
+
+
   redis-service:
     image: redis:7-alpine
     container_name: redis-service
@@ -95,9 +85,7 @@ services:
     networks:
       - app-network
 
-  # ======================================
-  # Sodor24 server
-  # ======================================
+
   sodor24-server:
     image: alizamanian/sodor24-server:latest
     container_name: sodor24-server
@@ -113,7 +101,7 @@ services:
 
       SERVER_PORT: 8181
       APP_ENV: dev
-      APP_CLIENT_HOST: http://localhost:3000
+      APP_CLIENT_HOST: http://sodor24-client:3000
       CURRENCY: IRT
 
       SPRING_DATASOURCE_URL: jdbc:mysql://sodor24-database-service:3306/sodor24db?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Tehran
@@ -125,7 +113,7 @@ services:
       SPRING_RABBITMQ_USERNAME: admin
       SPRING_RABBITMQ_PASSWORD: zamanian1379
 
-      SPRING_CACHE_TYPE: redis
+      SPRING_DATA_CATCHE_TYPE: redis
       SPRING_DATA_REDIS_HOST: redis-service
       SPRING_DATA_REDIS_PORT: 6379
       SPRING_DATA_REDIS_PASSWORD: zamanian1379
@@ -140,19 +128,11 @@ services:
       redis-service:
         condition: service_healthy
 
-    healthcheck:
-      test: ["CMD-SHELL", "wget --spider -q http://localhost:8181/actuator/health || exit 1"]
-      interval: 20s
-      timeout: 10s
-      retries: 10
-      start_period: 60s
-
     networks:
       - app-network
 
-  # ======================================
-  # Wallet Service
-  # ======================================
+
+
   wallet-service:
     image: alizamanian/wallet-service:latest
     container_name: wallet-service
@@ -197,25 +177,18 @@ services:
     networks:
       - app-network
 
-  # ======================================
-  # Signature Service
-  # ======================================
+
+
   signature-service:
     image: alizamanian/signature-service:latest
     container_name: signature-service
-
-    restart: unless-stopped
+    restart: always
     pull_policy: always
-
     ports:
       - "8585:8585"
-
     environment:
       TZ: Asia/Tehran
-
       SERVER_PORT: 8585
-      SPRING_PROFILES_ACTIVE: prod
-
       SPRING_RABBITMQ_HOST: rabbitmq-service
       SPRING_RABBITMQ_PORT: 5672
       SPRING_RABBITMQ_USERNAME: admin
@@ -225,10 +198,8 @@ services:
       - signature_storage:/app/storage
 
     depends_on:
-      rabbitmq-service:
-        condition: service_healthy
       sodor24-server:
-        condition: service_healthy
+        condition: service_started
 
     healthcheck:
       test: ["CMD-SHELL", "wget --spider -q http://localhost:8585/actuator/health || exit 1"]
@@ -239,6 +210,23 @@ services:
 
     networks:
       - app-network
+
+  sodor24-client:
+    image: alizamanian/sodor24-client:latest
+    container_name: sodor24-client
+    restart: unless-stopped
+    pull_policy: always
+    ports:
+      - "3000:3000"
+    environment:
+      TZ: Asia/Tehran
+      NEXT_PUBLIC_SERVER_HOST: http://sodor24-server:8181
+    depends_on:
+      sodor24-server:
+        condition: service_started
+    networks:
+      - app-network
+
 
 # ======================================
 # Volumes

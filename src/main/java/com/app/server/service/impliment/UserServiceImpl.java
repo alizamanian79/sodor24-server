@@ -14,8 +14,6 @@ import com.app.server.service.OtpService;
 import com.app.server.service.UserService;
 import com.app.server.service.impliment.OtpFactory.OtpFactory;
 import com.app.server.util.wallet_service_producer.WalletRMQProducer;
-import com.app.server.util.wallet_service_producer.dto.request.CreateWalletRequestDto;
-import com.app.server.util.wallet_service_producer.dto.response.WalletResponseDto;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;

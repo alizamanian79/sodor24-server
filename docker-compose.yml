@@ -101,7 +101,7 @@ services:
 
       SERVER_PORT: 8181
       APP_ENV: dev
-      APP_CLIENT_HOST: http://sodor24-client:3000
+      APP_CLIENT_HOST: http://0.0.0.0:3000
       CURRENCY: IRT
 
       SPRING_DATASOURCE_URL: jdbc:mysql://sodor24-database-service:3306/sodor24db?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Tehran
@@ -214,18 +214,22 @@ services:
   sodor24-client:
     image: alizamanian/sodor24-client:latest
     container_name: sodor24-client
-    restart: unless-stopped
-    pull_policy: always
+    build:
+      context: .
+      args:
+        NEXT_PUBLIC_SERVER_HOST: http://0.0.0.0:8181
+
     ports:
       - "3000:3000"
+
     environment:
-      TZ: Asia/Tehran
-      NEXT_PUBLIC_SERVER_HOST: http://sodor24-server:8181
+      NEXT_PUBLIC_SERVER_HOST: http://0.0.0.0:8181
     depends_on:
       sodor24-server:
         condition: service_started
     networks:
       - app-network
+
 
 
 # ======================================

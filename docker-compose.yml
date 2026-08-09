@@ -86,52 +86,6 @@ services:
       - app-network
 
 
-  sodor24-server:
-    image: alizamanian/sodor24-server:latest
-    container_name: sodor24-server
-
-    restart: unless-stopped
-    pull_policy: always
-
-    ports:
-      - "8181:8181"
-
-    environment:
-      TZ: Asia/Tehran
-
-      SERVER_PORT: 8181
-      APP_ENV: dev
-      APP_CLIENT_HOST: http://0.0.0.0:3000
-      CURRENCY: IRT
-
-      SPRING_DATASOURCE_URL: jdbc:mysql://sodor24-database-service:3306/sodor24db?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Tehran
-      SPRING_DATASOURCE_USERNAME: admin
-      SPRING_DATASOURCE_PASSWORD: zamanian1379
-
-      SPRING_RABBITMQ_HOST: rabbitmq-service
-      SPRING_RABBITMQ_PORT: 5672
-      SPRING_RABBITMQ_USERNAME: admin
-      SPRING_RABBITMQ_PASSWORD: zamanian1379
-
-      SPRING_DATA_CATCHE_TYPE: redis
-      SPRING_DATA_REDIS_HOST: redis-service
-      SPRING_DATA_REDIS_PORT: 6379
-      SPRING_DATA_REDIS_PASSWORD: zamanian1379
-
-    depends_on:
-      sodor24-database-service:
-        condition: service_healthy
-
-      rabbitmq-service:
-        condition: service_healthy
-
-      redis-service:
-        condition: service_healthy
-
-    networks:
-      - app-network
-
-
 
   wallet-service:
     image: alizamanian/wallet-service:latest
@@ -211,18 +165,73 @@ services:
     networks:
       - app-network
 
+
+
+  sodor24-server:
+    image: alizamanian/sodor24-server:latest
+    container_name: sodor24-server
+    restart: unless-stopped
+    pull_policy: always
+
+    ports:
+      - "8181:8181"
+
+    environment:
+      TZ: Asia/Tehran
+
+      SERVER_PORT: 8181
+      APP_ENV: dev
+
+      # Origin واقعی Browser
+      APP_CLIENT_HOST: http://192.168.1.7:3000
+
+      CURRENCY: IRT
+
+      SPRING_DATASOURCE_URL: jdbc:mysql://sodor24-database-service:3306/sodor24db?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Tehran
+      SPRING_DATASOURCE_USERNAME: admin
+      SPRING_DATASOURCE_PASSWORD: zamanian1379
+
+      SPRING_RABBITMQ_HOST: rabbitmq-service
+      SPRING_RABBITMQ_PORT: 5672
+      SPRING_RABBITMQ_USERNAME: admin
+      SPRING_RABBITMQ_PASSWORD: zamanian1379
+
+      SPRING_CACHE_TYPE: redis
+      SPRING_DATA_REDIS_HOST: redis-service
+      SPRING_DATA_REDIS_PORT: 6379
+      SPRING_DATA_REDIS_PASSWORD: zamanian1379
+
+    depends_on:
+      sodor24-database-service:
+        condition: service_healthy
+
+      rabbitmq-service:
+        condition: service_healthy
+
+      redis-service:
+        condition: service_healthy
+
+    networks:
+      - app-network
+
+
+
   sodor24-client:
     image: alizamanian/sodor24-client:latest
-    build:
-      context: ./
-      args:
-        NEXT_PUBLIC_SERVER_HOST: http://sodor24-server:8181
+    container_name: sodor24-client
+    restart: unless-stopped
 
     ports:
       - "3000:3000"
+
+    environment:
+      # برای Browser
+      SERVER_HOST: http://192.168.1.7:8181
+
     depends_on:
       sodor24-server:
         condition: service_started
+
     networks:
       - app-network
 

@@ -213,17 +213,13 @@ services:
 
   sodor24-client:
     image: alizamanian/sodor24-client:latest
-    container_name: sodor24-client
     build:
-      context: .
+      context: ./
       args:
-        NEXT_PUBLIC_SERVER_HOST: http://0.0.0.0:8181
+        NEXT_PUBLIC_SERVER_HOST: http://sodor24-server:8181
 
     ports:
       - "3000:3000"
-
-    environment:
-      NEXT_PUBLIC_SERVER_HOST: http://0.0.0.0:8181
     depends_on:
       sodor24-server:
         condition: service_started

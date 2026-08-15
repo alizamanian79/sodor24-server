@@ -1,10 +1,13 @@
 package com.app.server.controller;
 
+import com.app.server.annotation.VerifiedUser;
 import com.app.server.dto.request.LoginRequestDto;
 import com.app.server.dto.request.RegisterRequestDto;
 import com.app.server.dto.response.LoginResponseDto;
+import com.app.server.dto.response.RegisterResponseDto;
 import com.app.server.exception.AppUnAuthorizedException;
 import com.app.server.service.AuthenticationService;
+import com.app.server.service.UserService;
 import com.app.server.util.ExternalRequest.ExternalRequest;
 import com.app.server.util.ExternalRequest.dto.ExternalRequestDto;
 import com.app.server.util.ExternalRequest.dto.Method;
@@ -24,14 +27,26 @@ public class AuthController {
 
     private final ExternalRequest externalRequest;
     private final AuthenticationService authenticationService;
+    private final UserService userService;
 
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(
             @Valid @RequestBody RegisterRequestDto request
     ) {
-    return authenticationService.register(request);
+        // register in keycloak
+        String sub = authenticationService.register(request);
+
+        if (!sub.isBlank()){
+            request.setSub(sub);
+            RegisterResponseDto res =userService.registerUser(request);
+            return new ResponseEntity<>(res,HttpStatus.OK);
+        }
+
+    return new ResponseEntity<>("",HttpStatus.OK);
+
     }
 
+    
     @PostMapping("/login")
     public ResponseEntity<?> loginUser(
             @Valid @RequestBody LoginRequestDto request

@@ -8,5 +8,5 @@ import org.springframework.http.ResponseEntity;
 
 public interface AuthenticationService {
     ResponseEntity<LoginResponseDto> login (LoginRequestDto req);
-    ResponseEntity<RegisterResponseDto> register(RegisterRequestDto req);
+    String register(RegisterRequestDto req);
 }

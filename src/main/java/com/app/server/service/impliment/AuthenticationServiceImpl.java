@@ -6,6 +6,7 @@ import com.app.server.dto.response.LoginResponseDto;
 import com.app.server.dto.response.RegisterResponseDto;
 import com.app.server.exception.AppUnAuthorizedException;
 import com.app.server.service.AuthenticationService;
+import com.app.server.service.UserService;
 import com.app.server.util.ExternalRequest.ExternalRequest;
 import com.app.server.util.ExternalRequest.dto.ExternalRequestDto;
 import com.app.server.util.ExternalRequest.dto.Method;
@@ -25,6 +26,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
 
     private final ExternalRequest externalRequest;
+    private final UserService userService;
 
     @Override
     public ResponseEntity<LoginResponseDto> login(LoginRequestDto req) {
@@ -69,7 +71,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     @Override
-    public ResponseEntity<RegisterResponseDto> register(RegisterRequestDto req) {
+    public String register(RegisterRequestDto req) {
 
         RegisterResponseDto res = RegisterResponseDto.builder()
                 .message("ثبت نام شما با موفقیت انجام شد . لطفا کد ارسال شده را وارد نمایید")
@@ -95,11 +97,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         );
 
 
-        result.get("sub").toString();
-        int status = (int) result.getOrDefault("status", 200);
-        return ResponseEntity
-                .status(status)
-                .body(res);
+        String sub = result.get("sub").toString();
+        return sub;
     }
 
 

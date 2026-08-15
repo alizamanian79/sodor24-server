@@ -54,6 +54,7 @@ public class UserServiceImpl implements UserService {
                     .username(req.getUsername())
                     .password(passwordEncoder.encode(req.getPassword()))
 
+                    .sub(req.getSub())
                     .firstName(req.getFirstName())
                     .lastName(req.getLastName())
                     .nationalCode(req.getNationalCode())

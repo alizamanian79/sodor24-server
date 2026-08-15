@@ -45,6 +45,7 @@ public class RegisterRequestDto {
     private String nationalCode;
 
 
+    private String sub;
 
 
 }

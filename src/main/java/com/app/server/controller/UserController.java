@@ -28,7 +28,7 @@ import java.util.*;
 public class UserController {
 
     private final UserService userService;
-    private final AuthenticationManager authenticationManager;
+//    private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
 
     // List

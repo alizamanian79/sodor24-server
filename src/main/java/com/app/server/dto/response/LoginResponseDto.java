@@ -2,6 +2,7 @@ package com.app.server.dto.response;
 
 import com.github.mfathi91.time.PersianDate;
 import lombok.*;
+import org.springframework.http.HttpStatus;
 
 import java.time.LocalTime;
 import java.util.Date;
@@ -16,7 +17,7 @@ public class LoginResponseDto {
     private String message;
     private String access_token;
     private String refresh_token;
-
+    private HttpStatus status;
 
     private PersianDate timestamp;
 

@@ -1,28 +1,18 @@
 package com.app.server.config;
 
 import com.app.server.exception.CustomAccessDeniedHandler;
-import com.app.server.exception.CustomAuthEntryPoint;
-import com.app.server.filter.JwtAccessTokenFilter;
-import com.app.server.filter.JwtAccessTokenQueryParamFilter;
-import com.app.server.filter.JwtRefreshTokenFilter;
-import com.app.server.filter.RequestInfoFilter;
-import com.app.server.provider.UsernamePasswordProvider;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.argon2.Argon2PasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.web.client.RestTemplate;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -33,41 +23,14 @@ import java.util.List;
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity(securedEnabled = true, jsr250Enabled = true)
+@RequiredArgsConstructor
 public class SecurityConfig {
 
     @Value("${app.client.host}")
     private String clientHost;
 
-
-    private final  UsernamePasswordProvider usernamePasswordProvider;
-    private final JwtAccessTokenFilter jwtAccessTokenFilter;
-    private final JwtRefreshTokenFilter jwtRefreshTokenFilter;
-    private final CustomAuthEntryPoint unauthorizedHandler;
-    private final RequestInfoFilter requestInfoFilter;
-    private final JwtAccessTokenQueryParamFilter jwtAccessTokenQueryParamFilter;
     private final JwtKeycloakConverter jwtKeycloakConverter;
-
-    public SecurityConfig(@Lazy UsernamePasswordProvider usernamePasswordProvider,
-                          @Lazy JwtAccessTokenFilter jwtAccessTokenFilter,
-                          @Lazy JwtRefreshTokenFilter jwtRefreshTokenFilter,
-                          @Lazy CustomAuthEntryPoint unauthorizedHandler,
-                          @Lazy RequestInfoFilter requestInfoFilter,
-                          @Lazy JwtAccessTokenQueryParamFilter jwtAccessTokenQueryParamFilter, JwtKeycloakConverter jwtKeycloakConverter
-    ) {
-        this.usernamePasswordProvider = usernamePasswordProvider;
-        this.jwtRefreshTokenFilter = jwtRefreshTokenFilter;
-        this.jwtAccessTokenFilter = jwtAccessTokenFilter;
-        this.unauthorizedHandler = unauthorizedHandler;
-        this.requestInfoFilter = requestInfoFilter;
-        this.jwtAccessTokenQueryParamFilter = jwtAccessTokenQueryParamFilter;
-        this.jwtKeycloakConverter = jwtKeycloakConverter;
-    }
-
-
-    @Bean
-    public AuthenticationManager authenticationManager() {
-        return new ProviderManager(Arrays.asList(usernamePasswordProvider));
-    }
+    private final AuthenticationEntryPoint unauthorizedHandler;
 
 
     @Bean
@@ -90,10 +53,8 @@ public class SecurityConfig {
                 .oauth2ResourceServer(httpSecurityOAuth2ResourceServerConfigurer -> {
                     httpSecurityOAuth2ResourceServerConfigurer.jwt(jwtConfigurer -> jwtConfigurer.jwtAuthenticationConverter(jwtKeycloakConverter));
                 })
-                .addFilterBefore(jwtAccessTokenQueryParamFilter, UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(jwtAccessTokenFilter, UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(jwtRefreshTokenFilter, UsernamePasswordAuthenticationFilter.class)
-
+//                .addFilterBefore(jwtAccessTokenQueryParamFilter, UsernamePasswordAuthenticationFilter.class)
+//
                 .exceptionHandling(ex->{
                     ex.authenticationEntryPoint(unauthorizedHandler);
                     ex.accessDeniedHandler(new CustomAccessDeniedHandler());
@@ -146,19 +107,6 @@ public class SecurityConfig {
 
 
 
-    @Bean
-    public RestTemplate restTemplate() {
-        return new RestTemplate();
-    }
-
-    @Bean
-    public FilterRegistrationBean<RequestInfoFilter> requestInfoFilterRegistration() {
-        FilterRegistrationBean<RequestInfoFilter> registration = new FilterRegistrationBean<>();
-        registration.setFilter(requestInfoFilter);
-        registration.addUrlPatterns("/*");
-        registration.setOrder(1);
-        return registration;
-    }
 
 
 

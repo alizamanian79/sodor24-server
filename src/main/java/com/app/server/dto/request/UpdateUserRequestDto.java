@@ -13,7 +13,13 @@ import lombok.NoArgsConstructor;
 public class UpdateUserRequestDto {
     private String username;
     private String password;
-    private String fullName;
+
+
+    private String email;
+    private String firstName;
+    private String lastName;
+    private String nationalCode;
+
 
     @Pattern(
             regexp = "^\\d{11}$",

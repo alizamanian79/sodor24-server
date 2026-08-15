@@ -1,8 +1,10 @@
 package com.app.server.model;
 import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -22,14 +24,35 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 @Entity
 @Table(name = "users")
-public class User implements UserDetails, Serializable {
+public class User implements  Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String fullName;
 
+    @NotBlank(message = "وارد کردن ایمیل الزامی است")
     private String username;
+
+    @NotBlank(message = "وارد کردن ایمیل الزامی است")
+    @Email(message = "فرمت ایمیل صحیح نیست")
+    private String email;
+
+    @NotBlank(message = "وارد کردن نام الزامی است")
+    @Size(min = 2, max = 50, message = "نام باید بین 2 تا 50 کاراکتر باشد")
+    private String firstName;
+
+
+    @NotBlank(message = "وارد کردن نام خانوادگی الزامی است")
+    @Size(min = 2, max = 50, message = "نام خانوادگی باید بین 2 تا 50 کاراکتر باشد")
+    private String lastName;
+
+
+    @Size(min = 1, max = 15, message = "کدملی باید بین 1 تا 15 کاراکتر باشد")
+    @NotBlank(message = "کد ملی نمیتواند خالی باشد")
+    private String nationalCode;
+
+
+
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
@@ -40,6 +63,12 @@ public class User implements UserDetails, Serializable {
 
 
 
+    private String sub;
+
+    private String otp;
+
+    private boolean isValid;
+
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(
             name = "user_roles",
@@ -48,8 +77,6 @@ public class User implements UserDetails, Serializable {
     @Enumerated(EnumType.STRING)
     @Column(name = "role")
     private Set<Role> roles = new HashSet<>();
-
-
 
     @OneToMany(fetch = FetchType.EAGER,
             cascade = CascadeType.ALL,
@@ -64,54 +91,5 @@ public class User implements UserDetails, Serializable {
 
     private String walletId;
 
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        Set<GrantedAuthority> authorities = new HashSet<>();
-        for (Role role : roles) {
-            authorities.add(new SimpleGrantedAuthority("ROLE_" + role.name()));
-            authorities.addAll(role.getAuthorities().stream()
-                    .map(authority -> new SimpleGrantedAuthority(authority.name()))
-                    .collect(Collectors.toSet()));
-        }
-        return authorities;
-    }
 
-
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    private String otp;
-
-    private boolean isValid;
-
-
-
-    @Override
-    public String getPassword() {
-        return password;
-    }
-
-    @Override
-    public String getUsername() {
-        return username;
-    }
-
-
-    @Override
-    public boolean isAccountNonExpired() {
-        return UserDetails.super.isAccountNonExpired();
-    }
-
-    @Override
-    public boolean isAccountNonLocked() {
-        return UserDetails.super.isAccountNonLocked();
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return UserDetails.super.isCredentialsNonExpired();
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return true;
-    }
 }

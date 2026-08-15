@@ -53,7 +53,12 @@ public class UserServiceImpl implements UserService {
             User user = User.builder()
                     .username(req.getUsername())
                     .password(passwordEncoder.encode(req.getPassword()))
-                    .fullName(req.getFullName())
+
+                    .firstName(req.getFirstName())
+                    .lastName(req.getLastName())
+                    .nationalCode(req.getNationalCode())
+                    .email(req.getEmail())
+
                     .phoneNumber(req.getPhoneNumber())
                     .roles(Set.of(Role.USER))
                     .walletId(null)
@@ -147,7 +152,13 @@ public class UserServiceImpl implements UserService {
         User existUser = findUserById(id);
         existUser.setUsername(req.getUsername());
         existUser.setPassword(passwordEncoder.encode(req.getPassword()));
-        existUser.setFullName(req.getFullName());
+
+
+        existUser.setFirstName(req.getFirstName());
+        existUser.setLastName(req.getLastName());
+        existUser.setEmail(req.getEmail());
+        existUser.setNationalCode(req.getNationalCode());
+
         existUser.setPhoneNumber(req.getPhoneNumber());
         existUser.setRoles(existUser.getRoles());
         clearAllUserCache();

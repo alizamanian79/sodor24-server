@@ -168,7 +168,7 @@ public class SignatureServiceImpl implements SignatureService {
     public boolean sendRequestToSignatureService(Signature req) {
         try {
             com.app.server.util.signature_service_producer.dto.request.SignatureRequestDto signatureserviceReq = com.app.server.util.signature_service_producer.dto.request.SignatureRequestDto.builder()
-                    .username(req.getUser().getFullName())
+                    .username(req.getUser().getFirstName() + " "+ req.getUser().getLastName())
                     .country(req.getCountry())
                     .reason(req.getReason())
                     .location(req.getLocation())

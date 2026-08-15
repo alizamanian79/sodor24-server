@@ -1,11 +1,19 @@
 package com.app.server.controller;
 
+import com.app.server.dto.request.LoginRequestDto;
 import com.app.server.model.SignaturePlan;
 import com.app.server.service.SignaturePlanService;
 import com.app.server.service.impliment.NiazpardazSMSService;
+import com.app.server.util.ExternalRequest.ExternalRequest;
+import com.app.server.util.ExternalRequest.dto.ExternalRequestDto;
+import com.app.server.util.ExternalRequest.dto.Method;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -15,6 +23,7 @@ public class PublicController {
     private final SignaturePlanService signaturePlanService;
 
     private final NiazpardazSMSService smsService;
+    private final ExternalRequest externalRequest;
 
 
     @GetMapping("/signature/plan")
@@ -33,7 +42,6 @@ public class PublicController {
     public SignaturePlan getSignaturePlan(@PathVariable Long id){
         return signaturePlanService.findSignaturePlanById(id);
     }
-
 
 
 

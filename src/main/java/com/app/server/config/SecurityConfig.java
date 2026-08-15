@@ -45,13 +45,14 @@ public class SecurityConfig {
     private final CustomAuthEntryPoint unauthorizedHandler;
     private final RequestInfoFilter requestInfoFilter;
     private final JwtAccessTokenQueryParamFilter jwtAccessTokenQueryParamFilter;
+    private final JwtKeycloakConverter jwtKeycloakConverter;
 
     public SecurityConfig(@Lazy UsernamePasswordProvider usernamePasswordProvider,
                           @Lazy JwtAccessTokenFilter jwtAccessTokenFilter,
                           @Lazy JwtRefreshTokenFilter jwtRefreshTokenFilter,
                           @Lazy CustomAuthEntryPoint unauthorizedHandler,
                           @Lazy RequestInfoFilter requestInfoFilter,
-                          @Lazy JwtAccessTokenQueryParamFilter jwtAccessTokenQueryParamFilter
+                          @Lazy JwtAccessTokenQueryParamFilter jwtAccessTokenQueryParamFilter, JwtKeycloakConverter jwtKeycloakConverter
     ) {
         this.usernamePasswordProvider = usernamePasswordProvider;
         this.jwtRefreshTokenFilter = jwtRefreshTokenFilter;
@@ -59,6 +60,7 @@ public class SecurityConfig {
         this.unauthorizedHandler = unauthorizedHandler;
         this.requestInfoFilter = requestInfoFilter;
         this.jwtAccessTokenQueryParamFilter = jwtAccessTokenQueryParamFilter;
+        this.jwtKeycloakConverter = jwtKeycloakConverter;
     }
 
 
@@ -85,6 +87,9 @@ public class SecurityConfig {
                     auth.anyRequest().authenticated();
                 })
 
+                .oauth2ResourceServer(httpSecurityOAuth2ResourceServerConfigurer -> {
+                    httpSecurityOAuth2ResourceServerConfigurer.jwt(jwtConfigurer -> jwtConfigurer.jwtAuthenticationConverter(jwtKeycloakConverter));
+                })
                 .addFilterBefore(jwtAccessTokenQueryParamFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtAccessTokenFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtRefreshTokenFilter, UsernamePasswordAuthenticationFilter.class)

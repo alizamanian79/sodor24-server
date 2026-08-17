@@ -151,16 +151,12 @@ public class UserServiceImpl implements UserService {
     @CachePut(value = "userById", key = "#id")
     public User updateUser(UpdateUserRequestDto req, Long id) {
         User existUser = findUserById(id);
-        existUser.setUsername(req.getUsername());
-        existUser.setPassword(passwordEncoder.encode(req.getPassword()));
-
-
         existUser.setFirstName(req.getFirstName());
         existUser.setLastName(req.getLastName());
         existUser.setEmail(req.getEmail());
-        existUser.setNationalCode(req.getNationalCode());
-
         existUser.setPhoneNumber(req.getPhoneNumber());
+        existUser.setPassword(passwordEncoder.encode(req.getPassword()));
+        existUser.setNationalCode(req.getNationalCode());
         existUser.setRoles(existUser.getRoles());
         clearAllUserCache();
         return userRepository.save(existUser);

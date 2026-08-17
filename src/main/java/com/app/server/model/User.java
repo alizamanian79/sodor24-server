@@ -25,14 +25,19 @@ import java.util.stream.Collectors;
 @Entity
 @Table(name = "users")
 public class User implements  Serializable {
+
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
 
+
     @NotBlank(message = "وارد کردن ایمیل الزامی است")
     private String username;
 
+
+    @Column(unique = true)
     @NotBlank(message = "وارد کردن ایمیل الزامی است")
     @Email(message = "فرمت ایمیل صحیح نیست")
     private String email;
@@ -47,6 +52,7 @@ public class User implements  Serializable {
     private String lastName;
 
 
+    @Column(unique = true)
     @Size(min = 1, max = 15, message = "کدملی باید بین 1 تا 15 کاراکتر باشد")
     @NotBlank(message = "کد ملی نمیتواند خالی باشد")
     private String nationalCode;
@@ -57,13 +63,15 @@ public class User implements  Serializable {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 
+    @Column(unique = true)
     @NotBlank(message = "شماره تماس نمی‌تواند خالی باشد")
     @Pattern(regexp = "\\d{11}", message = "شماره تماس باید دقیقا 11 رقم باشد (0912xxxxxxx)")
-   private String phoneNumber;
+    private String phoneNumber;
 
 
 
     private String sub;
+
 
     private String otp;
 

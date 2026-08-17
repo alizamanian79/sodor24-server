@@ -1,7 +1,8 @@
-package com.app.server.service.impliment.OtpFactory;
+package com.app.server.service.impliment;
 
 import com.app.server.dto.response.Sodor24ResponseDto;
 import com.app.server.exception.AppBadRequestException;
+import com.app.server.exception.AppConflicException;
 import com.app.server.exception.AppNotFoundException;
 import com.app.server.model.NotificationType;
 import com.app.server.model.Otp;
@@ -19,195 +20,190 @@ import com.app.server.util.wallet_service_producer.dto.response.WalletResponseDt
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
 
-@Component
+@Service
 @RequiredArgsConstructor
 @Slf4j
 public class UserOtpServiceImpl implements OtpService {
 
     @Value("${application.wallet-service.currency}")
-    public String currency;
+    private String currency;
 
     private final OtpRepository otpRepository;
+    private final UserRepository userRepository;
     private final NotificationFactory notificationFactory;
     private final WalletRMQProducer walletRMQProducer;
-    private final RandomCodeGenerator randomcode;
-    private final UserRepository userRepository;
+    private final RandomCodeGenerator randomCodeGenerator;
 
+    private static final int OTP_EXPIRY_MINUTES = 2;
+    private static final int OTP_LENGTH = 5;
+    private static final String SMS_TEMPLATE = "به صدور24 خوش آمدید.\n" +
+            "ثبت نام شما با موفقیت انجام شد.\n" +
+            "کد تأیید شما: %s\n" +
+            "از همراهی شما سپاسگزاریم.";
 
-
-
-
-    public String createWallet(){
-        CreateWalletRequestDto req = CreateWalletRequestDto.builder()
-                .sub("")
-                .balance(BigDecimal.ZERO)
-                .currency(currency)
-                .build();
-
-        WalletResponseDto res = walletRMQProducer.createWallet(req);
-        Map<String,Object> data = (Map<String, Object>) res.getData();
-        String sub = data.get("sub").toString();
-
-        ActivityRequestDto actReq= ActivityRequestDto.builder()
-                .sub(sub)
-                .value(true)
-                .build();
-
-        walletRMQProducer.setActive(actReq);
-
-
-        return sub;
-    }
-
-    CompletableFuture<String> createWalletSub(){
-        return CompletableFuture.supplyAsync(()->createWallet());
-    }
-
-
-
-    CompletableFuture<Otp> getOtpCode(String code){
-        return CompletableFuture.supplyAsync(()->
-                otpRepository.findOtpByCode(code)
-                        .orElseThrow(()->new AppNotFoundException("کد شما اشتباه میباشد")));
-
-    }
-
-    CompletableFuture<User> getUserByPhoneNumber(String phoneNumber){
-        return CompletableFuture.supplyAsync(()->
-                userRepository.findUserByPhoneNumber(phoneNumber).orElseThrow(()->
-                        new AppNotFoundException("کاربر با این شماره تماس پیدا نشد")));
-    }
-
-
-    CompletableFuture<String> generateCode(){
-        return CompletableFuture.supplyAsync(()->randomcode.generate(5));
-    }
-
-
-    @Transactional
     @Override
+    @Transactional
     public String generateOtp(String phoneNumber) {
+        validatePhoneNumber(phoneNumber);
+        checkExistingOtp(phoneNumber);
 
-        // check otp exist or not
-       Optional<Otp> hasOtp = otpRepository.findOtpByReceiver(phoneNumber);
-       if (hasOtp.isPresent()){
-           throw new AppBadRequestException("کد تاییده به فرستنده ارسال شده است . لطفا بعد از "
-                    +timeToExpired(hasOtp.get().getExpiresAt())+
-                   " دقیقه مجددا اقدام نمایید");
-       }
+        User user = findValidatableUser(phoneNumber);
+        String code = generateRandomCode();
 
-
-        CompletableFuture<User> userFuture = getUserByPhoneNumber(phoneNumber.toString());
-        CompletableFuture<String> generateCodeFuture=generateCode();
-        CompletableFuture.allOf(generateCodeFuture,userFuture);
-
-        User user = userFuture.join();
-        String code = generateCodeFuture.join();
-
-        // Otp builder
-        Otp otpBuilder = Otp.builder()
-                .code(code)
-                .receiver(phoneNumber)
-                .expiresAt(LocalDateTime.now().plusMinutes(2))
-                .build();
-        otpRepository.save(otpBuilder);
-
-
-        user.setOtp(code);
-        user.setValid(false);
-        userRepository.save(user);
-
-
-        NotificationService service = notificationFactory.getService(NotificationType.SMS);
-        service.sendNotification(user.getPhoneNumber(),"به صدور24 خوش آمدید.\n" +
-                "ثبت نام شما با موفقیت انجام شد.\n" +
-                "کد تأیید شما:" +"\s"+code+"\s"+"\n"+
-                "از همراهی شما سپاسگزاریم.");
+        saveOtpAndUpdateUser(phoneNumber, code, user);
+        sendSmsNotification(user.getPhoneNumber(), code);
 
         return code;
-
     }
 
     @Override
-    public Object verifyOtp(String receiver,String code,Object data) {
+    @Transactional
+    public Object verifyOtp(String receiver, String code, Object data) {
+        User user = findUserByPhoneNumber(receiver);
+        Otp otp = findOtpByCode(code);
 
+        validateOtpOwner(otp, user);
 
-        CompletableFuture<User> userFuture=getUserByPhoneNumber(receiver);
-        CompletableFuture<Otp> otpFuture = getOtpCode(code);
-        CompletableFuture<String> subWallet = createWalletSub();
-        CompletableFuture.allOf(userFuture,otpFuture);
+        String walletId = createWallet();
+        completeVerification(user, walletId);
+        deleteOtp(otp);
 
-        User user = userFuture.join();
-        Otp otp= otpFuture.join();
-        String wallet= subWallet.join();
-
-        user.setValid(true);
-        user.setOtp(null);
-        user.setWalletId(wallet);
-        userRepository.save(user);
-        otpRepository.delete(otp);
-
-
-
-      return user.isValid();
+        return true;
     }
-
 
     @Scheduled(fixedRate = 120000)
     @Transactional
     public void removeExpiredOtps() {
         LocalDateTime now = LocalDateTime.now();
-        List<Otp> expiredOtps = otpRepository.findByExpiresAtBefore(now);
-
-        for (Otp otp : expiredOtps) {
-            User user = userRepository.findUserByOtp(otp.getCode()).orElseThrow(() ->
-                    new RuntimeException("otp not found"));;
-
-            if (user != null) {
-                user.setOtp(null);
-                user.setValid(false);
-                walletRMQProducer.deleteWalletBySub(user.getWalletId());
-                user.setWalletId(null);
-                userRepository.save(user);
-
-            }
+        long deletedCount = otpRepository.deleteByExpiresAtBefore(now);
+        if (deletedCount > 0) {
+            log.info("Deleted {} expired OTPs", deletedCount);
         }
+    }
 
-        long deleted = otpRepository.deleteByExpiresAtBefore(now);
+    // Private helper methods
+    private void validatePhoneNumber(String phoneNumber) {
+        if (phoneNumber == null || phoneNumber.trim().isEmpty()) {
+            throw new AppBadRequestException("شماره تماس نمی‌تواند خالی باشد");
+        }
+    }
 
-        log.info("Deleted {} expired OTPs", deleted);
+    private void checkExistingOtp(String phoneNumber) {
+        otpRepository.findOtpByReceiver(phoneNumber).ifPresent(otp -> {
+            String remainingTime = getRemainingTime(otp.getExpiresAt());
+            throw new AppBadRequestException(
+                    String.format("کد تایید قبلاً ارسال شده است. لطفاً بعد از %s دقیقه مجدداً اقدام نمایید", remainingTime)
+            );
+        });
+    }
+
+    private User findValidatableUser(String phoneNumber) {
+        User user = userRepository.findUserByPhoneNumber(phoneNumber)
+                .orElseThrow(() -> new AppNotFoundException("کاربر با این شماره تماس پیدا نشد"));
+
+        if (user.isValid()) {
+            throw new AppConflicException("احراز هویت شما قبلاً تایید شده است");
+        }
+        return user;
+    }
+
+    private User findUserByPhoneNumber(String phoneNumber) {
+        return userRepository.findUserByPhoneNumber(phoneNumber)
+                .orElseThrow(() -> new AppNotFoundException("کاربر با این شماره تماس پیدا نشد"));
+    }
+
+    private Otp findOtpByCode(String code) {
+        return otpRepository.findOtpByCode(code)
+                .orElseThrow(() -> new AppNotFoundException("کد شما اشتباه می‌باشد"));
+    }
+
+    private String generateRandomCode() {
+        return randomCodeGenerator.generate(OTP_LENGTH);
+    }
+
+    private void saveOtpAndUpdateUser(String phoneNumber, String code, User user) {
+        Otp otp = Otp.builder()
+                .code(code)
+                .receiver(phoneNumber)
+                .expiresAt(LocalDateTime.now().plusMinutes(OTP_EXPIRY_MINUTES))
+                .build();
+        otpRepository.save(otp);
+
+        user.setOtp(code);
+        user.setValid(false);
+        userRepository.save(user);
+    }
+
+    private void sendSmsNotification(String phoneNumber, String code) {
+        try {
+            NotificationService smsService = notificationFactory.getService(NotificationType.SMS);
+            String message = String.format(SMS_TEMPLATE, code);
+            smsService.sendNotification(phoneNumber, message);
+        } catch (Exception e) {
+            log.error("Failed to send SMS to {}", phoneNumber, e);
+        }
+    }
+
+    private void verifyUserinKeycloak(){
+
     }
 
 
-    public String timeToExpired(LocalDateTime expiredTime) {
-
-        Duration remaining = Duration.between(
-                LocalDateTime.now(),
-                expiredTime
-        );
-
-        if (remaining.isNegative()) {
-            return "Expired";
+    private void validateOtpOwner(Otp otp, User user) {
+        if (!otp.getReceiver().equals(user.getPhoneNumber())) {
+            deleteOtp(otp);
+            throw new AppBadRequestException("کد تأیید برای این کاربر معتبر نمی‌باشد");
         }
+    }
 
+    private String createWallet() {
+        CreateWalletRequestDto request = CreateWalletRequestDto.builder()
+                .sub("")
+                .balance(BigDecimal.ZERO)
+                .currency(currency)
+                .build();
+
+        WalletResponseDto response = walletRMQProducer.createWallet(request);
+        Map<String, Object> data = (Map<String, Object>) response.getData();
+        String walletId = data.get("sub").toString();
+
+        ActivityRequestDto activityRequest = ActivityRequestDto.builder()
+                .sub(walletId)
+                .value(true)
+                .build();
+        walletRMQProducer.setActive(activityRequest);
+
+        return walletId;
+    }
+
+    private void completeVerification(User user, String walletId) {
+        user.setValid(true);
+        user.setOtp(null);
+        user.setWalletId(walletId);
+        userRepository.save(user);
+    }
+
+    private void deleteOtp(Otp otp) {
+        otpRepository.delete(otp);
+    }
+
+    private String getRemainingTime(LocalDateTime expiredTime) {
+        Duration remaining = Duration.between(LocalDateTime.now(), expiredTime);
+        if (remaining.isNegative()) {
+            return "منقضی شده";
+        }
         long minutes = remaining.toMinutes();
         long seconds = remaining.minusMinutes(minutes).getSeconds();
-
         return String.format("%02d:%02d", minutes, seconds);
     }
-
-
 }

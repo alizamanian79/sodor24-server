@@ -185,8 +185,7 @@ public class SignatureOtpServiceImpl implements OtpService {
         List<Otp> expiredOtps = otpRepository.findByExpiresAtBefore(now);
 
         for (Otp otp : expiredOtps) {
-            Signature signature = signatureRepository.findSignatureByOtp(otp.getCode()).orElseThrow(() ->
-                    new RuntimeException("signature not found"));;
+            Signature signature = signatureRepository.findSignatureByOtp(otp.getCode()).get();
 
             if (signature != null) {
                 signature.setOtp(null);

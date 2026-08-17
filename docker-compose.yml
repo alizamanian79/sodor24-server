@@ -237,6 +237,102 @@ services:
 
 
 
+
+
+
+
+
+#
+#  keycloak-db-service:
+#    image: mysql:8.4.6
+#    container_name: keycloakdb
+#    restart: always
+#
+#    environment:
+#      TZ: Asia/Tehran
+#      MYSQL_ROOT_PASSWORD: zamanian1379
+#      MYSQL_DATABASE: keycloakdb
+#      MYSQL_USER: admin
+#      MYSQL_PASSWORD: zamanian1379
+#
+#
+#    ports:
+#      - "3307:3306"
+#
+#    volumes:
+#      - keycloak_mysql_volume:/var/lib/mysql
+#
+#    networks:
+#      - keycloak-net
+#
+#
+#  keycloak:
+#    image: quay.io/keycloak/keycloak:26.0
+#    container_name: keycloak
+#
+#    command:
+#      - start-dev
+#      - --import-realm
+#
+#    environment:
+#      KC_DB: mysql
+#      KC_DB_URL: jdbc:mysql://mysql:3306/keycloakdb?useSSL=false&allowPublicKeyRetrieval=true
+#      KC_DB_USERNAME: keycloak
+#      KC_DB_PASSWORD: keycloak_password
+#
+#      KEYCLOAK_ADMIN: admin
+#      KEYCLOAK_ADMIN_PASSWORD: "admin1379$$"
+#
+#      KC_HOSTNAME_STRICT: "false"
+#      KC_HTTP_ENABLED: "true"
+#
+#    ports:
+#      - "8080:8080"
+#
+#    volumes:
+#      - ./realm-export.json:/opt/keycloak/data/import/realm-export.json:ro
+#
+#    depends_on:
+#      - mysql
+#
+#    networks:
+#      - keycloak-net
+
+
+  authentication-service:
+    image: alizamanian/authentication-service:latest
+    container_name: authentication-service
+
+    environment:
+      KC_HOST: http://keycloak:8080
+      KC_REALM: myrealm
+      KC_CLIENT_ID: app-cli
+      KC_CLIENT_SECRET: hz8XCrPvCYZJo1eGZ4XgiU6GruzeeYrC
+
+      SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_RABBITMQ_PORT: 5672
+      SPRING_RABBITMQ_USERNAME: guest
+      SPRING_RABBITMQ_PASSWORD: guest
+
+      PORT: 8081
+
+    ports:
+      - "8081:8081"
+
+    depends_on:
+      - keycloak
+
+    networks:
+      - keycloak-net
+
+
+
+
+
+
+
+
+
 # ======================================
 # Volumes
 # ======================================
@@ -245,6 +341,7 @@ volumes:
   rabbitmq-volume:
   redis-volume:
   signature_storage:
+#  keycloak_mysql_volume:
 
 # ======================================
 # Networks

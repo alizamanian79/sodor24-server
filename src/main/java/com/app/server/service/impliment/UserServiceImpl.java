@@ -14,6 +14,7 @@ import com.app.server.service.OtpService;
 import com.app.server.service.UserService;
 import com.app.server.service.impliment.OtpFactory.OtpFactory;
 import com.app.server.util.wallet_service_producer.WalletRMQProducer;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
@@ -61,7 +62,7 @@ public class UserServiceImpl implements UserService {
                     .email(req.getEmail())
 
                     .phoneNumber(req.getPhoneNumber())
-                    .roles(Set.of(Role.USER))
+//                    .roles(Set.of(Role.USER))
                     .walletId(null)
                     .build();
             return userRepository.save(user);
@@ -146,6 +147,17 @@ public class UserServiceImpl implements UserService {
     }
 
 
+
+
+    @Override
+    public User findUserBySub(String sub){
+        User exist = userRepository.findUserBySub(sub).orElseThrow(() -> new AppUnAuthorizedException(
+                "کاربر با این sub پیدا نشد",
+                ""));;
+        return exist;
+    }
+
+
     @Override
     @Transactional
     @CachePut(value = "userById", key = "#id")
@@ -157,25 +169,25 @@ public class UserServiceImpl implements UserService {
         existUser.setPhoneNumber(req.getPhoneNumber());
         existUser.setPassword(passwordEncoder.encode(req.getPassword()));
         existUser.setNationalCode(req.getNationalCode());
-        existUser.setRoles(existUser.getRoles());
+//        existUser.setRoles(existUser.getRoles());
         clearAllUserCache();
         return userRepository.save(existUser);
     }
 
-    @Transactional
-    @Override
-    public User changeUserRole(Long id, Set<Role> roles) {
-        User existUser = findUserById(id);
-        existUser.setRoles(roles);
-
-        User savedUser = userRepository.save(existUser);
-
-        if (redisHealthChecker.isRedisAvailable()) {
-            updateUserCache(savedUser);
-        }
-
-        return savedUser;
-    }
+//    @Transactional
+//    @Override
+//    public User changeUserRole(Long id, Set<Role> roles) {
+//        User existUser = findUserById(id);
+//        existUser.setRoles(roles);
+//
+//        User savedUser = userRepository.save(existUser);
+//
+//        if (redisHealthChecker.isRedisAvailable()) {
+//            updateUserCache(savedUser);
+//        }
+//
+//        return savedUser;
+//    }
 
     @CachePut(value = "userById", key = "#user.id")
     public User updateUserCache(User user) {
@@ -202,12 +214,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User convertUserFromAuthentication(Authentication auth){
-        User user = (User) auth.getPrincipal();
-        if (user==null) {
-            return null;
-        }
-        return user;
+    public User convertUserFromAuthentication(Authentication authentication) {
+
+        Jwt jwt = (Jwt) authentication.getPrincipal();
+        String sub = jwt.getSubject();
+        return userRepository.findUserBySub(sub)
+                .orElseThrow(() -> new RuntimeException(
+                        "User not found with sub: " + sub
+                ));
     }
 
 

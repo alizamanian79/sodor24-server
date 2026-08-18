@@ -22,4 +22,5 @@ public interface UserRepository extends JpaRepository<User, Long>{
 
     Optional<User>  findUserByOtp(String otp);
 
+    Optional<User> findUserBySub(String sub);
 }

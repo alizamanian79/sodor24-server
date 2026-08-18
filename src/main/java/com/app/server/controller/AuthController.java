@@ -6,6 +6,7 @@ import com.app.server.dto.request.RegisterRequestDto;
 import com.app.server.dto.response.LoginResponseDto;
 import com.app.server.dto.response.RegisterResponseDto;
 import com.app.server.exception.AppUnAuthorizedException;
+import com.app.server.model.User;
 import com.app.server.service.AuthenticationService;
 import com.app.server.service.UserService;
 import com.app.server.util.ExternalRequest.ExternalRequest;
@@ -16,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -58,9 +60,13 @@ public class AuthController {
 
 
 
+
+
+
     @GetMapping("/me")
     public ResponseEntity<?> getUser(Authentication authentication) {
-
-        return ResponseEntity.ok(authentication.getPrincipal());
+            Jwt jwt = (Jwt) authentication.getPrincipal();
+            User user = userService.findUserBySub(jwt.getSubject());
+        return ResponseEntity.ok(user);
     }
 }

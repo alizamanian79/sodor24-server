@@ -20,7 +20,8 @@ public interface UserService {
     User findUserById(Long id);
     User findUserByPhoneNumber(String phoneNumber);
 
-    User changeUserRole(Long id, Set<Role> roles);
+    User findUserBySub(String sub);
+//    User changeUserRole(Long id, Set<Role> roles);
     Object deleteUserById(Long id);
     User convertUserFromAuthentication(Authentication auth);
 }

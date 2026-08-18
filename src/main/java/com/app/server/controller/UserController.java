@@ -87,48 +87,48 @@ public class UserController {
     }
 
     // get user roles
-    @PreAuthorize("hasRole('ADMIN') or #id == authentication.principal.id")
-    @GetMapping("/{id}/role")
-    public ResponseEntity<?> getUserRole(@PathVariable Long id) {
-       User user = userService.findUserById(id);
-       Set<String> roles = new HashSet<>();
-        Set<String> authorities = new HashSet<>();
-
-       user.getRoles().stream().forEach(role -> {
-           roles.add(role.name().toString());
-           role.getAuthorities().stream().forEach(authority -> {
-               authorities.add(authority.name().toString());
-           });
-       });
-
-       Map<String,Object> response = new HashMap<>();
-
-
-
-
-
-        response.put("username",user.getUsername());
-       response.put("roles",roles);
-       response.put("authorities",authorities);
-
-
-        return Sodor24ResponseDto.response(response,"نقشهای کاربر با موفقیت فراخوانی شد" ,"","",HttpStatus.OK);
-    }
+//    @PreAuthorize("hasRole('ADMIN') or #id == authentication.principal.id")
+//    @GetMapping("/{id}/role")
+//    public ResponseEntity<?> getUserRole(@PathVariable Long id) {
+//       User user = userService.findUserById(id);
+//       Set<String> roles = new HashSet<>();
+//        Set<String> authorities = new HashSet<>();
+//
+//       user.getRoles().stream().forEach(role -> {
+//           roles.add(role.name().toString());
+//           role.getAuthorities().stream().forEach(authority -> {
+//               authorities.add(authority.name().toString());
+//           });
+//       });
+//
+//       Map<String,Object> response = new HashMap<>();
+//
+//
+//
+//
+//
+//        response.put("username",user.getUsername());
+//       response.put("roles",roles);
+//       response.put("authorities",authorities);
+//
+//
+//        return Sodor24ResponseDto.response(response,"نقشهای کاربر با موفقیت فراخوانی شد" ,"","",HttpStatus.OK);
+//    }
 
 
     // set user roles
-    @PutMapping("/{id}/role")
-    public ResponseEntity<?> changeUserRole(
-            Authentication authentication,
-            @PathVariable Long id,
-            @Valid @RequestBody RoleChangeRequest request
-    ) {
-        Map<String,Object> response = new HashMap<>();
-        User updatedUser = userService.changeUserRole(id, request.getRoles());
-
-        response.put("roles",updatedUser.getRoles());
-        return Sodor24ResponseDto.response(response,"نقشهای کاربر با موفقیت تخصیص داده شدند","","",HttpStatus.OK);
-    }
+//    @PutMapping("/{id}/role")
+//    public ResponseEntity<?> changeUserRole(
+//            Authentication authentication,
+//            @PathVariable Long id,
+//            @Valid @RequestBody RoleChangeRequest request
+//    ) {
+//        Map<String,Object> response = new HashMap<>();
+//        User updatedUser = userService.changeUserRole(id, request.getRoles());
+//
+//        response.put("roles",updatedUser.getRoles());
+//        return Sodor24ResponseDto.response(response,"نقشهای کاربر با موفقیت تخصیص داده شدند","","",HttpStatus.OK);
+//    }
 
 
 }

@@ -22,75 +22,64 @@ public class JwtKeycloakConverter implements Converter<Jwt, AbstractAuthenticati
     @Override
     public AbstractAuthenticationToken convert(Jwt jwt) {
 
-        Collection<SimpleGrantedAuthority> authorities = new HashSet<>();
+        Set<SimpleGrantedAuthority> authorities = new HashSet<>();
 
-        // Client Roles
         authorities.addAll(extractClientRoles(jwt));
-
-        // Realm Roles (اختیاری)
         authorities.addAll(extractRealmRoles(jwt));
 
         return new JwtAuthenticationToken(
                 jwt,
                 authorities,
-                getPrincipalName(jwt)
+                jwt.getSubject()
         );
-    }
-
-    private String getPrincipalName(Jwt jwt) {
-
-        String username = jwt.getClaimAsString("preferred_username");
-
-        if (username != null) {
-            return username;
-        }
-
-        return jwt.getSubject();
     }
 
     private Collection<SimpleGrantedAuthority> extractRealmRoles(Jwt jwt) {
 
-        Map<String, Object> realmAccess = jwt.getClaim("realm_access");
+        Map<String, Object> realmAccess =
+                jwt.getClaimAsMap("realm_access");
 
-        if (realmAccess == null || realmAccess.isEmpty()) {
-            return Collections.emptyList();
+        if (realmAccess == null) {
+            return Collections.emptySet();
         }
 
-        Collection<String> roles =
-                (Collection<String>) realmAccess.get("roles");
+        Object rolesObject = realmAccess.get("roles");
 
-        if (roles == null || roles.isEmpty()) {
-            return Collections.emptyList();
+        if (!(rolesObject instanceof Collection<?> roles)) {
+            return Collections.emptySet();
         }
 
         return roles.stream()
+                .filter(Objects::nonNull)
+                .map(Object::toString)
                 .map(role -> new SimpleGrantedAuthority("ROLE_" + role))
                 .collect(Collectors.toSet());
     }
 
     private Collection<SimpleGrantedAuthority> extractClientRoles(Jwt jwt) {
 
-        Map<String, Object> resourceAccess = jwt.getClaim("resource_access");
+        Map<String, Object> resourceAccess =
+                jwt.getClaimAsMap("resource_access");
 
-        if (resourceAccess == null || resourceAccess.isEmpty()) {
-            return Collections.emptyList();
+        if (resourceAccess == null) {
+            return Collections.emptySet();
         }
 
-        Map<String, Object> client =
-                (Map<String, Object>) resourceAccess.get(clientId);
+        Object clientObject = resourceAccess.get(clientId);
 
-        if (client == null || client.isEmpty()) {
-            return Collections.emptyList();
+        if (!(clientObject instanceof Map<?, ?> client)) {
+            return Collections.emptySet();
         }
 
-        Collection<String> roles =
-                (Collection<String>) client.get("roles");
+        Object rolesObject = client.get("roles");
 
-        if (roles == null || roles.isEmpty()) {
-            return Collections.emptyList();
+        if (!(rolesObject instanceof Collection<?> roles)) {
+            return Collections.emptySet();
         }
 
         return roles.stream()
+                .filter(Objects::nonNull)
+                .map(Object::toString)
                 .map(role -> new SimpleGrantedAuthority("ROLE_" + role))
                 .collect(Collectors.toSet());
     }

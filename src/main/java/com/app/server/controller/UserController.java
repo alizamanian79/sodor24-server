@@ -6,6 +6,7 @@ import com.app.server.dto.response.LoginResponseDto;
 import com.app.server.dto.response.Sodor24ResponseDto;
 import com.app.server.exception.AppBadRequestException;
 import com.app.server.model.User;
+import com.app.server.service.AuthenticationService;
 import com.app.server.service.JwtService;
 import com.app.server.service.UserService;
 import com.github.mfathi91.time.PersianDate;
@@ -17,6 +18,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
@@ -30,6 +33,7 @@ public class UserController {
     private final UserService userService;
 //    private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
+    private final AuthenticationService authenticationService;
 
     // List
     @PreAuthorize("hasRole('ADMIN')")
@@ -40,7 +44,8 @@ public class UserController {
     }
 
     // get by id
-    @PreAuthorize("hasRole('ADMIN') or #id == authentication.principal.id")
+//    @PreAuthorize("hasRole('ADMIN') or #id == authentication.principal.id")
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/{id}")
     public ResponseEntity<?> getUserById(@PathVariable Long id) {
        User user = userService.findUserById(id);
@@ -57,33 +62,32 @@ public class UserController {
 
 
 
-    // update user by id
-    @PreAuthorize("hasRole('ADMIN') or #id == authentication.principal.id")
+
+
     @PutMapping("/{id}")
     public ResponseEntity<?> updateUser(
-
+            @AuthenticationPrincipal Jwt jwt,
             @PathVariable Long id,
-            @Valid @RequestBody UpdateUserRequestDto user) {
+            @Valid @RequestBody UpdateUserRequestDto req) {
 
-        try{
+        try {
 
-            User changedUser = userService.updateUser(user,id);
 
+            User changedUser = userService.updateUser(req, id);
+            req.setSub(changedUser.getSub());
+            req.setUsername(changedUser.getUsername());
+             Map<String,Object> res= authenticationService.updateUser(req, jwt.getTokenValue());
 
             return Sodor24ResponseDto.response(
-                    changedUser,
+                    res,
                     "اطلاعات شما بروزرسانی شد",
-                    "",
+                    changedUser.toString(),
                     "",
                     HttpStatus.ACCEPTED
             );
-
         } catch (Exception e) {
             throw new AppBadRequestException(e.getMessage());
         }
-
-
-
     }
 
     // get user roles

@@ -27,7 +27,6 @@ import java.util.Map;
 @RequestMapping("/api/v1/auth")
 public class AuthController {
 
-    private final ExternalRequest externalRequest;
     private final AuthenticationService authenticationService;
     private final UserService userService;
 
@@ -48,7 +47,8 @@ public class AuthController {
 
     }
 
-    
+
+    @VerifiedUser
     @PostMapping("/login")
     public ResponseEntity<?> loginUser(
             @Valid @RequestBody LoginRequestDto request

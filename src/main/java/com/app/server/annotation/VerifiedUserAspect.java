@@ -4,8 +4,11 @@ import com.app.server.dto.request.LoginRequestDto;
 import com.app.server.exception.AppBadRequestException;
 import com.app.server.exception.AppForbiddenException;
 import com.app.server.exception.AppNotFoundException;
+import com.app.server.model.OtpType;
 import com.app.server.model.User;
 import com.app.server.repository.UserRepository;
+import com.app.server.service.OtpService;
+import com.app.server.service.impliment.OtpFactory.OtpFactory;
 import lombok.RequiredArgsConstructor;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
@@ -20,6 +23,9 @@ import org.springframework.stereotype.Component;
 public class VerifiedUserAspect {
 
     private final UserRepository userRepository;
+    private final OtpFactory otpFactory;
+
+
 
     @Before("@annotation(com.app.server.annotation.VerifiedUser)")
     public void checkUser(JoinPoint joinPoint) {
@@ -33,7 +39,14 @@ public class VerifiedUserAspect {
                 User user = userRepository.findUserByUsername(username)
                         .orElseThrow(() -> new AppNotFoundException("کاربر یافت نشد."));
 
+
+
+
                 if (!user.isValid()) {
+
+                    OtpService otpService = otpFactory.getService(OtpType.USER);
+                    otpService.generateOtp(user.getPhoneNumber());
+
                     throw new AppForbiddenException(
                             "احراز هویت شما تایید نشده لطفا کد داده شده را وارد نمایید",
                             "",

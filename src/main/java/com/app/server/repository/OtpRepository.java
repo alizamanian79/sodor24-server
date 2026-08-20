@@ -20,6 +20,11 @@ public interface OtpRepository extends JpaRepository<Otp, Long> {
 
     Optional<Otp> findOtpByReceiver(String receiver);
 
+    Optional<Otp> findOtpByReceiverAndCode(
+            String receiver,
+            String code
+    );
+
     @Modifying
     @Transactional
     long deleteByExpiresAtBefore(LocalDateTime expiresAt);

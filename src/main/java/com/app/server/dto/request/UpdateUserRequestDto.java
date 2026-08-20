@@ -25,8 +25,9 @@ import java.util.Set;
 @Builder
 public class UpdateUserRequestDto {
 
-    @NotBlank(message = "وارد کردن ایمیل الزامی است")
     private String username;
+    private String sub;
+
 
     @NotBlank(message = "وارد کردن ایمیل الزامی است")
     @Email(message = "فرمت ایمیل صحیح نیست")

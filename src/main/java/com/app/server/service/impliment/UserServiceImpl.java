@@ -4,16 +4,21 @@ import com.app.server.config.RedisHealthChecker;
 import com.app.server.dto.request.RegisterRequestDto;
 import com.app.server.dto.request.UpdateUserRequestDto;
 import com.app.server.dto.response.RegisterResponseDto;
+import com.app.server.exception.AppConflicException;
 import com.app.server.exception.AppNotFoundException;
 import com.app.server.exception.AppUnAuthorizedException;
 import com.app.server.model.OtpType;
 import com.app.server.model.Role;
 import com.app.server.model.User;
 import com.app.server.repository.UserRepository;
+import com.app.server.service.AuthenticationService;
 import com.app.server.service.OtpService;
 import com.app.server.service.UserService;
 import com.app.server.service.impliment.OtpFactory.OtpFactory;
+import com.app.server.util.ExternalRequest.dto.ExternalRequestDto;
+import com.app.server.util.ExternalRequest.dto.Method;
 import com.app.server.util.wallet_service_producer.WalletRMQProducer;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -51,6 +56,13 @@ public class UserServiceImpl implements UserService {
 
     CompletableFuture<User> createUser(RegisterRequestDto req){
         return CompletableFuture.supplyAsync(()->{
+
+            Optional<User> exist = userRepository.findUserByUsername(req.getUsername());
+
+            if (exist.isPresent()){
+                throw new AppConflicException("کاربر با این نام کاربری وجود دارد");
+            }
+
             User user = User.builder()
                     .username(req.getUsername())
                     .password(passwordEncoder.encode(req.getPassword()))
@@ -162,7 +174,11 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @CachePut(value = "userById", key = "#id")
     public User updateUser(UpdateUserRequestDto req, Long id) {
+
+
+
         User existUser = findUserById(id);
+        existUser.setSub(existUser.getSub());
         existUser.setFirstName(req.getFirstName());
         existUser.setLastName(req.getLastName());
         existUser.setEmail(req.getEmail());
@@ -171,8 +187,13 @@ public class UserServiceImpl implements UserService {
         existUser.setNationalCode(req.getNationalCode());
 //        existUser.setRoles(existUser.getRoles());
         clearAllUserCache();
-        return userRepository.save(existUser);
+        User updatedUser = userRepository.save(existUser);
+
+
+        return updatedUser;
     }
+
+
 
 //    @Transactional
 //    @Override

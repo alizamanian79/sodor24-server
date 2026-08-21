@@ -2,7 +2,9 @@ version: "3.9"
 
 services:
 
-
+  # ======================================
+  # Sodor24 MySQL
+  # ======================================
   sodor24-database-service:
     image: mysql:8.4.6
     container_name: sodor24-db-service
@@ -33,6 +35,46 @@ services:
       - app-network
 
 
+  # ======================================
+  # Keycloak MySQL
+  # ======================================
+  keycloak-db:
+    image: mysql:8.4
+    container_name: keycloakdb
+    restart: always
+
+    environment:
+      MYSQL_DATABASE: keycloakdb
+      MYSQL_USER: keycloak
+      MYSQL_PASSWORD: keycloak_password
+      MYSQL_ROOT_PASSWORD: "1234"
+
+    volumes:
+      - keycloak_mysql_volume:/var/lib/mysql
+
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "mysqladmin",
+          "ping",
+          "-h",
+          "localhost",
+          "-ukeycloak",
+          "-pkeycloak_password"
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+      start_period: 30s
+
+    networks:
+      - app-network
+
+
+  # ======================================
+  # RabbitMQ
+  # ======================================
   rabbitmq-service:
     image: rabbitmq:3.13-management
     container_name: rabbitmq-service
@@ -61,7 +103,9 @@ services:
       - app-network
 
 
-
+  # ======================================
+  # Redis
+  # ======================================
   redis-service:
     image: redis:7-alpine
     container_name: redis-service
@@ -86,11 +130,104 @@ services:
       - app-network
 
 
+  # ======================================
+  # Keycloak
+  # ======================================
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.4.7
+    container_name: keycloak
+    restart: always
 
+    command:
+      - start-dev
+      - --import-realm
+
+    environment:
+      KC_DB: mysql
+
+      KC_DB_URL: jdbc:mysql://keycloak-db:3306/keycloakdb?useSSL=false&allowPublicKeyRetrieval=true
+
+      KC_DB_USERNAME: keycloak
+      KC_DB_PASSWORD: keycloak_password
+
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: "admin1379$$"
+
+      KC_HOSTNAME_STRICT: "false"
+      KC_HTTP_ENABLED: "true"
+
+    ports:
+      - "8080:8080"
+
+    volumes:
+      - ./realm-export.json:/opt/keycloak/data/import/realm-export.json:ro
+
+    depends_on:
+      keycloak-db:
+        condition: service_healthy
+
+    networks:
+      - app-network
+
+
+  # ======================================
+  # Authentication Service
+  # ======================================
+  authentication-service:
+    image: alizamanian/authentication-service:latest
+    container_name: authentication-service
+    restart: always
+    pull_policy: always
+
+    ports:
+      - "8081:8081"
+
+    environment:
+      TZ: Asia/Tehran
+
+      # ==============================
+      # Keycloak
+      # ==============================
+      KC_HOST: http://keycloak:8080
+      KC_REALM: myrealm
+      KC_CLIENT_ID: app-cli
+      KC_CLIENT_SECRET: "GM3J6L3Y7SUTEKh8fxcraOhRAUrGloj3"
+
+      # ==============================
+      # Request Server
+      # ==============================
+      REQUEST_SERVER: http://192.168.1.7:8181
+
+      # ==============================
+      # RabbitMQ
+      # ==============================
+      SPRING_RABBITMQ_HOST: rabbitmq-service
+      SPRING_RABBITMQ_PORT: 5672
+      SPRING_RABBITMQ_USERNAME: admin
+      SPRING_RABBITMQ_PASSWORD: zamanian1379
+
+      # ==============================
+      # Server
+      # ==============================
+      PORT: 8081
+
+    depends_on:
+      keycloak:
+        condition: service_started
+
+      rabbitmq-service:
+        condition: service_healthy
+
+    networks:
+      - app-network
+
+
+  # ======================================
+  # Wallet Service
+  # ======================================
   wallet-service:
     image: alizamanian/wallet-service:latest
     container_name: wallet-service
-
     restart: unless-stopped
     pull_policy: always
 
@@ -122,7 +259,11 @@ services:
         condition: service_healthy
 
     healthcheck:
-      test: ["CMD-SHELL", "wget --spider -q http://localhost:8489/actuator/health || exit 1"]
+      test:
+        [
+          "CMD-SHELL",
+          "wget --spider -q http://localhost:8489/actuator/health || exit 1"
+        ]
       interval: 20s
       timeout: 10s
       retries: 10
@@ -132,17 +273,22 @@ services:
       - app-network
 
 
-
+  # ======================================
+  # Signature Service
+  # ======================================
   signature-service:
     image: alizamanian/signature-service:latest
     container_name: signature-service
     restart: always
     pull_policy: always
+
     ports:
       - "8585:8585"
+
     environment:
       TZ: Asia/Tehran
       SERVER_PORT: 8585
+
       SPRING_RABBITMQ_HOST: rabbitmq-service
       SPRING_RABBITMQ_PORT: 5672
       SPRING_RABBITMQ_USERNAME: admin
@@ -156,7 +302,11 @@ services:
         condition: service_started
 
     healthcheck:
-      test: ["CMD-SHELL", "wget --spider -q http://localhost:8585/actuator/health || exit 1"]
+      test:
+        [
+          "CMD-SHELL",
+          "wget --spider -q http://localhost:8585/actuator/health || exit 1"
+        ]
       interval: 20s
       timeout: 10s
       retries: 10
@@ -166,7 +316,9 @@ services:
       - app-network
 
 
-
+  # ======================================
+  # Sodor24 Server
+  # ======================================
   sodor24-server:
     image: alizamanian/sodor24-server:latest
     container_name: sodor24-server
@@ -184,6 +336,7 @@ services:
 
       # Origin واقعی Browser
       APP_CLIENT_HOST: http://192.168.1.7:3000
+      AUTHENTICATION_SERVICE: http://192.168.1.7:8081
 
       CURRENCY: IRT
 
@@ -201,6 +354,8 @@ services:
       SPRING_DATA_REDIS_PORT: 6379
       SPRING_DATA_REDIS_PASSWORD: zamanian1379
 
+
+
     depends_on:
       sodor24-database-service:
         condition: service_healthy
@@ -215,7 +370,9 @@ services:
       - app-network
 
 
-
+  # ======================================
+  # Sodor24 Client
+  # ======================================
   sodor24-client:
     image: alizamanian/sodor24-client:latest
     container_name: sodor24-client
@@ -236,107 +393,16 @@ services:
       - app-network
 
 
-
-
-
-
-
-
-#
-#  keycloak-db-service:
-#    image: mysql:8.4.6
-#    container_name: keycloakdb
-#    restart: always
-#
-#    environment:
-#      TZ: Asia/Tehran
-#      MYSQL_ROOT_PASSWORD: zamanian1379
-#      MYSQL_DATABASE: keycloakdb
-#      MYSQL_USER: admin
-#      MYSQL_PASSWORD: zamanian1379
-#
-#
-#    ports:
-#      - "3307:3306"
-#
-#    volumes:
-#      - keycloak_mysql_volume:/var/lib/mysql
-#
-#    networks:
-#      - keycloak-net
-#
-#
-#  keycloak:
-#    image: quay.io/keycloak/keycloak:26.0
-#    container_name: keycloak
-#
-#    command:
-#      - start-dev
-#      - --import-realm
-#
-#    environment:
-#      KC_DB: mysql
-#      KC_DB_URL: jdbc:mysql://mysql:3306/keycloakdb?useSSL=false&allowPublicKeyRetrieval=true
-#      KC_DB_USERNAME: keycloak
-#      KC_DB_PASSWORD: keycloak_password
-#
-#      KEYCLOAK_ADMIN: admin
-#      KEYCLOAK_ADMIN_PASSWORD: "admin1379$$"
-#
-#      KC_HOSTNAME_STRICT: "false"
-#      KC_HTTP_ENABLED: "true"
-#
-#    ports:
-#      - "8080:8080"
-#
-#    volumes:
-#      - ./realm-export.json:/opt/keycloak/data/import/realm-export.json:ro
-#
-#    depends_on:
-#      - mysql
-#
-#    networks:
-#      - keycloak-net
-
-
-  authentication-service:
-    image: alizamanian/authentication-service:latest
-    container_name: authentication-service
-
-    environment:
-      KC_HOST: http://keycloak:8080
-      KC_REALM: myrealm
-      KC_CLIENT_ID: app-cli
-      KC_CLIENT_SECRET: hz8XCrPvCYZJo1eGZ4XgiU6GruzeeYrC
-
-      SPRING_RABBITMQ_HOST: rabbitmq
-      SPRING_RABBITMQ_PORT: 5672
-      SPRING_RABBITMQ_USERNAME: guest
-      SPRING_RABBITMQ_PASSWORD: guest
-
-      PORT: 8081
-
-    ports:
-      - "8081:8081"
-
-    depends_on:
-      - keycloak
-
-    networks:
-      - keycloak-net
-
-
-
-
 # ======================================
 # Volumes
 # ======================================
 volumes:
   sodor24-db-volume:
+  keycloak_mysql_volume:
   rabbitmq-volume:
   redis-volume:
   signature_storage:
-#  keycloak_mysql_volume:
+
 
 # ======================================
 # Networks

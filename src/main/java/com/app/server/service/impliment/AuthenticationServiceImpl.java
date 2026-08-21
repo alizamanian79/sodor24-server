@@ -91,7 +91,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         Map<String, Object> result = externalRequest.sendRequest(
                 ExternalRequestDto.builder()
-                        .url("http://localhost:8081/api/v1/authentication/direct/register")
+                        .url(authServiceUrl+"/api/v1/authentication/direct/register")
                         .method(Method.POST)
                         .body(Map.of(
                                 "username", req.getUsername(),

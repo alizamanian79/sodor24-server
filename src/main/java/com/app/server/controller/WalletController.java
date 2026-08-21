@@ -31,14 +31,14 @@ public class WalletController {
         return ResponseEntity.status(res.getStatus()).body(res);
     }
 
-    @PreAuthorize("hasRole('ADMIN') or #sub == authentication.principal.walletId")
+//    @PreAuthorize("hasRole('ADMIN') or #sub == authentication.principal.walletId")
     @GetMapping("/{sub}")
     public ResponseEntity<?> getBySub(@PathVariable String sub){
         WalletResponseDto res = walletRMQProducer.getWalletBySub(sub);
         return ResponseEntity.status(res.getStatus()).body(res);
     }
 
-    @PreAuthorize("hasRole('ADMIN') or #sub == authentication.principal.walletId")
+//    @PreAuthorize("hasRole('ADMIN') or #sub == authentication.principal.walletId")
     @GetMapping("/{sub}/{slug}")
     public ResponseEntity<?> getBySub(
             @PathVariable String sub,

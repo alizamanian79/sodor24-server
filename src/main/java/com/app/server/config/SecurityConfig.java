@@ -81,6 +81,8 @@ public class SecurityConfig {
 
         configuration.setAllowedOrigins(List.of(
                 clientHost,
+                "http://192.168.7:3000",
+                "http://0.0.0.0:3000",
                 "http://localhost:3000"
         ));
 

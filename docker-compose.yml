@@ -196,7 +196,7 @@ services:
       # ==============================
       # Request Server
       # ==============================
-      REQUEST_SERVER: http://192.168.1.7:8181
+      REQUEST_SERVER: http://sodor24-server:8181
 
       # ==============================
       # RabbitMQ
@@ -336,10 +336,15 @@ services:
 
       # Origin واقعی Browser
       APP_CLIENT_HOST: http://192.168.1.7:3000
-      AUTHENTICATION_SERVICE: http://192.168.1.7:8081
+      AUTHENTICATION_SERVICE: http://authentication-service:8081
+
+
+      KC_HOST: http://keycloak:8080
+      KC_REALM: myrealm
+      KC_CLIENT_ID: app-cli
+
 
       CURRENCY: IRT
-
       SPRING_DATASOURCE_URL: jdbc:mysql://sodor24-database-service:3306/sodor24db?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Tehran
       SPRING_DATASOURCE_USERNAME: admin
       SPRING_DATASOURCE_PASSWORD: zamanian1379

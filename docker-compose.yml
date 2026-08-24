@@ -134,7 +134,7 @@ services:
   # Keycloak
   # ======================================
   keycloak:
-    image: quay.io/keycloak/keycloak:26.4.7
+    image: alizamanian/keycloak-service:v26.4.7
     container_name: keycloak
     restart: always
 

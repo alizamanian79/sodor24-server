@@ -39,7 +39,9 @@ public class CacheConfig {
 
                     "userCacheBySub",
                     "userCacheByUserName",
-                    "userCacheById"
+                    "userCacheById",
+                    "signaturePlanCache",
+                    "signaturePlansPageCache"
 
             );
         }

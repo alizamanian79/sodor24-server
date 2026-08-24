@@ -197,11 +197,6 @@ public class UserServiceImpl implements UserService {
     // FIND BY SUB
     // =========================================================
 
-    @Cacheable(
-            value = "userCacheBySub",
-            key = "#sub",
-            unless = "#result == null"
-    )
     @Override
     public User findUserBySub(String sub) {
 

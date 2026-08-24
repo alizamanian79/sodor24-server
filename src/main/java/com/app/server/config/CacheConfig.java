@@ -35,7 +35,13 @@ public class CacheConfig {
                     .build();
         } else {
             System.out.println("⚠ Redis is NOT available. Using in-memory cache.");
-            return new ConcurrentMapCacheManager("users", "userById", "userByUsername");
+            return new ConcurrentMapCacheManager(
+
+                    "userCacheBySub",
+                    "userCacheByUserName",
+                    "userCacheById"
+
+            );
         }
     }
 }

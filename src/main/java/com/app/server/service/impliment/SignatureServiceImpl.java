@@ -2,20 +2,15 @@ package com.app.server.service.impliment;
 
 import com.app.server.dto.request.SignatureRequestDto;
 import com.app.server.dto.response.CustomResponseDto;
-import com.app.server.dto.response.Sodor24ResponseDto;
 import com.app.server.exception.AppBadRequestException;
-import com.app.server.exception.AppConflicException;
 import com.app.server.exception.AppNotFoundException;
-import com.app.server.model.OtpType;
 import com.app.server.model.SignaturePlan;
 import com.app.server.model.User;
 import com.app.server.model.Signature;
 import com.app.server.repository.SignatureRepository;
-import com.app.server.service.OtpService;
 import com.app.server.service.SignaturePlanService;
 import com.app.server.service.UserService;
 import com.app.server.service.SignatureService;
-
 import com.app.server.service.impliment.OtpFactory.OtpFactory;
 import com.app.server.util.signature_service_producer.producer.SignatureProducer;
 import com.fasterxml.jackson.core.type.TypeReference;

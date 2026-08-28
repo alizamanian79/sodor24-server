@@ -15,10 +15,6 @@ import com.app.server.service.impliment.OtpFactory.OtpFactory;
 import com.app.server.util.wallet_service_producer.WalletRMQProducer;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.CachePut;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
@@ -118,12 +114,6 @@ public class UserServiceImpl implements UserService {
     // =========================================================
     // FIND BY USERNAME
     // =========================================================
-
-    @Cacheable(
-            value = "userCacheByUserName",
-            key = "#username",
-            unless = "#result == null"
-    )
     @Override
     public User findUserByUsername(String username) {
 
@@ -141,10 +131,6 @@ public class UserServiceImpl implements UserService {
     // EXISTS BY USERNAME
     // =========================================================
 
-    @Cacheable(
-            value = "userExistsByUsername",
-            key = "#username"
-    )
     @Override
     public Boolean existUserByUsername(String username) {
 
@@ -158,11 +144,6 @@ public class UserServiceImpl implements UserService {
     // FIND BY ID
     // =========================================================
 
-    @Cacheable(
-            value = "userCacheById",
-            key = "#id",
-            unless = "#result == null"
-    )
     @Override
     public User findUserById(Long id) {
 
@@ -240,26 +221,6 @@ public class UserServiceImpl implements UserService {
         User updatedUser =
                 userRepository.save(existingUser);
 
-        /*
-         * Cache invalidation
-         *
-         * چون ممکن است username تغییر کرده باشد،
-         * cache مربوط به username قبلی هم باید پاک شود.
-         */
-
-        evictUserCaches(
-                id,
-                oldUsername,
-                updatedUser.getUsername(),
-                oldSub
-        );
-
-        /*
-         * Cache جدید
-         */
-
-        putUserCaches(updatedUser);
-
         return updatedUser;
     }
 
@@ -281,17 +242,6 @@ public class UserServiceImpl implements UserService {
         userRepository.delete(user);
 
         walletRMQProducer.deleteWalletBySub(walletId);
-
-        /*
-         * Delete all user caches
-         */
-
-        evictUserCaches(
-                id,
-                username,
-                username,
-                sub
-        );
 
         return "کاربر با موفقیت حذف شد";
     }
@@ -336,46 +286,7 @@ public class UserServiceImpl implements UserService {
             );
         }
 
-        /*
-         * مهم:
-         *
-         * اینجا مستقیماً repository را صدا نمی‌زنیم.
-         *
-         * findUserBySub دارای @Cacheable است.
-         */
-
         return findUserBySub(sub);
     }
 
-
-    // =========================================================
-    // CACHE HELPERS
-    // =========================================================
-
-    private void putUserCaches(User user) {
-
-        /*
-         * این متد فقط برای توضیح ساختار است.
-         *
-         * CachePut روی متد public بهتر است انجام شود
-         * و به خاطر Self Invocation نباید مستقیم annotation
-         * روی همین متد private قرار بگیرد.
-         */
-    }
-
-
-    private void evictUserCaches(
-            Long id,
-            String oldUsername,
-            String newUsername,
-            String sub
-    ) {
-
-        /*
-         * این متد هم فقط placeholder است.
-         *
-         * برای invalidate واقعی، بهتر است CacheManager
-         * را inject کنیم.
-         */
-    }
 }

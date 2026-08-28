@@ -3,28 +3,21 @@ import com.app.server.dto.request.SignaturePlanRequestDto;
 import com.app.server.dto.response.CustomResponseDto;
 import com.app.server.exception.AppNotFoundException;
 import com.app.server.model.SignaturePlan;
-import com.app.server.model.User;
 import com.app.server.repository.SignaturePlanRepository;
 import com.app.server.service.SignaturePlanService;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.mfathi91.time.PersianDate;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.CachePut;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -44,7 +37,6 @@ public class SignaturePlanServiceImpl implements SignaturePlanService {
 
     // Find signature plan by Id
 
-    @Cacheable(value = "signaturePlanCache", key = "#id")
     public SignaturePlan findSignaturePlanById(Long id) {
         return signaturePlanRepository.findSignatureById(id)
                 .orElseThrow(() ->
@@ -54,10 +46,6 @@ public class SignaturePlanServiceImpl implements SignaturePlanService {
 
 
     // Generate signature plan
-    @CacheEvict(value = {
-            "signaturePlanCache",
-            "signaturePlansPageCache"
-    }, allEntries = true)
     @Override
     public SignaturePlan generateSignaturePlan(SignaturePlanRequestDto req) {
 
@@ -83,12 +71,6 @@ public class SignaturePlanServiceImpl implements SignaturePlanService {
     }
 
 
-
-
-    @CacheEvict(value = {
-            "signaturePlanCache",
-            "signaturePlansPageCache"
-    }, key = "#id")
     @Override
     public Object deleteSignaturePlan(Long id) {
         SignaturePlan signature = findSignaturePlanById(id);
@@ -103,11 +85,6 @@ public class SignaturePlanServiceImpl implements SignaturePlanService {
     }
 
 
-    // Update signature plan
-    @CacheEvict(value = {
-            "signaturePlanCache",
-            "signaturePlansPageCache"
-    }, key = "#id")
     @Transactional
     @Override
     public SignaturePlan updateSignaturePlanById(SignaturePlanRequestDto req,Long id) {
@@ -124,11 +101,6 @@ public class SignaturePlanServiceImpl implements SignaturePlanService {
     }
 
 
-    // Signature plan Active status
-    @CacheEvict(value = {
-            "signaturePlanCache",
-            "signaturePlansPageCache"
-    }, key = "#signatureId")
     @Transactional
     @Override
     public Object activeSignaturePlan(Long signatureId , boolean active) {

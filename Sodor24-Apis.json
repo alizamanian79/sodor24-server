@@ -980,7 +980,7 @@
                   }
                 },
                 "url": {
-                  "raw": "{{HOST}}/api/v1/signature/plan/1",
+                  "raw": "{{HOST}}/api/v1/signature/plan/4",
                   "host": [
                     "{{HOST}}"
                   ],
@@ -989,7 +989,7 @@
                     "v1",
                     "signature",
                     "plan",
-                    "1"
+                    "4"
                   ]
                 }
               },
@@ -1012,7 +1012,7 @@
                 "header": [],
                 "body": {
                   "mode": "raw",
-                  "raw": "{\r\n    \"title\": \"گلد سیگنیچر\",\r\n    \"description\": \"با صرفه ترین و بهترین امضا\",\r\n    \"price\": 500000,\r\n    \"usageCount\": 10,\r\n    \"period\": 1,\r\n    \"features\": [\r\n      \"مناسب امضای خاص\"\r\n    ],\r\n    \"tags\": [\r\n      \"تک امضا\"\r\n    ]\r\n  }\r\n\r\n\r\n",
+                  "raw": "{\r\n    \"title\": \"دوبار مصرف\",\r\n    \"description\": \"با صرفه ترین و بهترین امضا\",\r\n    \"price\": 120000,\r\n    \"usageCount\": 2,\r\n    \"period\": 3,\r\n    \"features\": [\r\n      \"مناسب امضای خاص\"\r\n    ],\r\n    \"tags\": [\r\n      \"بهترین\"\r\n    ]\r\n  }\r\n\r\n\r\n",
                   "options": {
                     "raw": {
                       "language": "json"
@@ -1098,7 +1098,7 @@
                   }
                 },
                 "url": {
-                  "raw": "{{HOST}}/api/v1/signature/plan/2",
+                  "raw": "{{HOST}}/api/v1/signature/plan/5",
                   "host": [
                     "{{HOST}}"
                   ],
@@ -1107,7 +1107,7 @@
                     "v1",
                     "signature",
                     "plan",
-                    "2"
+                    "5"
                   ]
                 }
               },
@@ -1138,7 +1138,7 @@
                   }
                 },
                 "url": {
-                  "raw": "{{HOST}}/api/v1/signature/plan/1",
+                  "raw": "{{HOST}}/api/v1/signature/plan/4",
                   "host": [
                     "{{HOST}}"
                   ],
@@ -1147,7 +1147,7 @@
                     "v1",
                     "signature",
                     "plan",
-                    "1"
+                    "4"
                   ]
                 }
               },
@@ -1231,7 +1231,7 @@
                 "header": [],
                 "body": {
                   "mode": "raw",
-                  "raw": "{\r\n  \"signaturePlanId\":3,\r\n  \"country\": \"Iran\",\r\n  \"reason\": \"test request\",\r\n  \"location\": \"Tehran\",\r\n  \"organization\": \"Rimas.com\",\r\n  \"department\": \"Technical department\",\r\n  \"state\": \"Tehran\",\r\n  \"city\": \"Tehran\",\r\n  \"email\": \"alizamaniandev@gmail.com\",\r\n  \"title\": \"Alibaba.ir\",\r\n  \"signaturePassword\": \"12345678\"\r\n}\r\n",
+                  "raw": "{\r\n  \"signaturePlanId\":1,\r\n  \"country\": \"Iran\",\r\n  \"reason\": \"test request\",\r\n  \"location\": \"Tehran\",\r\n  \"organization\": \"Rimas.com\",\r\n  \"department\": \"Technical department\",\r\n  \"state\": \"Tehran\",\r\n  \"city\": \"Tehran\",\r\n  \"email\": \"alizamaniandev@gmail.com\",\r\n  \"title\": \"Alibaba.ir\",\r\n  \"signaturePassword\": \"12345678\"\r\n}\r\n",
                   "options": {
                     "raw": {
                       "language": "json"
@@ -1299,7 +1299,7 @@
                 "method": "GET",
                 "header": [],
                 "url": {
-                  "raw": "{{HOST}}/api/v1/signature/service/3",
+                  "raw": "{{HOST}}/api/v1/signature/service/2",
                   "host": [
                     "{{HOST}}"
                   ],
@@ -1308,7 +1308,38 @@
                     "v1",
                     "signature",
                     "service",
-                    "3"
+                    "2"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Download signature by key",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{ACCESS_TOKEN}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{HOST}}/api/v1/download/signature/user-e0a9cc54-a3ab-49ae-bed1-0807f682a159.p12",
+                  "host": [
+                    "{{HOST}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "download",
+                    "signature",
+                    "user-e0a9cc54-a3ab-49ae-bed1-0807f682a159.p12"
                   ]
                 }
               },
@@ -1740,7 +1771,7 @@
       "name": "Wallet",
       "item": [
         {
-          "name": "New Request",
+          "name": "Get all wallets",
           "request": {
             "auth": {
               "type": "bearer",
@@ -1755,7 +1786,36 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{HOST}}/api/v1/wallet/b418688d-1720-4383-ad63-45783de2664e",
+              "raw": "{{HOST}}/api/v1/wallet",
+              "host": [
+                "{{HOST}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "wallet"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get wallet by wallet-id",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{ACCESS_TOKEN}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{HOST}}/api/v1/wallet/80357b02-bf3e-4d9a-aad8-276c0c685b6a",
               "host": [
                 "{{HOST}}"
               ],
@@ -1763,7 +1823,293 @@
                 "api",
                 "v1",
                 "wallet",
-                "b418688d-1720-4383-ad63-45783de2664e"
+                "80357b02-bf3e-4d9a-aad8-276c0c685b6a"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get transaction in a wallet",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{ACCESS_TOKEN}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{HOST}}/api/v1/wallet/80357b02-bf3e-4d9a-aad8-276c0c685b6a/938601",
+              "host": [
+                "{{HOST}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "wallet",
+                "80357b02-bf3e-4d9a-aad8-276c0c685b6a",
+                "938601"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Contract",
+      "item": [
+        {
+          "name": "Preparation contract",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{ACCESS_TOKEN}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "pdfFile",
+                  "type": "file",
+                  "uuid": "c1d2dd66-ef64-4aeb-b8fb-44a957fa9338",
+                  "value": ""
+                },
+                {
+                  "key": "privateKeyFile",
+                  "type": "file",
+                  "uuid": "c031f88b-3245-42b2-9ba8-318abc40b4e4",
+                  "value": ""
+                },
+                {
+                  "key": "password",
+                  "value": "",
+                  "type": "text",
+                  "uuid": "41656343-18d1-49d3-99c5-773f542e8da0"
+                },
+                {
+                  "key": "title",
+                  "value": "",
+                  "type": "text",
+                  "uuid": "dfc5c61a-09cf-4155-a767-bdda973e7479"
+                },
+                {
+                  "key": "description",
+                  "value": "",
+                  "type": "text",
+                  "uuid": "f2389989-e410-4d40-8bb7-6d3e45f0a7b8"
+                },
+                {
+                  "key": "signedLink",
+                  "value": "",
+                  "type": "text",
+                  "uuid": "25b59204-5e7a-4712-b7ca-f5b9047d3a43"
+                },
+                {
+                  "key": "unSignedLink",
+                  "value": "",
+                  "type": "text",
+                  "uuid": "bffb1c31-edc4-45c0-bb8b-c8ea0c7f6294"
+                },
+                {
+                  "key": "slug",
+                  "value": "",
+                  "type": "text",
+                  "uuid": "772cbd10-74bd-469a-8c19-9c8884bb593e"
+                },
+                {
+                  "key": "userId",
+                  "value": "",
+                  "type": "text",
+                  "uuid": "066d9a7b-7e01-40f3-979f-8300f19d1388"
+                },
+                {
+                  "key": "signatureId",
+                  "value": "",
+                  "type": "text",
+                  "uuid": "9c6a7c6a-daac-44e3-a1d5-62324d973a7b"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{HOST}}/api/v1/contract/preparation",
+              "host": [
+                "{{HOST}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "contract",
+                "preparation"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get contracts",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{ACCESS_TOKEN}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{HOST}}/api/v1/contract",
+              "host": [
+                "{{HOST}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "contract"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get contracts by slug",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{ACCESS_TOKEN}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{HOST}}/api/v1/contract/slug/369475",
+              "host": [
+                "{{HOST}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "contract",
+                "slug",
+                "369475"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get contracts by id",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{ACCESS_TOKEN}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{HOST}}/api/v1/contract/id/6",
+              "host": [
+                "{{HOST}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "contract",
+                "id",
+                "6"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Download signed-contract by slug",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{ACCESS_TOKEN}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{HOST}}/api/v1/download/contract/signed/369475",
+              "host": [
+                "{{HOST}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "download",
+                "contract",
+                "signed",
+                "369475"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Download unsigned-contract by slug",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{ACCESS_TOKEN}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{HOST}}/api/v1/download/contract/unsigned/369475",
+              "host": [
+                "{{HOST}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "download",
+                "contract",
+                "unsigned",
+                "369475"
               ]
             }
           },

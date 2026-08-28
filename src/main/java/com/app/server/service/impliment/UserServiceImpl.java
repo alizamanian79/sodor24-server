@@ -225,6 +225,36 @@ public class UserServiceImpl implements UserService {
     }
 
 
+    @Transactional
+    @Override
+    public User updateUserBySub(UpdateUserRequestDto req, String sub) {
+
+        User existingUser = findUserBySub(sub);
+
+        String oldUsername = existingUser.getUsername();
+        String oldSub = existingUser.getSub();
+
+        existingUser.setFirstName(req.getFirstName());
+        existingUser.setLastName(req.getLastName());
+        existingUser.setEmail(req.getEmail());
+        existingUser.setPhoneNumber(req.getPhoneNumber());
+        existingUser.setNationalCode(req.getNationalCode());
+
+        if (req.getPassword() != null &&
+                !req.getPassword().isBlank()) {
+
+            existingUser.setPassword(
+                    passwordEncoder.encode(req.getPassword())
+            );
+        }
+
+        User updatedUser =
+                userRepository.save(existingUser);
+
+        return updatedUser;
+    }
+
+
     // =========================================================
     // DELETE USER
     // =========================================================

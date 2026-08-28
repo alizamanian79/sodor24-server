@@ -1,23 +1,18 @@
 package com.app.server.controller;
 
-import com.app.server.dto.request.RoleChangeRequest;
+import com.app.server.annotation.IsSelfOrAdminBySub;
 import com.app.server.dto.request.UpdateUserRequestDto;
-import com.app.server.dto.response.LoginResponseDto;
 import com.app.server.dto.response.Sodor24ResponseDto;
 import com.app.server.exception.AppBadRequestException;
 import com.app.server.model.User;
 import com.app.server.service.AuthenticationService;
 import com.app.server.service.JwtService;
 import com.app.server.service.UserService;
-import com.github.mfathi91.time.PersianDate;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
@@ -64,16 +59,17 @@ public class UserController {
 
 
 
-    @PutMapping("/{id}")
+    @IsSelfOrAdminBySub
+    @PutMapping("/{sub}")
     public ResponseEntity<?> updateUser(
+            @PathVariable String sub,
             @AuthenticationPrincipal Jwt jwt,
-            @PathVariable Long id,
             @Valid @RequestBody UpdateUserRequestDto req) {
 
         try {
 
 
-            User changedUser = userService.updateUser(req, id);
+            User changedUser = userService.updateUserBySub(req, sub);
             req.setSub(changedUser.getSub());
             req.setUsername(changedUser.getUsername());
              Map<String,Object> res= authenticationService.updateUser(req, jwt.getTokenValue());
@@ -89,6 +85,11 @@ public class UserController {
             throw new AppBadRequestException(e.getMessage());
         }
     }
+
+
+
+
+
 
     // get user roles
 //    @PreAuthorize("hasRole('ADMIN') or #id == authentication.principal.id")

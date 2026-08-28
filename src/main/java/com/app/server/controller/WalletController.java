@@ -1,10 +1,12 @@
 package com.app.server.controller;
 
+import com.app.server.annotation.IsSelfOrAdminBySub;
 import com.app.server.util.wallet_service_producer.WalletRMQProducer;
 import com.app.server.util.wallet_service_producer.dto.response.WalletResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,15 +32,15 @@ public class WalletController {
         WalletResponseDto res = walletRMQProducer.walletLists();
         return ResponseEntity.status(res.getStatus()).body(res);
     }
-
-//    @PreAuthorize("hasRole('ADMIN') or #sub == authentication.principal.walletId")
+    @IsSelfOrAdminBySub
     @GetMapping("/{sub}")
-    public ResponseEntity<?> getBySub(@PathVariable String sub){
+    public ResponseEntity<?> getBySub(
+        @PathVariable String sub){
         WalletResponseDto res = walletRMQProducer.getWalletBySub(sub);
         return ResponseEntity.status(res.getStatus()).body(res);
     }
 
-//    @PreAuthorize("hasRole('ADMIN') or #sub == authentication.principal.walletId")
+    @IsSelfOrAdminBySub
     @GetMapping("/{sub}/{slug}")
     public ResponseEntity<?> getBySub(
             @PathVariable String sub,

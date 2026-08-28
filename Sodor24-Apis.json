@@ -640,7 +640,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\r\n    \"email\": \"alizamaniandev@gmail.com\",\r\n    \"password\": \"admin\",\r\n    \"firstName\": \"علی\",\r\n    \"lastName\": \"زمانیان\",\r\n    \"phoneNumber\": \"09917403979\",\r\n    \"nationalCode\":\"0023566639\"\r\n}",
+              "raw": "{\r\n    \"email\": \"madid@gmail.com\",\r\n    \"password\": \"mahdi\",\r\n    \"firstName\": \"مهدی\",\r\n    \"lastName\": \"زمانیان\",\r\n    \"phoneNumber\": \"09917403966\",\r\n    \"nationalCode\":\"0023566666\"\r\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -648,7 +648,7 @@
               }
             },
             "url": {
-              "raw": "{{HOST}}/api/v1/users/1",
+              "raw": "{{HOST}}/api/v1/users/e25874db-3d0b-42f5-9c38-9df0d23fdb55",
               "host": [
                 "{{HOST}}"
               ],
@@ -656,7 +656,7 @@
                 "api",
                 "v1",
                 "users",
-                "1"
+                "e25874db-3d0b-42f5-9c38-9df0d23fdb55"
               ]
             }
           },
@@ -785,69 +785,6 @@
                 "v1",
                 "users",
                 "2"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Update",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  ""
-                ],
-                "type": "text/javascript",
-                "packages": {},
-                "requests": {}
-              }
-            },
-            {
-              "listen": "prerequest",
-              "script": {
-                "exec": [
-                  ""
-                ],
-                "type": "text/javascript",
-                "packages": {},
-                "requests": {}
-              }
-            }
-          ],
-          "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{ACCESS_TOKEN}}",
-                  "type": "string"
-                }
-              ]
-            },
-            "method": "PUT",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\r\n    \"username\":\"mahdi\",\r\n    \"password\":\"mahdi\",\r\n    \"fullName\":\"مهدی زمانیان\",\r\n    \"phoneNumber\":\"09386520680\"\r\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{HOST}}/api/v1/users/3",
-              "host": [
-                "{{HOST}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "users",
-                "3"
               ]
             }
           },
@@ -1768,101 +1705,6 @@
       ]
     },
     {
-      "name": "Wallet",
-      "item": [
-        {
-          "name": "Get all wallets",
-          "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{ACCESS_TOKEN}}",
-                  "type": "string"
-                }
-              ]
-            },
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{HOST}}/api/v1/wallet",
-              "host": [
-                "{{HOST}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "wallet"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Get wallet by wallet-id",
-          "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{ACCESS_TOKEN}}",
-                  "type": "string"
-                }
-              ]
-            },
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{HOST}}/api/v1/wallet/80357b02-bf3e-4d9a-aad8-276c0c685b6a",
-              "host": [
-                "{{HOST}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "wallet",
-                "80357b02-bf3e-4d9a-aad8-276c0c685b6a"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Get transaction in a wallet",
-          "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{ACCESS_TOKEN}}",
-                  "type": "string"
-                }
-              ]
-            },
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{HOST}}/api/v1/wallet/80357b02-bf3e-4d9a-aad8-276c0c685b6a/938601",
-              "host": [
-                "{{HOST}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "wallet",
-                "80357b02-bf3e-4d9a-aad8-276c0c685b6a",
-                "938601"
-              ]
-            }
-          },
-          "response": []
-        }
-      ]
-    },
-    {
       "name": "Contract",
       "item": [
         {
@@ -2110,6 +1952,101 @@
                 "contract",
                 "unsigned",
                 "369475"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Wallet",
+      "item": [
+        {
+          "name": "Get all wallets",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{ACCESS_TOKEN}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{HOST}}/api/v1/wallet",
+              "host": [
+                "{{HOST}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "wallet"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get wallet by wallet-id",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{ACCESS_TOKEN}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{HOST}}/api/v1/wallet/e25874db-3d0b-42f5-9c38-9df0d23fdb55",
+              "host": [
+                "{{HOST}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "wallet",
+                "e25874db-3d0b-42f5-9c38-9df0d23fdb55"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get transaction in a wallet",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{ACCESS_TOKEN}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{HOST}}/api/v1/wallet/e25874db-3d0b-42f5-9c38-9df0d23fdb55/938601",
+              "host": [
+                "{{HOST}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "wallet",
+                "e25874db-3d0b-42f5-9c38-9df0d23fdb55",
+                "938601"
               ]
             }
           },

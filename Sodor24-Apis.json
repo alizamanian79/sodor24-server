@@ -640,7 +640,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\r\n    \"email\": \"madid@gmail.com\",\r\n    \"password\": \"mahdi\",\r\n    \"firstName\": \"مهدی\",\r\n    \"lastName\": \"زمانیان\",\r\n    \"phoneNumber\": \"09917403966\",\r\n    \"nationalCode\":\"0023566666\"\r\n}",
+              "raw": "{\r\n    \"email\": \"alizamanian2000@gmail.com\",\r\n    \"password\": \"admin\",\r\n    \"firstName\": \"علی\",\r\n    \"lastName\": \"زمانیان\",\r\n    \"phoneNumber\": \"09917403979\",\r\n    \"nationalCode\":\"0023566639\"\r\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -648,7 +648,7 @@
               }
             },
             "url": {
-              "raw": "{{HOST}}/api/v1/users/e25874db-3d0b-42f5-9c38-9df0d23fdb55",
+              "raw": "{{HOST}}/api/v1/users/e25874db-3d0b-42f5-9c38-9df0d23fdb55/1",
               "host": [
                 "{{HOST}}"
               ],
@@ -656,7 +656,8 @@
                 "api",
                 "v1",
                 "users",
-                "e25874db-3d0b-42f5-9c38-9df0d23fdb55"
+                "e25874db-3d0b-42f5-9c38-9df0d23fdb55",
+                "1"
               ]
             }
           },

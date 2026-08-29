@@ -1,0 +1,2167 @@
+{
+  "info": {
+    "_postman_id": "b9340276-ed7f-4753-8dcd-db261868c9c6",
+    "name": "Sodor24 Service Apis",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "29979735"
+  },
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Verify Account",
+          "item": [
+            {
+              "name": "Account",
+              "item": [
+                {
+                  "name": "Generate otp for account",
+                  "request": {
+                    "method": "GET",
+                    "header": [],
+                    "url": {
+                      "raw": "{{HOST}}/api/v1/otp/generate/account/09917403979",
+                      "host": [
+                        "{{HOST}}"
+                      ],
+                      "path": [
+                        "api",
+                        "v1",
+                        "otp",
+                        "generate",
+                        "account",
+                        "09917403979"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "Verify otp for account",
+                  "request": {
+                    "auth": {
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "GET",
+                    "header": [],
+                    "url": {
+                      "raw": "{{HOST}}/api/v1/otp/verify/account/09917403979/09917403988",
+                      "host": [
+                        "{{HOST}}"
+                      ],
+                      "path": [
+                        "api",
+                        "v1",
+                        "otp",
+                        "verify",
+                        "account",
+                        "09917403979",
+                        "09917403988"
+                      ]
+                    }
+                  },
+                  "response": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"username\": \"admin\",\r\n    \"email\": \"alizamanianalizamanian@gmail.com\",\r\n    \"password\": \"admin\",\r\n    \"firstName\": \"ali\",\r\n    \"lastName\": \"zamanian\",\r\n    \"phoneNumber\": \"09917403979\",\r\n    \"nationalCode\":\"0023566639\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{HOST}}/api/v1/auth/register",
+              "host": [
+                "{{HOST}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "register"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Mahdi",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"username\": \"mahdi\",\r\n    \"email\": \"mahdi@gmail.com\",\r\n    \"password\": \"mahdi\",\r\n    \"firstName\": \"مهدی\",\r\n    \"lastName\": \"زمانیان\",\r\n    \"phoneNumber\": \"09386520680\",\r\n    \"nationalCode\":\"0023566620\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{HOST}}/api/v1/auth/register",
+                  "host": [
+                    "{{HOST}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "auth",
+                    "register"
+                  ]
+                }
+              },
+              "_postman_previewlanguage": null,
+              "header": null,
+              "cookie": [],
+              "body": null
+            },
+            {
+              "name": "Rima",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"username\": \"sima\",\r\n    \"email\": \"sima@gmail.com\",\r\n    \"password\": \"sima\",\r\n    \"firstName\": \"rima\",\r\n    \"lastName\": \"raminfard\",\r\n    \"phoneNumber\": \"09917403888\",\r\n    \"nationalCode\":\"0023566888\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{HOST}}/api/v1/auth/register",
+                  "host": [
+                    "{{HOST}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "auth",
+                    "register"
+                  ]
+                }
+              },
+              "_postman_previewlanguage": null,
+              "header": null,
+              "cookie": [],
+              "body": null
+            },
+            {
+              "name": "Sima",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"username\": \"rima\",\r\n    \"email\": \"rima@gmail.com\",\r\n    \"password\": \"rima\",\r\n    \"firstName\": \"rima\",\r\n    \"lastName\": \"raminfard\",\r\n    \"phoneNumber\": \"09917403988\",\r\n    \"nationalCode\":\"0023566688\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{HOST}}/api/v1/auth/register",
+                  "host": [
+                    "{{HOST}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "auth",
+                    "register"
+                  ]
+                }
+              },
+              "_postman_previewlanguage": null,
+              "header": null,
+              "cookie": [],
+              "body": null
+            }
+          ]
+        },
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "let res = pm.response.json();\r",
+                  "pm.environment.set(\"ACCESS_TOKEN\", res.access_token);"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"username\":\"admin\",\r\n    \"password\":\"admin\"\r\n    \r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{HOST}}/api/v1/auth/login",
+              "host": [
+                "{{HOST}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "login"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Mahdi",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"username\":\"mahdi\",\r\n    \"password\":\"mahdi\",\r\n    \"refresh_token\":false\r\n    \r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{HOST}}/api/v1/auth/login",
+                  "host": [
+                    "{{HOST}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "auth",
+                    "login"
+                  ]
+                }
+              },
+              "_postman_previewlanguage": null,
+              "header": null,
+              "cookie": [],
+              "body": null
+            },
+            {
+              "name": "Rima",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"username\":\"rima\",\r\n    \"password\":\"rima\",\r\n    \"refresh_token\":false\r\n    \r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{HOST}}/api/v1/auth/login",
+                  "host": [
+                    "{{HOST}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "auth",
+                    "login"
+                  ]
+                }
+              },
+              "_postman_previewlanguage": null,
+              "header": null,
+              "cookie": [],
+              "body": null
+            }
+          ]
+        },
+        {
+          "name": "Me",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{ACCESS_TOKEN}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{HOST}}/api/v1/auth/me",
+              "host": [
+                "{{HOST}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "me"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Authorization",
+      "item": [
+        {
+          "name": "Get roles by user id",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{ACCESS_TOKEN}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"roles\":[\"USER\",\"ADMIN\"]\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{HOST}}/api/v1/users/1/role",
+              "host": [
+                "{{HOST}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "users",
+                "1",
+                "role"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Set roles by user id",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// let res = pm.response.json();\r",
+                  "// let data =res.data.access_token;\r",
+                  "// pm.environment.set(\"ACCESS_TOKEN\", data);"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{ACCESS_TOKEN}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"roles\":[\"USER\",\"ADMIN\"]\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{HOST}}/api/v1/users/1/role",
+              "host": [
+                "{{HOST}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "users",
+                "1",
+                "role"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "User",
+      "item": [
+        {
+          "name": "List",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{ACCESS_TOKEN}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{HOST}}/api/v1/users",
+              "host": [
+                "{{HOST}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "users"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get by id",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{ACCESS_TOKEN}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{HOST}}/api/v1/users/1",
+              "host": [
+                "{{HOST}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "users",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{ACCESS_TOKEN}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"email\": \"alizamanian2000@gmail.com\",\r\n    \"password\": \"admin\",\r\n    \"firstName\": \"علی\",\r\n    \"lastName\": \"زمانیان\",\r\n    \"phoneNumber\": \"09917403979\",\r\n    \"nationalCode\":\"0023566639\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{HOST}}/api/v1/users/e25874db-3d0b-42f5-9c38-9df0d23fdb55/1",
+              "host": [
+                "{{HOST}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "users",
+                "e25874db-3d0b-42f5-9c38-9df0d23fdb55",
+                "1"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Mahdi",
+              "originalRequest": {
+                "method": "PUT",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"username\":\"mahdi\",\r\n    \"password\":\"mahdi\",\r\n    \"fullName\":\"مهدی زمانیان\",\r\n    \"phoneNumber\":\"09386520680\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{HOST}}/api/v1/users/3",
+                  "host": [
+                    "{{HOST}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "users",
+                    "3"
+                  ]
+                }
+              },
+              "_postman_previewlanguage": null,
+              "header": null,
+              "cookie": [],
+              "body": null
+            },
+            {
+              "name": "Rima",
+              "originalRequest": {
+                "method": "PUT",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{HOST}}/api/v1/users/3",
+                  "host": [
+                    "{{HOST}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "users",
+                    "3"
+                  ]
+                }
+              },
+              "_postman_previewlanguage": null,
+              "header": null,
+              "cookie": [],
+              "body": null
+            }
+          ]
+        },
+        {
+          "name": "Delete by id",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{ACCESS_TOKEN}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{HOST}}/api/v1/users/2",
+              "host": [
+                "{{HOST}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "users",
+                "2"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Notification",
+      "item": [
+        {
+          "name": "Send by SMS",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{ACCESS_TOKEN}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{HOST}}/api/v1/notification/send?receiver=09917403979&type=SMS&message=Hello",
+              "host": [
+                "{{HOST}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "notification",
+                "send"
+              ],
+              "query": [
+                {
+                  "key": "receiver",
+                  "value": "09917403979"
+                },
+                {
+                  "key": "type",
+                  "value": "SMS"
+                },
+                {
+                  "key": "message",
+                  "value": "Hello"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Signature plan",
+      "item": [
+        {
+          "name": "Crud",
+          "item": [
+            {
+              "name": "List",
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              },
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{ACCESS_TOKEN}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{HOST}}/api/v1/signature/plan",
+                  "host": [
+                    "{{HOST}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "signature",
+                    "plan"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get by id",
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              },
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{ACCESS_TOKEN}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{HOST}}/api/v1/signature/plan/4",
+                  "host": [
+                    "{{HOST}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "signature",
+                    "plan",
+                    "4"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Generate Plan",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{ACCESS_TOKEN}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"title\": \"دوبار مصرف\",\r\n    \"description\": \"با صرفه ترین و بهترین امضا\",\r\n    \"price\": 120000,\r\n    \"usageCount\": 2,\r\n    \"period\": 3,\r\n    \"features\": [\r\n      \"مناسب امضای خاص\"\r\n    ],\r\n    \"tags\": [\r\n      \"بهترین\"\r\n    ]\r\n  }\r\n\r\n\r\n",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{HOST}}/api/v1/signature/plan",
+                  "host": [
+                    "{{HOST}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "signature",
+                    "plan"
+                  ]
+                }
+              },
+              "response": [
+                {
+                  "name": "Basic plan",
+                  "originalRequest": {
+                    "method": "POST",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": " {\r\n    \"title\": \"پلن پایه\",\r\n    \"description\": \"مناسب کاربران با نیاز محدود\",\r\n    \"price\": 249000,\r\n    \"usageCount\": 10,\r\n    \"period\": 30,\r\n    \"features\": [\r\n      \"۱۰ امضای دیجیتال\",\r\n      \"اعتبار ۳۰ روزه\"\r\n    ],\r\n    \"tags\": [\r\n      \"پایه\",\r\n      \"اقتصادی\"\r\n    ]\r\n  },",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{HOST}}/api/v1/signature/plan",
+                      "host": [
+                        "{{HOST}}"
+                      ],
+                      "path": [
+                        "api",
+                        "v1",
+                        "signature",
+                        "plan"
+                      ]
+                    }
+                  },
+                  "_postman_previewlanguage": "",
+                  "header": [],
+                  "cookie": [
+                    {
+                      "expires": "Invalid Date",
+                      "domain": "",
+                      "path": ""
+                    }
+                  ],
+                  "body": ""
+                }
+              ]
+            },
+            {
+              "name": "Update",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{ACCESS_TOKEN}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PUT",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"title\": \"امضای یکبار مصرف\",\r\n    \"description\": \"یبار مصرف\",\r\n    \"price\": 350000,\r\n    \"usageCount\": 1,\r\n    \"period\": 1,\r\n    \"features\": [\r\n      \"مناصب امضای تک\"\r\n    ],\r\n    \"tags\": [\r\n      \"پلاتینیوم\",\r\n      \"ویژه\",\r\n      \"پریمیوم\"\r\n    ]\r\n  }\r\n\r\n\r\n",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{HOST}}/api/v1/signature/plan/5",
+                  "host": [
+                    "{{HOST}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "signature",
+                    "plan",
+                    "5"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Delete by id",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{ACCESS_TOKEN}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "DELETE",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{HOST}}/api/v1/signature/plan/4",
+                  "host": [
+                    "{{HOST}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "signature",
+                    "plan",
+                    "4"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Active",
+          "item": [
+            {
+              "name": "Set plan active",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{ACCESS_TOKEN}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PUT",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"title\": \"امضای یکبار مصرف\",\r\n    \"description\": \"پلن یکبار مصرف\",\r\n    \"price\": 77000,\r\n    \"usageCount\": 1,\r\n    \"period\": 1,\r\n    \"features\": [\r\n      \"مناصب امضای تک\"\r\n    ],\r\n    \"tags\": [\r\n      \"پلاتینیوم\",\r\n      \"ویژه\",\r\n      \"پریمیوم\"\r\n    ]\r\n  }\r\n\r\n\r\n"
+                },
+                "url": {
+                  "raw": "{{HOST}}/api/v1/signature/plan/active/set?id=1&active=1",
+                  "host": [
+                    "{{HOST}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "signature",
+                    "plan",
+                    "active",
+                    "set"
+                  ],
+                  "query": [
+                    {
+                      "key": "id",
+                      "value": "1"
+                    },
+                    {
+                      "key": "active",
+                      "value": "1"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Signature request",
+      "item": [
+        {
+          "name": "Crud",
+          "item": [
+            {
+              "name": "Signature request generation",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{ACCESS_TOKEN}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"signaturePlanId\":1,\r\n  \"country\": \"Iran\",\r\n  \"reason\": \"test request\",\r\n  \"location\": \"Tehran\",\r\n  \"organization\": \"Rimas.com\",\r\n  \"department\": \"Technical department\",\r\n  \"state\": \"Tehran\",\r\n  \"city\": \"Tehran\",\r\n  \"email\": \"alizamaniandev@gmail.com\",\r\n  \"title\": \"Alibaba.ir\",\r\n  \"signaturePassword\": \"12345678\"\r\n}\r\n",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{HOST}}/api/v1/signature/service",
+                  "host": [
+                    "{{HOST}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "signature",
+                    "service"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Signature request list",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{ACCESS_TOKEN}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{HOST}}/api/v1/signature/service",
+                  "host": [
+                    "{{HOST}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "signature",
+                    "service"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get signature request by id",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{ACCESS_TOKEN}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{HOST}}/api/v1/signature/service/2",
+                  "host": [
+                    "{{HOST}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "signature",
+                    "service",
+                    "2"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Download signature by key",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{ACCESS_TOKEN}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{HOST}}/api/v1/download/signature/user-e0a9cc54-a3ab-49ae-bed1-0807f682a159.p12",
+                  "host": [
+                    "{{HOST}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "download",
+                    "signature",
+                    "user-e0a9cc54-a3ab-49ae-bed1-0807f682a159.p12"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Delete signature request",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{ACCESS_TOKEN}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "DELETE",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": ""
+                },
+                "url": {
+                  "raw": "{{HOST}}/api/v1/signature/service/8",
+                  "host": [
+                    "{{HOST}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "signature",
+                    "service",
+                    "8"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Verify signature request",
+          "item": [
+            {
+              "name": "Generate otp for signature",
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              },
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{ACCESS_TOKEN}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{HOST}}/api/v1/generate/signature/35",
+                  "host": [
+                    "{{HOST}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "generate",
+                    "signature",
+                    "35"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Verify signature otp",
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              },
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{ACCESS_TOKEN}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{HOST}}/api/v1/verify/signature/17/71014",
+                  "host": [
+                    "{{HOST}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "verify",
+                    "signature",
+                    "17",
+                    "71014"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Verifications",
+      "item": [
+        {
+          "name": "Verify account",
+          "item": [
+            {
+              "name": "Generate otp for account",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{HOST}}/api/v1/otp/generate/account/09917403979",
+                  "host": [
+                    "{{HOST}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "otp",
+                    "generate",
+                    "account",
+                    "09917403979"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Verify otp for account",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{HOST}}/api/v1/otp/verify/account/09917403979/74981",
+                  "host": [
+                    "{{HOST}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "otp",
+                    "verify",
+                    "account",
+                    "09917403979",
+                    "74981"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Verify signature request",
+          "item": [
+            {
+              "name": "Generate otp for signature",
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              },
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{ACCESS_TOKEN}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{HOST}}/api/v1/generate/signature/6",
+                  "host": [
+                    "{{HOST}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "generate",
+                    "signature",
+                    "6"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Verify signature otp",
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              },
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{ACCESS_TOKEN}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{HOST}}/api/v1/verify/signature/8/83382",
+                  "host": [
+                    "{{HOST}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "verify",
+                    "signature",
+                    "8",
+                    "83382"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Transactions",
+      "item": [
+        {
+          "name": "List",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{ACCESS_TOKEN}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{HOST}}/api/v1/wallet",
+              "host": [
+                "{{HOST}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "wallet"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get user transaction",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{ACCESS_TOKEN}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
+            "url": {
+              "raw": "{{HOST}}/api/v1/wallet/user-10958873",
+              "host": [
+                "{{HOST}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "wallet",
+                "user-10958873"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get transaction by slug",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{ACCESS_TOKEN}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
+            "url": {
+              "raw": "{{HOST}}/api/v1/wallet/user-10958873/690575",
+              "host": [
+                "{{HOST}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "wallet",
+                "user-10958873",
+                "690575"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Public",
+      "item": [
+        {
+          "name": "New Request Copy",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"username\":\"admin\",\r\n    \"password\":\"admin\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{HOST}}/api/v1/public/req/external",
+              "host": [
+                "{{HOST}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "public",
+                "req",
+                "external"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Contract",
+      "item": [
+        {
+          "name": "Preparation contract",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{ACCESS_TOKEN}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "pdfFile",
+                  "type": "file",
+                  "uuid": "c1d2dd66-ef64-4aeb-b8fb-44a957fa9338",
+                  "value": ""
+                },
+                {
+                  "key": "privateKeyFile",
+                  "type": "file",
+                  "uuid": "c031f88b-3245-42b2-9ba8-318abc40b4e4",
+                  "value": ""
+                },
+                {
+                  "key": "password",
+                  "value": "",
+                  "type": "text",
+                  "uuid": "41656343-18d1-49d3-99c5-773f542e8da0"
+                },
+                {
+                  "key": "title",
+                  "value": "",
+                  "type": "text",
+                  "uuid": "dfc5c61a-09cf-4155-a767-bdda973e7479"
+                },
+                {
+                  "key": "description",
+                  "value": "",
+                  "type": "text",
+                  "uuid": "f2389989-e410-4d40-8bb7-6d3e45f0a7b8"
+                },
+                {
+                  "key": "signedLink",
+                  "value": "",
+                  "type": "text",
+                  "uuid": "25b59204-5e7a-4712-b7ca-f5b9047d3a43"
+                },
+                {
+                  "key": "unSignedLink",
+                  "value": "",
+                  "type": "text",
+                  "uuid": "bffb1c31-edc4-45c0-bb8b-c8ea0c7f6294"
+                },
+                {
+                  "key": "slug",
+                  "value": "",
+                  "type": "text",
+                  "uuid": "772cbd10-74bd-469a-8c19-9c8884bb593e"
+                },
+                {
+                  "key": "userId",
+                  "value": "",
+                  "type": "text",
+                  "uuid": "066d9a7b-7e01-40f3-979f-8300f19d1388"
+                },
+                {
+                  "key": "signatureId",
+                  "value": "",
+                  "type": "text",
+                  "uuid": "9c6a7c6a-daac-44e3-a1d5-62324d973a7b"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{HOST}}/api/v1/contract/preparation",
+              "host": [
+                "{{HOST}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "contract",
+                "preparation"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get contracts",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{ACCESS_TOKEN}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{HOST}}/api/v1/contract",
+              "host": [
+                "{{HOST}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "contract"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get contracts by slug",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{ACCESS_TOKEN}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{HOST}}/api/v1/contract/slug/369475",
+              "host": [
+                "{{HOST}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "contract",
+                "slug",
+                "369475"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get contracts by id",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{ACCESS_TOKEN}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{HOST}}/api/v1/contract/id/6",
+              "host": [
+                "{{HOST}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "contract",
+                "id",
+                "6"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Download signed-contract by slug",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{ACCESS_TOKEN}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{HOST}}/api/v1/download/contract/signed/369475",
+              "host": [
+                "{{HOST}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "download",
+                "contract",
+                "signed",
+                "369475"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Download unsigned-contract by slug",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{ACCESS_TOKEN}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{HOST}}/api/v1/download/contract/unsigned/369475",
+              "host": [
+                "{{HOST}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "download",
+                "contract",
+                "unsigned",
+                "369475"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Wallet",
+      "item": [
+        {
+          "name": "Get all wallets",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{ACCESS_TOKEN}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{HOST}}/api/v1/wallet",
+              "host": [
+                "{{HOST}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "wallet"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get wallet by wallet-id",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{ACCESS_TOKEN}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{HOST}}/api/v1/wallet/e25874db-3d0b-42f5-9c38-9df0d23fdb55",
+              "host": [
+                "{{HOST}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "wallet",
+                "e25874db-3d0b-42f5-9c38-9df0d23fdb55"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get transaction in a wallet",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{ACCESS_TOKEN}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{HOST}}/api/v1/wallet/e25874db-3d0b-42f5-9c38-9df0d23fdb55/938601",
+              "host": [
+                "{{HOST}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "wallet",
+                "e25874db-3d0b-42f5-9c38-9df0d23fdb55",
+                "938601"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Payment",
+      "item": [
+        {
+          "name": "Request",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{ACCESS_TOKEN}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"sub\":\"80357b02-bf3e-4d9a-aad8-276c0c685b6a\",\r\n    \"amount\":100000.0,\r\n    \"process\":\"deposit\",\r\n    \"phoneNumber\":\"09917403979\",\r\n    \"email\":\"alizamaniandev@gmail.com\",\r\n    \"description\":\"پرداختی\",\r\n    \"callbackUrl\":\"http://localhost:8181/api/v1/payment/callback?\",\r\n    \"gateway\":\"zarinpal\",\r\n    \"status\":\"\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{HOST}}/api/v1/payment/request",
+              "host": [
+                "{{HOST}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "payment",
+                "request"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Verify callback",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{ACCESS_TOKEN}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"sub\":\"80357b02-bf3e-4d9a-aad8-276c0c685b6a\",\r\n    \"amount\":100000.0,\r\n    \"process\":\"deposit\",\r\n    \"phoneNumber\":\"09917403979\",\r\n    \"email\":\"alizamaniandev@gmail.com\",\r\n    \"description\":\"پرداختی\",\r\n    \"callbackUrl\":\"http://google.com\",\r\n    \"gateway\":\"zarinpal\",\r\n    \"status\":\"\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{HOST}}/api/v1/payment/callback?sub&slug&gateway&Authority&Status",
+              "host": [
+                "{{HOST}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "payment",
+                "callback"
+              ],
+              "query": [
+                {
+                  "key": "sub",
+                  "value": null
+                },
+                {
+                  "key": "slug",
+                  "value": null
+                },
+                {
+                  "key": "gateway",
+                  "value": null
+                },
+                {
+                  "key": "Authority",
+                  "value": null
+                },
+                {
+                  "key": "Status",
+                  "value": null
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}

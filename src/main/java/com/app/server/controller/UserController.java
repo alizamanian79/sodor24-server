@@ -60,16 +60,17 @@ public class UserController {
 
 
     @IsSelfOrAdminBySub
-    @PutMapping("/{sub}")
+    @PutMapping("/{sub}/{id}")
     public ResponseEntity<?> updateUser(
             @PathVariable String sub,
+            @PathVariable Long id,
             @AuthenticationPrincipal Jwt jwt,
             @Valid @RequestBody UpdateUserRequestDto req) {
 
         try {
 
 
-            User changedUser = userService.updateUserBySub(req, sub);
+            User changedUser = userService.updateUser(req, id);
             req.setSub(changedUser.getSub());
             req.setUsername(changedUser.getUsername());
              Map<String,Object> res= authenticationService.updateUser(req, jwt.getTokenValue());

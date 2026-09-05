@@ -39,7 +39,7 @@ services:
   # Keycloak MySQL
   # ======================================
   keycloak-db:
-    image: mysql:8.4
+    image: mysql:8.4.6
     container_name: keycloakdb
     restart: always
 
@@ -222,6 +222,45 @@ services:
       - app-network
 
 
+
+  wallet-database-service:
+    image: mysql:8.4.6
+    container_name: wallet-database-service
+    restart: unless-stopped
+
+    environment:
+      TZ: Asia/Tehran
+      MYSQL_ROOT_PASSWORD: wallet_root_1379
+      MYSQL_DATABASE: walletdb
+      MYSQL_USER: wallet_admin
+      MYSQL_PASSWORD: wallet_password_1379
+
+    ports:
+      - "3308:3306"
+
+    volumes:
+      - wallet-db-volume:/var/lib/mysql
+
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "mysqladmin",
+          "ping",
+          "-h",
+          "localhost",
+          "-uwallet_admin",
+          "-pwallet_password_1379"
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+      start_period: 40s
+
+    networks:
+      - app-network
+
+
   # ======================================
   # Wallet Service
   # ======================================
@@ -239,9 +278,9 @@ services:
 
       SERVER_PORT: 8489
 
-      DB_RESOURCE: jdbc:mysql://sodor24-database-service:3306/walletdb?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Tehran
-      DB_USER: admin
-      DB_PASSWORD: zamanian1379
+      DB_RESOURCE: jdbc:mysql://wallet-database-service:3306/walletdb?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Tehran
+      DB_USER: wallet_admin
+      DB_PASSWORD: wallet_password_1379
 
       SPRING_RABBITMQ_HOST: rabbitmq-service
       SPRING_RABBITMQ_PORT: 5672
@@ -252,7 +291,7 @@ services:
       ZARINPAL_MERCHANT_ID: d8234a3a-dbcf-4f30-ab52-b195b0f0f1a3
 
     depends_on:
-      sodor24-database-service:
+      wallet-database-service:
         condition: service_healthy
 
       rabbitmq-service:
@@ -300,6 +339,9 @@ services:
     depends_on:
       sodor24-server:
         condition: service_started
+
+      rabbitmq-service:
+        condition: service_healthy
 
     healthcheck:
       test:
@@ -371,6 +413,9 @@ services:
       redis-service:
         condition: service_healthy
 
+      keycloak:
+        condition: service_started
+
     networks:
       - app-network
 
@@ -403,6 +448,7 @@ services:
 # ======================================
 volumes:
   sodor24-db-volume:
+  wallet-db-volume:
   keycloak_mysql_volume:
   rabbitmq-volume:
   redis-volume:

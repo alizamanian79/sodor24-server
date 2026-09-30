@@ -6,7 +6,6 @@ import com.app.server.dto.response.Sodor24ResponseDto;
 import com.app.server.exception.AppBadRequestException;
 import com.app.server.model.User;
 import com.app.server.service.AuthenticationService;
-import com.app.server.service.JwtService;
 import com.app.server.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -26,8 +25,6 @@ import java.util.*;
 public class UserController {
 
     private final UserService userService;
-//    private final AuthenticationManager authenticationManager;
-    private final JwtService jwtService;
     private final AuthenticationService authenticationService;
 
     // List

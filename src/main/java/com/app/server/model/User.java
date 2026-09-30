@@ -100,4 +100,9 @@ public class User implements  Serializable {
     private String walletId;
 
 
+
+    @ManyToMany(mappedBy = "owners")
+    private Set<Company> companies = new HashSet<>();
+
+
 }

@@ -380,7 +380,6 @@ services:
       APP_CLIENT_HOST: http://192.168.1.7:3000
       AUTHENTICATION_SERVICE: http://authentication-service:8081
 
-
       KC_HOST: http://keycloak:8080
       KC_REALM: myrealm
       KC_CLIENT_ID: app-cli

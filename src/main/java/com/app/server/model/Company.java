@@ -38,9 +38,6 @@ public class Company {
     private String companyName;
 
 
-    @Max(value = 365, message = "مدت اعتبار نمیتواند بیشتر از 365 روز باشد")
-    @Column(nullable = false)
-    private int validityDays;
 
     @Size(max = 255, message = "موقعیت مکانی نمیتواند بیشتر از ۲۵۵ کاراکتر باشد")
     private String location;
@@ -73,6 +70,18 @@ public class Company {
 
     @UpdateTimestamp
     private LocalDateTime updatedAt;
+
+    private LocalDateTime expiredAt;
+
+
+
+
+
+
+
+    private boolean isValid;
+    private boolean isActive;
+
 
     @PrePersist
     private void generateSlug() {

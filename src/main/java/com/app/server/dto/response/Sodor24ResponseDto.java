@@ -26,6 +26,8 @@ public class Sodor24ResponseDto<T> {
 
     private int status;
 
+
+
     public static <T> ResponseEntity<Sodor24ResponseDto<T>> response(
             T data,
             String message,
@@ -45,6 +47,12 @@ public class Sodor24ResponseDto<T> {
                                 .build()
                 );
     }
+
+
+
+
+
+
 
     public static <T> ResponseEntity<Sodor24ResponseDto<T>> ok(
             T data,

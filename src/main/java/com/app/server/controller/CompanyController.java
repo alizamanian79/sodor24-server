@@ -22,10 +22,12 @@ public class CompanyController {
           @Valid @RequestBody CreateCompanyRequestDto req,
           Authentication auth
     ) {
-
         req.setUserSub(auth.getName().toString());
        Company res = companyService.createCompany(req);
-
         return new ResponseEntity<>(res, HttpStatus.OK);
     }
+
+
+
+
 }

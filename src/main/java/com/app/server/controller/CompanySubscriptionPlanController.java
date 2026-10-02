@@ -90,7 +90,7 @@ public class CompanySubscriptionPlanController {
 
 
     @PatchMapping("/{slug}")
-    public Sodor24ResponseDto setActive(
+    public CompanySubscriptionPlan setActive(
             @PathVariable String slug,
             @RequestParam boolean value
     ) {

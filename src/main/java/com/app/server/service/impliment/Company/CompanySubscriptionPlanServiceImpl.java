@@ -8,12 +8,13 @@ import com.app.server.model.CompanySubscriptionPlan;
 import com.app.server.repository.CompanySubscriptionPlanRepository;
 import com.app.server.service.CompanySubscriptionPlanService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-
 import java.util.List;
-
 
 @Service
 @RequiredArgsConstructor
@@ -21,84 +22,63 @@ import java.util.List;
 public class CompanySubscriptionPlanServiceImpl
         implements CompanySubscriptionPlanService {
 
-
     private final CompanySubscriptionPlanRepository repository;
 
+    private static final String CACHE_NAME = "CompanySubscriptionPlan";
 
 
     @Override
+    @CacheEvict(
+            value = CACHE_NAME,
+            allEntries = true
+    )
     public CompanySubscriptionPlan createCompanySubscriptionPlan(
-            CompanySubscriptionPlan plan , String userSub
+            CompanySubscriptionPlan plan,
+            String userSub
     ) throws AppConflicException {
 
         if (repository.existsByTitle(plan.getTitle())) {
             throw new AppConflicException(
                     "پلنی با این عنوان قبلاً ثبت شده است"
-
             );
         }
 
         plan.setCreatedBy(userSub);
         plan.setActive(false);
+
         return repository.save(plan);
     }
 
 
-
-
-
     @Override
+    @CachePut(
+            value = CACHE_NAME,
+            key = "#slug"
+    )
     public CompanySubscriptionPlan updateCompanySubscriptionPlanBySlug(
             String slug,
             CompanySubscriptionPlan request
     ) {
 
-
-        CompanySubscriptionPlan existing = findCompanySubscriptionPlanBySlug(slug);
-
-
+        CompanySubscriptionPlan existing =
+                findCompanySubscriptionPlanBySlug(slug);
 
         existing.setTitle(request.getTitle());
-
-        existing.setDescription(
-                request.getDescription()
-        );
-
-        existing.setCompletedDescription(
-                request.getCompletedDescription()
-        );
-
-        existing.setTags(
-                request.getTags()
-        );
-
-        existing.setValidDays(
-                request.getValidDays()
-        );
-
-        existing.setUsersCount(
-                request.getUsersCount()
-        );
-
-        existing.setPrice(
-                request.getPrice()
-        );
-
-        existing.setActive(
-                request.getActive()
-        );
-
+        existing.setDescription(request.getDescription());
+        existing.setCompletedDescription(request.getCompletedDescription());
+        existing.setTags(request.getTags());
+        existing.setValidDays(request.getValidDays());
+        existing.setUsersCount(request.getUsersCount());
+        existing.setPrice(request.getPrice());
+        existing.setActive(request.getActive());
 
         return repository.save(existing);
     }
 
 
-
-
     @Override
     @Transactional(readOnly = true)
     public CompanySubscriptionPlan findCompanySubscriptionPlanById(Long id) {
-
 
         return repository.findById(id)
                 .orElseThrow(() ->
@@ -110,10 +90,20 @@ public class CompanySubscriptionPlanServiceImpl
 
 
     @Override
-    public CompanySubscriptionPlan findCompanySubscriptionPlanBySlug(String slug) {
+    @Transactional(readOnly = true)
+    @Cacheable(
+            value = CACHE_NAME,
+            key = "#slug"
+    )
+    public CompanySubscriptionPlan findCompanySubscriptionPlanBySlug(
+            String slug
+    ) {
+
         return repository.findCompanySubscriptionPlanBySlug(slug)
                 .orElseThrow(() ->
-                        new AppNotFoundException("پلن اشتراک پیدا نشد")
+                        new AppNotFoundException(
+                                "پلن اشتراک پیدا نشد"
+                        )
                 );
     }
 
@@ -126,9 +116,6 @@ public class CompanySubscriptionPlanServiceImpl
     }
 
 
-
-
-
     @Override
     @Transactional(readOnly = true)
     public List<CompanySubscriptionPlan> findActivePlans() {
@@ -137,16 +124,17 @@ public class CompanySubscriptionPlanServiceImpl
     }
 
 
-
-
-
     @Override
+    @CacheEvict(
+            value = CACHE_NAME,
+            key = "#slug"
+    )
     public Sodor24ResponseDto delete(String slug) {
 
+        CompanySubscriptionPlan exist =
+                findCompanySubscriptionPlanBySlug(slug);
 
-        CompanySubscriptionPlan exist = findCompanySubscriptionPlanBySlug(slug);
         repository.delete(exist);
-
 
         return Sodor24ResponseDto.builder()
                 .data("")
@@ -155,12 +143,12 @@ public class CompanySubscriptionPlanServiceImpl
     }
 
 
-
-
-
-    @Transactional
     @Override
-    public Sodor24ResponseDto setActive(
+    @CachePut(
+            value = CACHE_NAME,
+            key = "#slug"
+    )
+    public CompanySubscriptionPlan setActive(
             String slug,
             boolean value
     ) {
@@ -170,24 +158,22 @@ public class CompanySubscriptionPlanServiceImpl
 
         find.setActive(value);
 
-        CompanySubscriptionPlan res =
-                repository.save(find);
-
-
-        return Sodor24ResponseDto.builder()
-                .data(res)
-                .message(
-                        "اشتراک " + slug + " به حالت " +
-                                (res.getActive() ? "معتبر" : "تعلیق") +
-                                " تغییر کرد"
-                )
-                .build();
-
+        return repository.save(find);
     }
 
+
     @Override
-    public boolean checkActivePlan(String slug) throws AppInternalException {
-        CompanySubscriptionPlan subscriptionPlan = findCompanySubscriptionPlanBySlug(slug);
+    @Transactional(readOnly = true)
+    @Cacheable(
+            value = CACHE_NAME,
+            key = "'active:' + #slug"
+    )
+    public boolean checkActivePlan(
+            String slug
+    ) throws AppInternalException {
+
+        CompanySubscriptionPlan subscriptionPlan =
+                findCompanySubscriptionPlanBySlug(slug);
 
         if (Boolean.TRUE.equals(subscriptionPlan.getActive())) {
             return true;

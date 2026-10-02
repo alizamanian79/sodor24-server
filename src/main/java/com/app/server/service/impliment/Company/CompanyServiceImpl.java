@@ -1,5 +1,6 @@
 package com.app.server.service.impliment.Company;
 
+import com.app.server.dto.request.CreateCompanyRequestDto;
 import com.app.server.model.Company;
 import com.app.server.model.User;
 import com.app.server.repository.CompanyRepository;
@@ -21,11 +22,25 @@ public class CompanyServiceImpl implements CompanyService {
     private final CompanyRepository companyRepository;
     private final UserService userService;
 
+
+
     @Override
-    public Company createCompany(Company company,String userSub) {
-        User user = userService.findUserBySub(userSub);
-        company.setOwners((Set<User>) user);
-        return   companyRepository.save(company);
+    public Company createCompany(CreateCompanyRequestDto req) {
+
+        User user = userService.findUserBySub(req.getUserSub());
+
+
+        Company createCompany= Company.builder()
+                .companyName(req.getCompanyName())
+                .validityDays(req.getValidityDays())
+                .privateKeyPassword(req.getPrivateKeyPassword())
+                .country(req.getCountry())
+                .state(req.getState())
+                .location(req.getLocation())
+                .owners(Set.of(user))
+                .build();
+
+        return   companyRepository.save(createCompany);
     }
 
 }

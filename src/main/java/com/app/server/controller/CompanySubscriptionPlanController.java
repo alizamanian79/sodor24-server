@@ -99,6 +99,12 @@ public class CompanySubscriptionPlanController {
     }
 
 
+    @GetMapping("/{slug}/status")
+    public boolean getStatus(
+            @PathVariable String slug
+    ) {
+        return service.checkActivePlan(slug);
+    }
 
 
 }

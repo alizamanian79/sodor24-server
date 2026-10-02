@@ -2,14 +2,12 @@ package com.app.server.service.impliment.Company;
 
 import com.app.server.dto.response.Sodor24ResponseDto;
 import com.app.server.exception.AppConflicException;
+import com.app.server.exception.AppInternalException;
 import com.app.server.exception.AppNotFoundException;
-import com.app.server.model.Company;
 import com.app.server.model.CompanySubscriptionPlan;
 import com.app.server.repository.CompanySubscriptionPlanRepository;
 import com.app.server.service.CompanySubscriptionPlanService;
-
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -41,6 +39,7 @@ public class CompanySubscriptionPlanServiceImpl
         }
 
         plan.setCreatedBy(userSub);
+        plan.setActive(false);
         return repository.save(plan);
     }
 
@@ -184,5 +183,19 @@ public class CompanySubscriptionPlanServiceImpl
                 )
                 .build();
 
+    }
+
+    @Override
+    public boolean checkActivePlan(String slug) throws AppInternalException {
+        CompanySubscriptionPlan subscriptionPlan = findCompanySubscriptionPlanBySlug(slug);
+
+        if (Boolean.TRUE.equals(subscriptionPlan.getActive())) {
+            return true;
+        }
+
+        throw new AppInternalException(
+                "اشتراک در حالت تعلیق می‌باشد",
+                "از اشتراک های دیگری استفاده نمایید"
+        );
     }
 }

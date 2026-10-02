@@ -23,7 +23,11 @@ public interface CompanySubscriptionPlanService {
 
     List<CompanySubscriptionPlan> findActivePlans();
 
-
     Sodor24ResponseDto delete(String slug);
+
     Sodor24ResponseDto setActive(String slug , boolean value);
+
+
+    boolean checkActivePlan(String slug);
+
 }

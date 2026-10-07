@@ -1,6 +1,6 @@
 package com.app.server.service.impliment.Company;
 
-import com.app.server.dto.request.CreateCompanyRequestDto;
+import com.app.server.dto.request.CompanyRequestDto;
 import com.app.server.dto.response.Sodor24ResponseDto;
 import com.app.server.exception.AppNotFoundException;
 import com.app.server.model.Company;
@@ -12,9 +12,9 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import java.util.Collections;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 
@@ -24,9 +24,9 @@ import java.util.Set;
 @Service
 public class CompanyServiceImpl implements CompanyService {
 
+    private final PasswordEncoder passwordEncoder;
     private final CompanyRepository companyRepository;
     private final UserService userService;
-    private final PasswordEncoder passwordEncoder;
 
 
     @Override
@@ -43,11 +43,12 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
-    public Company createCompany(CreateCompanyRequestDto req) {
+    public Company createCompany(CompanyRequestDto req) {
+
         User user = userService.findUserBySub(req.getUserSub());
+
         Company createCompany= Company.builder()
                 .companyName(req.getCompanyName())
-                .expiredAt(LocalDateTime.now().plusDays(req.getValidityDays()))
                 .privateKeyPassword(req.getPrivateKeyPassword())
                 .country(req.getCountry())
                 .state(req.getState())
@@ -60,6 +61,11 @@ public class CompanyServiceImpl implements CompanyService {
 
         return companyRepository.save(createCompany);
     }
+
+
+
+
+
 
     @Override
     public Sodor24ResponseDto deleteCompanyBySlug(String slug) {

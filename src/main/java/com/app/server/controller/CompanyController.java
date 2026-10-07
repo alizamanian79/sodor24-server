@@ -1,6 +1,6 @@
 package com.app.server.controller;
 
-import com.app.server.dto.request.CreateCompanyRequestDto;
+import com.app.server.dto.request.CompanyRequestDto;
 import com.app.server.model.Company;
 import com.app.server.service.CompanyService;
 import jakarta.validation.Valid;
@@ -19,7 +19,7 @@ public class CompanyController {
 
     @PostMapping("/create")
     public ResponseEntity<?> createCompany(
-          @Valid @RequestBody CreateCompanyRequestDto req,
+          @Valid @RequestBody CompanyRequestDto req,
           Authentication auth
     ) {
         req.setUserSub(auth.getName().toString());

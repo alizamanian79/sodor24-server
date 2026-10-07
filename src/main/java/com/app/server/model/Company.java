@@ -38,6 +38,10 @@ public class Company {
     private String companyName;
 
 
+    private String description;
+    private String completeDescriptions;
+
+
 
     @Size(max = 255, message = "موقعیت مکانی نمیتواند بیشتر از ۲۵۵ کاراکتر باشد")
     private String location;
@@ -64,6 +68,7 @@ public class Company {
     @Builder.Default
     private Set<User> owners = new HashSet<>();
 
+
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -71,16 +76,11 @@ public class Company {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
-    private LocalDateTime expiredAt;
-
-
-
-
-
 
 
     private boolean isValid;
     private boolean isActive;
+
 
 
     @PrePersist

@@ -99,6 +99,9 @@ public class CompanySubscriptionPlan {
     }
 
 
+
+
+
     @PreUpdate
     protected void onUpdate() {
         updatedAt = LocalDateTime.now();

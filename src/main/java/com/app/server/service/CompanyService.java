@@ -15,5 +15,5 @@ public interface CompanyService {
     Company updateCompanyBySlug(String slug , CompanyRequestDto req);
     Company setActive(String slug , boolean value);
     Company setValid(String slug , boolean value);
-
+    boolean isCompanyValidToUse(String slug);
 }

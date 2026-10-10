@@ -2,6 +2,7 @@ package com.app.server.service.impliment.Company;
 
 import com.app.server.dto.request.CompanyRequestDto;
 import com.app.server.dto.response.Sodor24ResponseDto;
+import com.app.server.exception.AppForbiddenException;
 import com.app.server.exception.AppNotFoundException;
 import com.app.server.model.Company;
 import com.app.server.model.User;
@@ -121,7 +122,19 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
 
-    
+    @Override
+    public boolean isCompanyValidToUse(String slug) {
+        Company existCompany = findCompanyBySlug(slug);
+
+        if (!existCompany.isValid() || !existCompany.isActive()) {
+            throw new AppForbiddenException(
+                    "فعالیت شرکت شما هنوز تایید نشده است"
+            );
+        }
+
+        return true;
+    }
+
 
 
 

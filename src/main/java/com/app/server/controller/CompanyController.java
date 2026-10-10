@@ -2,6 +2,7 @@ package com.app.server.controller;
 
 import com.app.server.dto.request.CompanyRequestDto;
 import com.app.server.dto.response.Sodor24ResponseDto;
+import com.app.server.exception.AppForbiddenException;
 import com.app.server.model.Company;
 import com.app.server.service.CompanyService;
 import jakarta.validation.Valid;
@@ -89,6 +90,14 @@ public class CompanyController {
         return new ResponseEntity<>(res,HttpStatus.OK);
     }
 
+
+    @GetMapping("/{slug}/isvalid")
+    public ResponseEntity<?> isCompanyValidToUse(
+            @PathVariable String slug
+    ) {
+        boolean result = companyService.isCompanyValidToUse(slug);
+        return ResponseEntity.ok(result);
+    }
 
 
 }

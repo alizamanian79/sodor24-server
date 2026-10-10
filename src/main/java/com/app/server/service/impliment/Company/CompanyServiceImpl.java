@@ -53,6 +53,8 @@ public class CompanyServiceImpl implements CompanyService {
                 .country(req.getCountry())
                 .state(req.getState())
                 .location(req.getLocation())
+                .description(req.getDescription())
+                .completeDescriptions(req.getCompleteDescriptions())
                 .isActive(false)
                 .isValid(false)
                 .owners(Set.of(user))
@@ -61,10 +63,6 @@ public class CompanyServiceImpl implements CompanyService {
 
         return companyRepository.save(createCompany);
     }
-
-
-
-
 
 
     @Override
@@ -81,15 +79,50 @@ public class CompanyServiceImpl implements CompanyService {
             .build();
     }
 
+
     @Transactional
     @Override
-    public Company updateCompanyBySlug(String slug) {
+    public Company updateCompanyBySlug(String slug , CompanyRequestDto req) {
 
         Company exist = findCompanyBySlug(slug);
+        exist.setCompanyName(req.getCompanyName());
+        exist.setCountry(req.getCountry());
+        exist.setState(req.getState());
+        exist.setDescription(req.getDescription());
+        exist.setCompleteDescriptions(req.getCompleteDescriptions());
+
+        Company res = companyRepository.save(exist);
 
 
-        return null;
+        return res;
     }
+
+
+
+
+
+    @Transactional
+    @Override
+    public Company setActive(String slug, boolean value) {
+       Company existCompany = findCompanyBySlug(slug);
+       existCompany.setActive(value);
+       companyRepository.save(existCompany);
+        return existCompany;
+    }
+
+
+    @Transactional
+    @Override
+    public Company setValid(String slug, boolean value) {
+        Company existCompany = findCompanyBySlug(slug);
+        existCompany.setValid(value);
+        companyRepository.save(existCompany);
+        return existCompany;
+    }
+
+
+    
+
 
 
 }

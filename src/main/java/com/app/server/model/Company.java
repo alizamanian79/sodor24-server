@@ -1,5 +1,7 @@
 package com.app.server.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
@@ -10,6 +12,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(
@@ -38,7 +41,10 @@ public class Company {
     private String companyName;
 
 
+    @NotBlank(message = "توضیحات شرکت درخواست کننده گواهی نمیتواند خالی باشد")
     private String description;
+
+    @NotBlank(message = "توضیحات تکمیلی شرکت درخواست کننده گواهی نمیتواند خالی باشد")
     private String completeDescriptions;
 
 
@@ -65,8 +71,16 @@ public class Company {
             joinColumns = @JoinColumn(name = "company_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id")
     )
+    @JsonIgnore
     @Builder.Default
     private Set<User> owners = new HashSet<>();
+
+    @JsonProperty("owners")
+    public Set<String> getOwnerUsernames() {
+        return owners.stream()
+                .map(User::getUsername)
+                .collect(Collectors.toSet());
+    }
 
 
     @CreationTimestamp

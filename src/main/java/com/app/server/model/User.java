@@ -101,6 +101,7 @@ public class User implements  Serializable {
 
 
 
+
     @ManyToMany(mappedBy = "owners")
     private Set<Company> companies = new HashSet<>();
 

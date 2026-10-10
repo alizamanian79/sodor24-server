@@ -12,6 +12,8 @@ public interface CompanyService {
     Company findCompanyBySlug(String slug);
     Company createCompany(CompanyRequestDto req);
     Sodor24ResponseDto deleteCompanyBySlug(String slug);
-    Company updateCompanyBySlug(String slug);
+    Company updateCompanyBySlug(String slug , CompanyRequestDto req);
+    Company setActive(String slug , boolean value);
+    Company setValid(String slug , boolean value);
 
 }

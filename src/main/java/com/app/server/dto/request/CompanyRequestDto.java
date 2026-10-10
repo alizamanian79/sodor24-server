@@ -28,9 +28,7 @@ public class CompanyRequestDto {
             max = 500,
             message = "توضیحات نمیتواند بیشتر از ۵۰۰ کاراکتر باشد"
     )
-    private String description;
 
-    private String completeDescriptions;
 
     @Size(
             max = 255,
@@ -57,6 +55,14 @@ public class CompanyRequestDto {
             message = "رمز کلید خصوصی باید بین 12 تا ۲۵۵ کاراکتر باشد"
     )
     private String privateKeyPassword;
+
+
+    @NotBlank(message = "توضیحات شرکت درخواست کننده گواهی نمیتواند خالی باشد")
+    private String description;
+
+    @NotBlank(message = "توضیحات تکمیلی شرکت درخواست کننده گواهی نمیتواند خالی باشد")
+    private String completeDescriptions;
+
 
     private String userSub;
 

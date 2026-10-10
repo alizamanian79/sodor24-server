@@ -2,6 +2,7 @@ package com.app.server.service.impliment.Company;
 
 import com.app.server.dto.request.CompanyRequestDto;
 import com.app.server.dto.response.Sodor24ResponseDto;
+import com.app.server.exception.AppConflicException;
 import com.app.server.exception.AppForbiddenException;
 import com.app.server.exception.AppNotFoundException;
 import com.app.server.model.Company;
@@ -14,6 +15,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import java.util.Collections;
 
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.util.List;
@@ -29,6 +33,8 @@ public class CompanyServiceImpl implements CompanyService {
     private final CompanyRepository companyRepository;
     private final UserService userService;
 
+    public static final String CACHE_NAME="companyCache";
+
 
     @Override
     public List<Company> companiesList() {
@@ -37,14 +43,25 @@ public class CompanyServiceImpl implements CompanyService {
         return companies;
     }
 
+
+    @Cacheable(value = CACHE_NAME,key = "#slug")
     @Override
     public Company findCompanyBySlug(String slug) {
         return companyRepository.findCompaniesBySlug(slug)
                 .orElseThrow(() -> new AppNotFoundException("شرکت پیدا نشد"));
     }
 
+
+
     @Override
     public Company createCompany(CompanyRequestDto req) {
+
+        String companyName = req.getCompanyName().trim();
+
+        if (companyRepository.existsByCompanyNameIgnoreCase(companyName)) {
+            throw new AppConflicException("نام شرکت تکراری است");
+        }
+
 
         User user = userService.findUserBySub(req.getUserSub());
 
@@ -66,6 +83,7 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
 
+    @CacheEvict(value = CACHE_NAME,key = "#slug")
     @Override
     public Sodor24ResponseDto deleteCompanyBySlug(String slug) {
     Company exist= findCompanyBySlug(slug);
@@ -81,6 +99,7 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
 
+    @CachePut(value = CACHE_NAME,key = "#slug")
     @Transactional
     @Override
     public Company updateCompanyBySlug(String slug , CompanyRequestDto req) {
@@ -102,6 +121,7 @@ public class CompanyServiceImpl implements CompanyService {
 
 
 
+    @CachePut(value = CACHE_NAME,key = "#slug")
     @Transactional
     @Override
     public Company setActive(String slug, boolean value) {
@@ -112,6 +132,7 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
 
+    @CachePut(value = CACHE_NAME,key = "#slug")
     @Transactional
     @Override
     public Company setValid(String slug, boolean value) {
@@ -122,6 +143,7 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
 
+    @CachePut(value = CACHE_NAME,key = "#slug")
     @Override
     public boolean isCompanyValidToUse(String slug) {
         Company existCompany = findCompanyBySlug(slug);

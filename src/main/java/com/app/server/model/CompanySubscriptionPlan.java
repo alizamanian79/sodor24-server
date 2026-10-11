@@ -1,5 +1,6 @@
 package com.app.server.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -99,6 +100,14 @@ public class CompanySubscriptionPlan {
     }
 
 
+
+    @JsonBackReference
+    @OneToMany(
+            mappedBy = "subscriptionPlan",
+            fetch = FetchType.LAZY
+    )
+    @Builder.Default
+    private Set<CompaniesCa> companiesCa = new HashSet<>();
 
 
 

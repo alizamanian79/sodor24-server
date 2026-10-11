@@ -1,5 +1,6 @@
 package com.app.server.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -96,6 +97,18 @@ public class Company {
 
     private boolean isValid;
     private boolean isActive;
+
+
+
+    @JsonBackReference
+    @OneToMany(
+            mappedBy = "company",
+            fetch = FetchType.LAZY,
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    @Builder.Default
+    private Set<CompaniesCa> companiesCa = new HashSet<>();
 
 
 

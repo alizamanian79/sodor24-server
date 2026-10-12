@@ -1,7 +1,5 @@
-package com.app.server.dto.request;
+package com.app.server.dto.request.companies;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.persistence.Column;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -14,7 +12,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class CompanyRequestDto {
+public class CreateCompanyRequestDto {
 
 
     @NotBlank(message = "اسم شرکت درخواست کننده گواهی نمیتواند خالی باشد")
@@ -57,10 +55,9 @@ public class CompanyRequestDto {
     private String privateKeyPassword;
 
 
-    @NotBlank(message = "توضیحات شرکت درخواست کننده گواهی نمیتواند خالی باشد")
+
     private String description;
 
-    @NotBlank(message = "توضیحات تکمیلی شرکت درخواست کننده گواهی نمیتواند خالی باشد")
     private String completeDescriptions;
 
 

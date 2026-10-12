@@ -1,6 +1,6 @@
-package com.app.server.repository;
+package com.app.server.repository.companies;
 
-import com.app.server.model.CompanySubscriptionPlan;
+import com.app.server.model.companies.CompanySubscriptionPlan;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

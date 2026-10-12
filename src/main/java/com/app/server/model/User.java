@@ -1,4 +1,5 @@
 package com.app.server.model;
+import com.app.server.model.companies.Company;
 import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
@@ -6,12 +7,9 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.*;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
+
 import java.io.Serializable;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @JsonIdentityInfo(
         generator = ObjectIdGenerators.PropertyGenerator.class,
@@ -76,25 +74,6 @@ public class User implements  Serializable {
     private String otp;
 
     private boolean isValid;
-
-//    @ElementCollection(fetch = FetchType.EAGER)
-//    @CollectionTable(
-//            name = "user_roles",
-//            joinColumns = @JoinColumn(name = "user_id")
-//    )
-//    @Enumerated(EnumType.STRING)
-//    @Column(name = "role")
-//    private Set<Role> roles = new HashSet<>();
-
-    @OneToMany(fetch = FetchType.EAGER,
-            cascade = CascadeType.ALL,
-            mappedBy = "user",
-            orphanRemoval = true)
-    private List<Signature> signatures;
-
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private List<UserContract> signedContract = new ArrayList<>();
 
 
     private String walletId;

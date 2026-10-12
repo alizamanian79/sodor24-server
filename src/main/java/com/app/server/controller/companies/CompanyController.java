@@ -1,8 +1,8 @@
 package com.app.server.controller.companies;
 
-import com.app.server.dto.request.CompanyRequestDto;
+import com.app.server.dto.request.companies.CreateCompanyRequestDto;
 import com.app.server.dto.response.CustomResponseDto;
-import com.app.server.model.Company;
+import com.app.server.model.companies.Company;
 import com.app.server.service.CompanyService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +30,7 @@ public class CompanyController {
 
     @PostMapping
     public ResponseEntity<?> createCompany(
-          @Valid @RequestBody CompanyRequestDto req,
+          @Valid @RequestBody CreateCompanyRequestDto req,
           Authentication auth
     ) {
         req.setUserSub(auth.getName().toString());
@@ -63,7 +63,7 @@ public class CompanyController {
     @PutMapping("/{slug}")
     public ResponseEntity<?> updatedCompanies(
             @Valid @PathVariable String slug,
-            @Valid @RequestBody CompanyRequestDto req
+            @Valid @RequestBody CreateCompanyRequestDto req
     ) {
         Company res = companyService.updateCompanyBySlug(slug , req);
         return new ResponseEntity<>(res,HttpStatus.OK);
@@ -72,8 +72,8 @@ public class CompanyController {
 
     @PatchMapping("/active/{slug}")
     public ResponseEntity<?> setActive(
-            @Valid @PathVariable String slug,
-            @Valid @RequestParam boolean value
+             @PathVariable String slug,
+             @RequestParam boolean value
     ) {
         Company res = companyService.setActive(slug , value);
         return new ResponseEntity<>(res,HttpStatus.OK);
@@ -83,8 +83,8 @@ public class CompanyController {
 
     @PatchMapping("/valid/{slug}")
     public ResponseEntity<?> setValid(
-            @Valid @PathVariable String slug,
-            @Valid @RequestParam boolean value
+             @PathVariable String slug,
+             @RequestParam boolean value
     ) {
         Company res = companyService.setValid(slug , value);
         return new ResponseEntity<>(res,HttpStatus.OK);
@@ -96,7 +96,14 @@ public class CompanyController {
             @PathVariable String slug
     ) {
         boolean result = companyService.isCompanyValidToUse(slug);
-        return ResponseEntity.ok(result);
+
+       com.app.server.dto.response.CustomResponseDto res =CustomResponseDto.builder()
+                .data(result)
+                .status(result?200:403)
+                .message(result?"مجاز به فعالیت ( دارای اعتبار)"
+                        :"وضعیت شرکت شما در حالت تعلیق میباشد و اجازه فعالیت ندارید")
+               .build();
+        return ResponseEntity.status(res.getStatus()).body(res);
     }
 
 

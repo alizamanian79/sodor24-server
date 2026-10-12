@@ -12,18 +12,18 @@ import org.springframework.stereotype.Component;
 public class OtpFactory {
 
     private UserOtpServiceImpl userOtpService;
-    private SignatureOtpServiceImpl signatureOtpService;
+  
 
-    public OtpFactory(UserOtpServiceImpl userOtpService, SignatureOtpServiceImpl signatureOtpService) {
+    public OtpFactory(UserOtpServiceImpl userOtpService) {
         this.userOtpService = userOtpService;
-        this.signatureOtpService = signatureOtpService;
+
     }
 
     public OtpService getService(OtpType type) {
 
         return switch (type) {
             case USER -> userOtpService;
-            case SIGNATURE -> signatureOtpService;
+            case SIGNATURE -> null;
         };
     }
 }

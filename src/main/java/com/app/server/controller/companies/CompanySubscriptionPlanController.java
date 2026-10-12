@@ -1,15 +1,14 @@
 package com.app.server.controller.companies;
 
+import com.app.server.dto.request.companies.CreateCompanySubscriptionPlanRequestDto;
 import com.app.server.dto.response.CustomResponseDto;
-import com.app.server.model.CompanySubscriptionPlan;
+import com.app.server.model.companies.CompanySubscriptionPlan;
 import com.app.server.service.CompanySubscriptionPlanService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @RestController
@@ -19,61 +18,105 @@ public class CompanySubscriptionPlanController {
 
     private final CompanySubscriptionPlanService service;
 
-
     @PostMapping
-    public ResponseEntity<CompanySubscriptionPlan> create(
-            @Valid @RequestBody CompanySubscriptionPlan request,
-            Authentication auth
+    public ResponseEntity<?> create(
+            @Valid @RequestBody CreateCompanySubscriptionPlanRequestDto request,
+            Authentication authentication
     ) {
 
         CompanySubscriptionPlan created =
-                service.createCompanySubscriptionPlan(request,auth.getName());
+                service.createCompanySubscriptionPlan(
+                        request,
+                        authentication.getName()
+                );
+
+//        CustomResponseDto res = CustomResponseDto.builder()
+//                .data(created)
+//                .message("پلن اشتراک شرکت ساخته شد")
+//                .status(200)
+//                .build();
 
         return ResponseEntity
-                .status(HttpStatus.CREATED)
+                .status(200)
                 .body(created);
     }
 
 
     @PutMapping("/{slug}")
-    public ResponseEntity<CompanySubscriptionPlan> update(
+    public ResponseEntity<?> update(
             @PathVariable String slug,
-            @Valid @RequestBody CompanySubscriptionPlan request
+            @Valid @RequestBody CreateCompanySubscriptionPlanRequestDto request
     ) {
 
         CompanySubscriptionPlan updated =
-                service.updateCompanySubscriptionPlanBySlug(slug, request);
-
-        return ResponseEntity.ok(updated);
-    }
-
-
-    @GetMapping("/{slug}")
-    public ResponseEntity<CompanySubscriptionPlan> findById(
-            @PathVariable String slug
-    ) {
-
-        return ResponseEntity.ok(
-                service.findCompanySubscriptionPlanBySlug(slug)
-        );
-    }
+                service.updateCompanySubscriptionPlanBySlug(
+                        slug,
+                        request
+                );
 
 
-    @GetMapping
-    public ResponseEntity<List<CompanySubscriptionPlan>> findAll() {
+//        CustomResponseDto res = CustomResponseDto.builder()
+//                .data(updated)
+//                .message("پلن اشتراک شرکت بروزرسانی شد")
+//                .status(200)
+//                .build();
 
-        return ResponseEntity.ok(
-                service.findAll()
-        );
+        return ResponseEntity
+                .status(200)
+                .body(updated);
+
     }
 
 
     @GetMapping("/active")
-    public ResponseEntity<List<CompanySubscriptionPlan>> findActivePlans() {
+    public ResponseEntity<?> findActivePlans() {
 
-        return ResponseEntity.ok(
-                service.findActivePlans()
-        );
+        List<CompanySubscriptionPlan> plans =
+                service.findActivePlans();
+        return ResponseEntity.ok(plans);
+    }
+
+
+    @GetMapping
+    public ResponseEntity<?> findAll() {
+        List<CompanySubscriptionPlan> plans =
+                service.findAll();
+        return ResponseEntity.ok(plans);
+    }
+
+
+
+    @GetMapping("/{slug}")
+    public ResponseEntity<?> findBySlug(
+            @PathVariable String slug
+    ) {
+
+        CompanySubscriptionPlan plan =
+                service.findCompanySubscriptionPlanBySlug(slug);
+
+
+        return ResponseEntity.ok(plan);
+    }
+
+
+    @PatchMapping("/{slug}/active")
+    public ResponseEntity<?> setActive(
+            @PathVariable String slug,
+            @RequestParam boolean value
+    ) {
+
+        CompanySubscriptionPlan updated =
+                service.setActive(slug, value);
+
+//        CustomResponseDto res = CustomResponseDto.builder()
+//                .data(updated)
+//                .message("پلن اشتراک شرکت بروزرسانی شد")
+//                .status(200)
+//                .build();
+
+        return ResponseEntity
+                .status(200)
+                .body(updated);
     }
 
 
@@ -82,29 +125,16 @@ public class CompanySubscriptionPlanController {
             @PathVariable String slug
     ) {
 
-        CustomResponseDto res = service.delete(slug);
+        service.delete(slug);
 
-        return ResponseEntity.status(res.getStatus()).body(res);
+        CustomResponseDto res = CustomResponseDto.builder()
+                .data("")
+                .message("پلن اشتراک شرکت با موفقیت حذف شد")
+                .status(200)
+                .build();
+
+        return ResponseEntity
+                .status(res.getStatus())
+                .body(res);
     }
-
-
-
-    @PatchMapping("/{slug}")
-    public CompanySubscriptionPlan setActive(
-            @PathVariable String slug,
-            @RequestParam boolean value
-    ) {
-
-        return service.setActive(slug, value);
-    }
-
-
-    @GetMapping("/{slug}/status")
-    public boolean getStatus(
-            @PathVariable String slug
-    ) {
-        return service.checkActivePlan(slug);
-    }
-
-
 }

@@ -1,12 +1,15 @@
 package com.app.server.service.impliment.Company;
 
+import com.app.server.dto.request.companies.CreateCompanySubscriptionPlanRequestDto;
 import com.app.server.dto.response.CustomResponseDto;
 import com.app.server.exception.AppConflicException;
 import com.app.server.exception.AppInternalException;
 import com.app.server.exception.AppNotFoundException;
-import com.app.server.model.CompanySubscriptionPlan;
-import com.app.server.repository.CompanySubscriptionPlanRepository;
+import com.app.server.model.User;
+import com.app.server.model.companies.CompanySubscriptionPlan;
+import com.app.server.repository.companies.CompanySubscriptionPlanRepository;
 import com.app.server.service.CompanySubscriptionPlanService;
+import com.app.server.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
@@ -25,6 +28,7 @@ public class CompanySubscriptionPlanServiceImpl
     private final CompanySubscriptionPlanRepository repository;
 
     private static final String CACHE_NAME = "CompanySubscriptionPlan";
+    private final UserService userService;
 
 
     @Override
@@ -33,20 +37,33 @@ public class CompanySubscriptionPlanServiceImpl
             allEntries = true
     )
     public CompanySubscriptionPlan createCompanySubscriptionPlan(
-            CompanySubscriptionPlan plan,
+            CreateCompanySubscriptionPlanRequestDto req,
             String userSub
     ) throws AppConflicException {
 
-        if (repository.existsByTitle(plan.getTitle())) {
+        if (repository.existsByTitle(req.getTitle())) {
             throw new AppConflicException(
                     "پلنی با این عنوان قبلاً ثبت شده است"
             );
         }
 
-        plan.setCreatedBy(userSub);
-        plan.setActive(false);
 
-        return repository.save(plan);
+        User existUser = userService.findUserBySub(userSub);
+
+        CompanySubscriptionPlan companySubscriptionPlan = CompanySubscriptionPlan.builder()
+                .createdBy(userSub)
+                .createdBy(existUser.getSub())
+                .title(req.getTitle())
+                .description(req.getDescription())
+                .completedDescription(req.getCompletedDescription())
+                .tags(req.getTags())
+                .active(false)
+                .validDays(req.getValidDays())
+                .usersCount(req.getUsersCount())
+                .price(req.getPrice())
+                .build();
+
+        return repository.save(companySubscriptionPlan);
     }
 
 
@@ -57,7 +74,7 @@ public class CompanySubscriptionPlanServiceImpl
     )
     public CompanySubscriptionPlan updateCompanySubscriptionPlanBySlug(
             String slug,
-            CompanySubscriptionPlan request
+            CreateCompanySubscriptionPlanRequestDto request
     ) {
 
         CompanySubscriptionPlan existing =
@@ -70,7 +87,6 @@ public class CompanySubscriptionPlanServiceImpl
         existing.setValidDays(request.getValidDays());
         existing.setUsersCount(request.getUsersCount());
         existing.setPrice(request.getPrice());
-        existing.setActive(request.getActive());
 
         return repository.save(existing);
     }

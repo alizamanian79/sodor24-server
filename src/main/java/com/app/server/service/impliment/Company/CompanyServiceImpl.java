@@ -1,12 +1,12 @@
 package com.app.server.service.impliment.Company;
 
-import com.app.server.dto.request.CompanyRequestDto;
+import com.app.server.dto.request.companies.CreateCompanyRequestDto;
 import com.app.server.dto.response.CustomResponseDto;
 import com.app.server.exception.AppConflicException;
 import com.app.server.exception.AppNotFoundException;
-import com.app.server.model.Company;
+import com.app.server.model.companies.Company;
 import com.app.server.model.User;
-import com.app.server.repository.CompanyRepository;
+import com.app.server.repository.companies.CompanyRepository;
 import com.app.server.service.CompanyService;
 import com.app.server.service.UserService;
 import jakarta.transaction.Transactional;
@@ -53,7 +53,7 @@ public class CompanyServiceImpl implements CompanyService {
 
 
     @Override
-    public Company createCompany(CompanyRequestDto req) {
+    public Company createCompany(CreateCompanyRequestDto req) {
 
         String companyName = req.getCompanyName().trim();
 
@@ -101,7 +101,7 @@ public class CompanyServiceImpl implements CompanyService {
     @CachePut(value = CACHE_NAME,key = "#slug")
     @Transactional
     @Override
-    public Company updateCompanyBySlug(String slug , CompanyRequestDto req) {
+    public Company updateCompanyBySlug(String slug , CreateCompanyRequestDto req) {
 
         Company exist = findCompanyBySlug(slug);
         exist.setCompanyName(req.getCompanyName());

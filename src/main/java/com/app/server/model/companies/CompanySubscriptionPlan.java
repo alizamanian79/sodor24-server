@@ -1,4 +1,4 @@
-package com.app.server.model;
+package com.app.server.model.companies;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
@@ -61,8 +61,11 @@ public class CompanySubscriptionPlan {
     private Integer usersCount;
 
 
-    @Column(nullable = false, precision = 19, scale = 2)
+    @Column(nullable = false)
     private BigDecimal price;
+
+
+
 
 
     @Builder.Default
@@ -107,7 +110,7 @@ public class CompanySubscriptionPlan {
             fetch = FetchType.LAZY
     )
     @Builder.Default
-    private Set<CompaniesCa> companiesCa = new HashSet<>();
+    private Set<CompanyCa> companyCa = new HashSet<>();
 
 
 

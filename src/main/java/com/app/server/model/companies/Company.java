@@ -1,8 +1,8 @@
-package com.app.server.model;
+package com.app.server.model.companies;
 
+import com.app.server.model.User;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
@@ -44,10 +44,9 @@ public class Company {
     private String companyName;
 
 
-    @NotBlank(message = "توضیحات شرکت درخواست کننده گواهی نمیتواند خالی باشد")
+
     private String description;
 
-    @NotBlank(message = "توضیحات تکمیلی شرکت درخواست کننده گواهی نمیتواند خالی باشد")
     private String completeDescriptions;
 
 
@@ -108,7 +107,7 @@ public class Company {
             orphanRemoval = true
     )
     @Builder.Default
-    private Set<CompaniesCa> companiesCa = new HashSet<>();
+    private Set<CompanyCa> companyCa = new HashSet<>();
 
 
 

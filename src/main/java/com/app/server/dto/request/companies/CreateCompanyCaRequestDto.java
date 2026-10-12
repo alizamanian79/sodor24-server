@@ -1,4 +1,4 @@
-package com.app.server.dto.request;
+package com.app.server.dto.request.companies;
 
 import jakarta.validation.constraints.*;
 import lombok.*;
@@ -8,7 +8,7 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class CompaniesCaRequestDto {
+public class CreateCompanyCaRequestDto {
 
         @NotBlank(message = "شناسه شرکت الزامی است")
         private String companySlug;

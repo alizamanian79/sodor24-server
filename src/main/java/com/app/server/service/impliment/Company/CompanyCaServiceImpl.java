@@ -1,12 +1,12 @@
 package com.app.server.service.impliment.Company;
 
-import com.app.server.dto.request.CompaniesCaRequestDto;
+import com.app.server.dto.request.companies.CreateCompanyCaRequestDto;
 import com.app.server.exception.AppForbiddenException;
-import com.app.server.model.CompaniesCa;
-import com.app.server.model.Company;
-import com.app.server.model.CompanySubscriptionPlan;
-import com.app.server.repository.CompaniesCaRepository;
-import com.app.server.service.CompaniesCaService;
+import com.app.server.model.companies.CompanyCa;
+import com.app.server.model.companies.Company;
+import com.app.server.model.companies.CompanySubscriptionPlan;
+import com.app.server.repository.companies.CompanyCaRepository;
+import com.app.server.service.CompanyCaService;
 import com.app.server.service.CompanyService;
 import com.app.server.service.CompanySubscriptionPlanService;
 import lombok.RequiredArgsConstructor;
@@ -17,16 +17,16 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 @Service
 @Slf4j
-public class CompaniesCaServiceImpl implements CompaniesCaService {
+public class CompanyCaServiceImpl implements CompanyCaService {
 
     private final CompanyService companyService;
     private final CompanySubscriptionPlanService subscriptionService;
 
 
-    private final CompaniesCaRepository companiesCaRepository;
+    private final CompanyCaRepository companyCaRepository;
 
     @Override
-    public CompaniesCa createCa(CompaniesCaRequestDto req) {
+    public CompanyCa createCa(CreateCompanyCaRequestDto req) {
 
         Company existCompany =  companyService.findCompanyBySlug(req.getCompanySlug());
         CompanySubscriptionPlan subscription = subscriptionService.findCompanySubscriptionPlanBySlug(req.getSubscriptionPlanSlug());
@@ -39,7 +39,7 @@ public class CompaniesCaServiceImpl implements CompaniesCaService {
        
 
 
-        CompaniesCa generate = CompaniesCa.builder()
+        CompanyCa generate = CompanyCa.builder()
                 .status("pending")
                 .company(existCompany)
                 .subscriptionPlan(subscription)
@@ -48,7 +48,7 @@ public class CompaniesCaServiceImpl implements CompaniesCaService {
                 .isActive(false)
                 .build();
 
-        return companiesCaRepository.save(generate);
+        return companyCaRepository.save(generate);
     }
 
 }

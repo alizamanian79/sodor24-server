@@ -1,10 +1,9 @@
-package com.app.server.repository;
+package com.app.server.repository.companies;
 
-import com.app.server.model.Company;
+import com.app.server.model.companies.Company;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
 import java.util.Optional;
 
 @Repository

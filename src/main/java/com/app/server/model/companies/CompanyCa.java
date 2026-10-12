@@ -1,4 +1,4 @@
-package com.app.server.model;
+package com.app.server.model.companies;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
@@ -22,7 +22,7 @@ import java.util.Random;
                 )
         }
 )
-public class CompaniesCa {
+public class CompanyCa {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

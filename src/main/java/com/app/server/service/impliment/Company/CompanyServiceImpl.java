@@ -149,9 +149,7 @@ public class CompanyServiceImpl implements CompanyService {
         Company existCompany = findCompanyBySlug(slug);
 
         if (!existCompany.isValid() || !existCompany.isActive()) {
-            throw new AppForbiddenException(
-                    "فعالیت شرکت شما هنوز تایید نشده است"
-            );
+            return false;
         }
 
         return true;

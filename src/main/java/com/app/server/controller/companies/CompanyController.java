@@ -1,8 +1,7 @@
-package com.app.server.controller;
+package com.app.server.controller.companies;
 
 import com.app.server.dto.request.CompanyRequestDto;
-import com.app.server.dto.response.Sodor24ResponseDto;
-import com.app.server.exception.AppForbiddenException;
+import com.app.server.dto.response.CustomResponseDto;
 import com.app.server.model.Company;
 import com.app.server.service.CompanyService;
 import jakarta.validation.Valid;
@@ -46,8 +45,9 @@ public class CompanyController {
     public ResponseEntity<?> deleteCompany(
             @Valid @PathVariable String slug
     ) {
-        Sodor24ResponseDto res = companyService.deleteCompanyBySlug(slug);
-        return new ResponseEntity<>(res, HttpStatus.valueOf(res.getStatus()));
+        CustomResponseDto res = companyService.deleteCompanyBySlug(slug);
+
+        return ResponseEntity.status(res.getStatus()).body(res);
     }
 
 

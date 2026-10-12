@@ -1,9 +1,8 @@
 package com.app.server.service.impliment.Company;
 
 import com.app.server.dto.request.CompanyRequestDto;
-import com.app.server.dto.response.Sodor24ResponseDto;
+import com.app.server.dto.response.CustomResponseDto;
 import com.app.server.exception.AppConflicException;
-import com.app.server.exception.AppForbiddenException;
 import com.app.server.exception.AppNotFoundException;
 import com.app.server.model.Company;
 import com.app.server.model.User;
@@ -85,16 +84,16 @@ public class CompanyServiceImpl implements CompanyService {
 
     @CacheEvict(value = CACHE_NAME,key = "#slug")
     @Override
-    public Sodor24ResponseDto deleteCompanyBySlug(String slug) {
+    public CustomResponseDto deleteCompanyBySlug(String slug) {
     Company exist= findCompanyBySlug(slug);
     companyRepository.delete(exist);
 
-    return Sodor24ResponseDto.builder()
+    return CustomResponseDto.builder()
             .message("شرکت با موفقیت حذف گردید")
             .details("")
             .redirect("/")
             .data("")
-            .status(201)
+            .status(200)
             .build();
     }
 

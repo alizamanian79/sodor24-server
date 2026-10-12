@@ -1,4 +1,4 @@
-package com.app.server.controller;
+package com.app.server.controller.companies;
 
 import com.app.server.dto.request.CompaniesCaRequestDto;
 import com.app.server.model.CompaniesCa;

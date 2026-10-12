@@ -1,11 +1,10 @@
-package com.app.server.controller;
+package com.app.server.controller.notifications;
 
-import com.app.server.dto.response.Sodor24ResponseDto;
+import com.app.server.dto.response.CustomResponseDto;
 import com.app.server.model.NotificationType;
 import com.app.server.service.NotificationService;
 import com.app.server.service.impliment.NotificationFactory;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -20,15 +19,21 @@ public class NotificationController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
-    public ResponseEntity
-            <Sodor24ResponseDto<String>> sendNotification(@RequestParam String receiver,
-                                                               @RequestParam NotificationType type,
-                                                               @RequestParam String message
+    public ResponseEntity<?> sendNotification(@RequestParam String receiver,
+                                                         @RequestParam NotificationType type,
+                                                         @RequestParam String message
                                                ){
 
         NotificationService service = notificationFactory.getService(type);
         service.sendNotification(receiver,message);
-        return Sodor24ResponseDto.response("","پیام از طریق \s" +type.toString()+"\s رسال شد","","", HttpStatus.OK);
+
+        CustomResponseDto res = CustomResponseDto.builder()
+                .data(null)
+                .message("پیام از طریق \s" +type.toString()+"\s رسال شد")
+                .details(null)
+                .status(201)
+                .build();
+        return ResponseEntity.status(res.getStatus()).body(res);
 
     }
 

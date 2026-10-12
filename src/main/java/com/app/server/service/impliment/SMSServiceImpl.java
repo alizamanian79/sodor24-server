@@ -1,11 +1,9 @@
 package com.app.server.service.impliment;
 
-import com.app.server.dto.response.Sodor24ResponseDto;
 import com.app.server.exception.AppNotFoundException;
 import com.app.server.model.User;
 import com.app.server.repository.UserRepository;
 import com.app.server.service.NotificationService;
-import com.app.server.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;

@@ -1,10 +1,8 @@
 package com.app.server.service;
 
-import com.app.server.dto.response.Sodor24ResponseDto;
+import com.app.server.dto.response.CustomResponseDto;
 import com.app.server.exception.AppInternalException;
-import com.app.server.model.Company;
 import com.app.server.model.CompanySubscriptionPlan;
-import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 
@@ -24,7 +22,7 @@ public interface CompanySubscriptionPlanService {
 
     List<CompanySubscriptionPlan> findActivePlans();
 
-    Sodor24ResponseDto delete(String slug);
+    CustomResponseDto delete(String slug);
 
     CompanySubscriptionPlan setActive(String slug , boolean value);
 

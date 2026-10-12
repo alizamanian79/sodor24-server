@@ -1,27 +1,19 @@
-package com.app.server.controller;
+package com.app.server.controller.authentication;
 
 import com.app.server.annotation.VerifiedUser;
 import com.app.server.dto.request.LoginRequestDto;
 import com.app.server.dto.request.RegisterRequestDto;
-import com.app.server.dto.response.LoginResponseDto;
 import com.app.server.dto.response.RegisterResponseDto;
-import com.app.server.exception.AppUnAuthorizedException;
 import com.app.server.model.User;
 import com.app.server.service.AuthenticationService;
 import com.app.server.service.UserService;
-import com.app.server.util.ExternalRequest.ExternalRequest;
-import com.app.server.util.ExternalRequest.dto.ExternalRequestDto;
-import com.app.server.util.ExternalRequest.dto.Method;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor

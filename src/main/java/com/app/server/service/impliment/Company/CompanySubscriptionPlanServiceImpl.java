@@ -1,6 +1,6 @@
 package com.app.server.service.impliment.Company;
 
-import com.app.server.dto.response.Sodor24ResponseDto;
+import com.app.server.dto.response.CustomResponseDto;
 import com.app.server.exception.AppConflicException;
 import com.app.server.exception.AppInternalException;
 import com.app.server.exception.AppNotFoundException;
@@ -129,15 +129,16 @@ public class CompanySubscriptionPlanServiceImpl
             value = CACHE_NAME,
             key = "#slug"
     )
-    public Sodor24ResponseDto delete(String slug) {
+    public CustomResponseDto delete(String slug) {
 
         CompanySubscriptionPlan exist =
                 findCompanySubscriptionPlanBySlug(slug);
 
         repository.delete(exist);
 
-        return Sodor24ResponseDto.builder()
+        return CustomResponseDto.builder()
                 .data("")
+                .status(200)
                 .message("اشتراک مورد نظر حذف شد")
                 .build();
     }

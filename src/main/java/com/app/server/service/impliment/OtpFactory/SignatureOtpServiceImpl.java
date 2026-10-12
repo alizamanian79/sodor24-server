@@ -1,24 +1,20 @@
 package com.app.server.service.impliment.OtpFactory;
 
-import com.app.server.dto.response.Sodor24ResponseDto;
 import com.app.server.exception.AppBadRequestException;
 import com.app.server.exception.AppForbiddenException;
 import com.app.server.exception.AppNotFoundException;
 import com.app.server.model.NotificationType;
 import com.app.server.model.Otp;
 import com.app.server.model.Signature;
-import com.app.server.model.User;
 import com.app.server.repository.OtpRepository;
 import com.app.server.repository.SignatureRepository;
 import com.app.server.service.NotificationService;
 import com.app.server.service.OtpService;
-import com.app.server.service.SignatureService;
 import com.app.server.service.impliment.NotificationFactory;
 import com.app.server.service.impliment.RandomCodeGenerator;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 

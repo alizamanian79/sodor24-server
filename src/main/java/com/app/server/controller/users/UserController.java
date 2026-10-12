@@ -1,8 +1,8 @@
-package com.app.server.controller;
+package com.app.server.controller.users;
 
 import com.app.server.annotation.IsSelfOrAdminBySub;
 import com.app.server.dto.request.UpdateUserRequestDto;
-import com.app.server.dto.response.Sodor24ResponseDto;
+import com.app.server.dto.response.CustomResponseDto;
 import com.app.server.exception.AppBadRequestException;
 import com.app.server.model.User;
 import com.app.server.service.AuthenticationService;
@@ -49,7 +49,13 @@ public class UserController {
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteUserById(@PathVariable Long id) {
         Object res = userService.deleteUserById(id);
-        return Sodor24ResponseDto.response(res,res.toString(),"","",HttpStatus.OK);
+
+       CustomResponseDto response= CustomResponseDto.builder()
+                .data(res)
+                .message("user deleted")
+                .status(200)
+                .build();
+        return ResponseEntity.status(response.getStatus()).body(response);
     }
 
 
@@ -72,13 +78,14 @@ public class UserController {
             req.setUsername(changedUser.getUsername());
              Map<String,Object> res= authenticationService.updateUser(req, jwt.getTokenValue());
 
-            return Sodor24ResponseDto.response(
-                    res,
-                    "اطلاعات شما بروزرسانی شد",
-                    changedUser.toString(),
-                    "",
-                    HttpStatus.ACCEPTED
-            );
+
+             CustomResponseDto response =
+                     CustomResponseDto.builder()
+                             .data(res)
+                             .message("updated user info successfully")
+                             .build();
+
+            return ResponseEntity.status(response.getStatus()).body(response);
         } catch (Exception e) {
             throw new AppBadRequestException(e.getMessage());
         }

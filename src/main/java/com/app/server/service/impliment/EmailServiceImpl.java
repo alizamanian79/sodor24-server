@@ -1,6 +1,5 @@
 package com.app.server.service.impliment;
 
-import com.app.server.dto.response.Sodor24ResponseDto;
 import com.app.server.service.NotificationService;
 import org.springframework.stereotype.Service;
 

@@ -1,6 +1,6 @@
-package com.app.server.controller;
+package com.app.server.controller.companies;
 
-import com.app.server.dto.response.Sodor24ResponseDto;
+import com.app.server.dto.response.CustomResponseDto;
 import com.app.server.model.CompanySubscriptionPlan;
 import com.app.server.service.CompanySubscriptionPlanService;
 import jakarta.validation.Valid;
@@ -78,13 +78,13 @@ public class CompanySubscriptionPlanController {
 
 
     @DeleteMapping("/{slug}")
-    public  Sodor24ResponseDto delete(
+    public ResponseEntity<?> delete(
             @PathVariable String slug
     ) {
 
-        Sodor24ResponseDto res = service.delete(slug);
+        CustomResponseDto res = service.delete(slug);
 
-        return res;
+        return ResponseEntity.status(res.getStatus()).body(res);
     }
 
 

@@ -1,6 +1,5 @@
 package com.app.server.service.impliment;
 
-import com.app.server.dto.response.Sodor24ResponseDto;
 import com.app.server.exception.AppBadRequestException;
 import com.app.server.exception.AppConflicException;
 import com.app.server.exception.AppNotFoundException;

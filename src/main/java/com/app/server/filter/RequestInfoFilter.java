@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Component
@@ -57,7 +58,7 @@ public class RequestInfoFilter implements Filter {
                     .message("Your country is in our boycott list")
                     .details("We hope both countries will improve relations")
                     .status(HttpStatus.FORBIDDEN.value())
-                    .timestamp(PersianDate.now())
+                    .timestamp(LocalDateTime.now())
                     .build();
 
             ObjectMapper mapper = new ObjectMapper();

@@ -1,135 +1,142 @@
 package com.app.server.exception;
 
 import com.github.mfathi91.time.PersianDate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import com.app.server.util.ExternalRequest.exception.ExternalApiException;
+
+import java.time.LocalDateTime;
 import java.util.stream.Collectors;
 
 @RestControllerAdvice
 public class GlobalException {
 
+    private static final Logger log = LoggerFactory.getLogger(GlobalException.class);
 
+    // ---------- helper ----------
+    private ResponseEntity<ErrorResponse> build(HttpStatus status, String message, String details, String redirect) {
+        ErrorResponse.ErrorResponseBuilder builder = ErrorResponse.builder()
+                .message(message)
+                .details(details)
+                .status(status.value())
+                .timestamp(LocalDateTime.now()); // String تا مشکل سریالایز نداشته باشیم
+
+        if (redirect != null) {
+            builder.redirect(redirect);
+        }
+
+        return ResponseEntity.status(status).body(builder.build());
+    }
+
+    private String orDefault(String value, String defaultValue) {
+        return (value != null && !value.isBlank()) ? value : defaultValue;
+    }
+
+    // ---------- External API ----------
     @ExceptionHandler(ExternalApiException.class)
-    public ResponseEntity<?> handleExternalApiException(
-            ExternalApiException ex
-    ) {
-
+    public ResponseEntity<?> handleExternalApiException(ExternalApiException ex) {
         return ResponseEntity
                 .status(ex.getStatus())
                 .body(ex.getMessage());
     }
 
-    // 409 Conflict
+    // ---------- 409 Conflict ----------
     @ExceptionHandler(AppConflicException.class)
-    public ResponseEntity<?> handleAppConflicException(AppConflicException e) {
-        ErrorResponse errorResponse = ErrorResponse.builder()
-                .message(e.getMessage() != null ? e.getMessage() : "تداخل در سیستم")
-                .details(e.getDetails() != null ? e.getDetails() : "در پردازش درخواست شما تعارضی به وجود آمده است.")
-                .status(HttpStatus.CONFLICT.value())
-                .timestamp(PersianDate.now())
-                .build();
-
-        return new ResponseEntity<>(errorResponse, HttpStatus.CONFLICT);
+    public ResponseEntity<ErrorResponse> handleAppConflicException(AppConflicException e) {
+        return build(
+                HttpStatus.CONFLICT,
+                orDefault(e.getMessage(), "تداخل در سیستم"),
+                orDefault(e.getDetails(), "در پردازش درخواست شما تعارضی به وجود آمده است."),
+                null
+        );
     }
 
-
-    // Forbidden Conflict
+    // ---------- 403 Forbidden ----------
     @ExceptionHandler(AppForbiddenException.class)
-    public ResponseEntity<?> handleAppForbiddenException(AppForbiddenException e) {
-        ErrorResponse errorResponse = ErrorResponse.builder()
-                .message(e.getMessage() != null ? e.getMessage() : "دسترسی غیرمجاز")
-                .details(e.getDetails() != null ? e.getDetails() : "دسترسی غیر مجاز")
-                .redirect(e.getRedirect().equals(null)?"":e.getRedirect())
-                .status(HttpStatus.FORBIDDEN.value())
-                .timestamp(PersianDate.now())
-                .build();
-
-        return new ResponseEntity<>(errorResponse, HttpStatus.FORBIDDEN);
+    public ResponseEntity<ErrorResponse> handleAppForbiddenException(AppForbiddenException e) {
+        return build(
+                HttpStatus.FORBIDDEN,
+                orDefault(e.getMessage(), "دسترسی غیرمجاز"),
+                orDefault(e.getDetails(), "دسترسی غیر مجاز"),
+                e.getRedirect() != null ? e.getRedirect() : ""
+        );
     }
 
-
-
-    // Internal Conflict
+    // ---------- 500 Internal ----------
     @ExceptionHandler(AppInternalException.class)
-    public ResponseEntity<?> handleAppInternalException(AppInternalException e) {
-        ErrorResponse errorResponse = ErrorResponse.builder()
-                .message(e.getMessage() != null ? e.getMessage() : "خطای سرور")
-                .details(e.getDetails() != null ? e.getDetails() : "خطای سرور")
-                .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
-                .timestamp(PersianDate.now())
-                .build();
-
-        return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+    public ResponseEntity<ErrorResponse> handleAppInternalException(AppInternalException e) {
+        log.error("AppInternalException", e);
+        return build(
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                orDefault(e.getMessage(), "خطای سرور"),
+                orDefault(e.getDetails(), "خطای سرور"),
+                null
+        );
     }
 
-
-
-
-
-
-    // ✅ 404 Not Found
+    // ---------- 404 Not Found ----------
     @ExceptionHandler(AppNotFoundException.class)
-    public ResponseEntity<?> handleAppNotFoundException(AppNotFoundException e) {
-        ErrorResponse errorResponse = ErrorResponse.builder()
-                .message(e.getMessage() != null ? e.getMessage() : "آیتم یافت نشد")
-                .details(e.getDetails() != null ? e.getDetails() : "آیتمی که به دنبال آن هستید پیدا نشد.")
-                .status(HttpStatus.NOT_FOUND.value())
-                .timestamp(PersianDate.now())
-                .build();
-
-        return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
+    public ResponseEntity<ErrorResponse> handleAppNotFoundException(AppNotFoundException e) {
+        return build(
+                HttpStatus.NOT_FOUND,
+                orDefault(e.getMessage(), "آیتم یافت نشد"),
+                orDefault(e.getDetails(), "آیتمی که به دنبال آن هستید پیدا نشد."),
+                null
+        );
     }
 
-
-//    // ✅ Badrequest
+    // ---------- 400 Bad Request ----------
     @ExceptionHandler(AppBadRequestException.class)
-    public ResponseEntity<?> handleAppBadRequestException(AppBadRequestException e) {
-        ErrorResponse errorResponse = ErrorResponse.builder()
-                .message(e.getMessage() != null ? e.getMessage() : "در درخواست شما مشکلی وجود دارد")
-                .details(e.getDetails() != null ? e.getDetails() : "درخواست اشتباه")
-                .status(HttpStatus.BAD_REQUEST.value())
-                .timestamp(PersianDate.now())
-                .build();
-
-        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    public ResponseEntity<ErrorResponse> handleAppBadRequestException(AppBadRequestException e) {
+        return build(
+                HttpStatus.BAD_REQUEST,
+                orDefault(e.getMessage(), "در درخواست شما مشکلی وجود دارد"),
+                orDefault(e.getDetails(), "درخواست اشتباه"),
+                null
+        );
     }
 
-
-    // 401 Unauthorized
+    // ---------- 401 Unauthorized ----------
     @ExceptionHandler(AppUnAuthorizedException.class)
-    public ResponseEntity<?> handleAppUnauthorizedException(AppUnAuthorizedException e) {
-        ErrorResponse errorResponse = ErrorResponse.builder()
-                .message(e.getMessage() != null ? e.getMessage() : "احراز هویت ناموفق")
-                .details(e.getDetails() != null ? e.getDetails() : "")
-                .status(HttpStatus.UNAUTHORIZED.value())
-                .timestamp(PersianDate.now())
-                .build();
-
-        return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
+    public ResponseEntity<ErrorResponse> handleAppUnauthorizedException(AppUnAuthorizedException e) {
+        return build(
+                HttpStatus.UNAUTHORIZED,
+                orDefault(e.getMessage(), "احراز هویت ناموفق"),
+                orDefault(e.getDetails(), ""),
+                null
+        );
     }
 
-
-    // 400 Bad Request
+    // ---------- 400 Validation ----------
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<?> handleValidationExceptions(MethodArgumentNotValidException ex) {
+    public ResponseEntity<ErrorResponse> handleValidationExceptions(MethodArgumentNotValidException ex) {
         String messages = ex.getBindingResult().getFieldErrors().stream()
                 .map(error -> error.getDefaultMessage())
                 .distinct()
                 .collect(Collectors.joining(" ، "));
 
-        ErrorResponse errorResponse = ErrorResponse.builder()
-                .message(messages)
-                .details("درخواست نامعتبر است.")
-                .status(HttpStatus.BAD_REQUEST.value())
-                .timestamp(PersianDate.now())
-                .build();
-
-        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+        return build(
+                HttpStatus.BAD_REQUEST,
+                messages,
+                "درخواست نامعتبر است.",
+                null
+        );
     }
 
-
+    // ---------- Fallback (همیشه آخر) ----------
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorResponse> handleGeneric(Exception e) {
+        log.error("Unhandled exception", e);
+        return build(
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                "خطای سرور",
+                "خطای پیش‌بینی‌نشده",
+                null
+        );
+    }
 }

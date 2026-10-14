@@ -29,8 +29,11 @@ public class SecurityConfig {
     @Value("${app.client.host}")
     private String clientHost;
 
-    private final JwtKeycloakConverter jwtKeycloakConverter;
+    private final CustomAccessDeniedHandler accessDeniedHandler;
     private final AuthenticationEntryPoint unauthorizedHandler;
+
+
+    private final JwtKeycloakConverter jwtKeycloakConverter;
 
 
     @Bean
@@ -56,10 +59,10 @@ public class SecurityConfig {
                 })
 //                .addFilterBefore(jwtAccessTokenQueryParamFilter, UsernamePasswordAuthenticationFilter.class)
 //
-                .exceptionHandling(ex->{
-                    ex.authenticationEntryPoint(unauthorizedHandler);
-                    ex.accessDeniedHandler(new CustomAccessDeniedHandler());
-                })
+                .exceptionHandling(ex -> ex
+                        .authenticationEntryPoint(unauthorizedHandler)
+                        .accessDeniedHandler(accessDeniedHandler)
+                );
 
         ;
 

@@ -60,6 +60,7 @@ public class CompanySubscriptionPlanServiceImpl
                 .active(false)
                 .validDays(req.getValidDays())
                 .usersCount(req.getUsersCount())
+                .signaturesCount(req.getSignaturesCount())
                 .price(req.getPrice())
                 .build();
 

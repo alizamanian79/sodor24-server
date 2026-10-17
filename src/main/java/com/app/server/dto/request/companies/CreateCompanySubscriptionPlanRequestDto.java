@@ -49,6 +49,8 @@ public class CreateCompanySubscriptionPlanRequestDto {
     @Column(nullable = false)
     private Integer usersCount;
 
+    @Column(name = "signatures_count", nullable = false)
+    private Integer signaturesCount;
 
     @Column(nullable = false)
     private BigDecimal price;

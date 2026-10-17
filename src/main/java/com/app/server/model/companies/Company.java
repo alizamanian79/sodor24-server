@@ -1,25 +1,29 @@
 package com.app.server.model.companies;
 
 import com.app.server.model.User;
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.*;
+import org.hibernate.Hibernate;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Entity
 @Table(
         name = "companies",
         uniqueConstraints = {
-                @UniqueConstraint(name = "uk_company_slug", columnNames = "slug")
+                @UniqueConstraint(name = "uk_company_slug", columnNames = "slug"),
+                @UniqueConstraint(name = "uk_company_name", columnNames = "company_name")
         }
 )
 @Getter
@@ -27,29 +31,27 @@ import java.util.stream.Collectors;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Company {
+
+    private static final SecureRandom RANDOM = new SecureRandom();
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true, length = 6)
+    // uniqueness is declared once, in @Table
+    @Column(nullable = false, length = 6, updatable = false)
     private String slug;
-
-
 
     @NotBlank(message = "اسم شرکت درخواست کننده گواهی نمیتواند خالی باشد")
     @Size(max = 150, message = "اسم شرکت نمیتواند بیشتر از ۱۵۰ کاراکتر باشد")
-    @Column(nullable = false, length = 150,unique = true)
+    @Column(name = "company_name", nullable = false, length = 150)
     private String companyName;
-
-
 
     private String description;
 
     private String completeDescriptions;
-
-
 
     @Size(max = 255, message = "موقعیت مکانی نمیتواند بیشتر از ۲۵۵ کاراکتر باشد")
     private String location;
@@ -60,14 +62,16 @@ public class Company {
     @Size(max = 100, message = "کشور نمیتواند بیشتر از ۱۰۰ کاراکتر باشد")
     private String country;
 
+    // never returned in responses. Store it hashed/encrypted, not as plain text.
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @NotBlank(message = "رمز کلید خصوصی نمیتواند خالی باشد")
     @Size(min = 12, max = 255, message = "رمز کلید خصوصی باید بین 12 تا ۲۵۵ کاراکتر باشد")
+    @Column(nullable = false)
     private String privateKeyPassword;
 
+    // ---------- Relations ----------
 
-
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "company_owners",
             joinColumns = @JoinColumn(name = "company_id"),
@@ -77,13 +81,18 @@ public class Company {
     @Builder.Default
     private Set<User> owners = new HashSet<>();
 
-    @JsonProperty("owners")
-    public Set<String> getOwnerUsernames() {
-        return owners.stream()
-                .map(User::getUsername)
-                .collect(Collectors.toSet());
-    }
+    // Child side. Never serialize it from the entity (breaks the Company <-> CompanyCa loop).
+    @OneToMany(
+            mappedBy = "company",
+            fetch = FetchType.LAZY,
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    @JsonIgnore
+    @Builder.Default
+    private Set<CompanyCa> companyCa = new HashSet<>();
 
+    // ---------- Timestamps / flags ----------
 
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
@@ -92,35 +101,50 @@ public class Company {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
-
-
     private boolean isValid;
     private boolean isActive;
 
+    // ---------- Helpers (keep both sides of the relation in sync) ----------
 
+    public void addCompanyCa(CompanyCa ca) {
+        companyCa.add(ca);
+        ca.setCompany(this);
+    }
 
-    @JsonBackReference
-    @OneToMany(
-            mappedBy = "company",
-            fetch = FetchType.LAZY,
-            cascade = CascadeType.ALL,
-            orphanRemoval = true
-    )
-    @Builder.Default
-    private Set<CompanyCa> companyCa = new HashSet<>();
+    public void removeCompanyCa(CompanyCa ca) {
+        companyCa.remove(ca);
+        ca.setCompany(null);
+    }
 
+    public void addOwner(User user) {
+        owners.add(user);
+    }
 
+    public void removeOwner(User user) {
+        owners.remove(user);
+    }
+
+    // ---------- Lifecycle ----------
 
     @PrePersist
     private void generateSlug() {
         if (slug == null || slug.isBlank()) {
-            slug = generateSixDigitSlug();
+            slug = String.valueOf(100000 + RANDOM.nextInt(900000));
         }
     }
 
-    private String generateSixDigitSlug() {
-        return String.valueOf(
-                100000 + new java.util.Random().nextInt(900000)
-        );
+    // ---------- equals / hashCode (id based, proxy safe) ----------
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+        Company other = (Company) o;
+        return id != null && Objects.equals(id, other.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return Hibernate.getClass(this).hashCode();
     }
 }

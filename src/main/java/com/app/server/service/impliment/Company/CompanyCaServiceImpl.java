@@ -13,6 +13,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 
 @RequiredArgsConstructor
 @Service
@@ -21,9 +23,16 @@ public class CompanyCaServiceImpl implements CompanyCaService {
 
     private final CompanyService companyService;
     private final CompanySubscriptionPlanService subscriptionService;
-
-
     private final CompanyCaRepository companyCaRepository;
+
+
+
+    @Override
+    public List<CompanyCa> companyCaList() {
+        List<CompanyCa> list = companyCaRepository.findAll();
+    return list;
+    }
+
 
     @Override
     public CompanyCa createCa(CreateCompanyCaRequestDto req) {
@@ -35,10 +44,6 @@ public class CompanyCaServiceImpl implements CompanyCaService {
            throw new AppForbiddenException("شرکت شما فعال نمیباشد");
        }
 
-
-       
-
-
         CompanyCa generate = CompanyCa.builder()
                 .status("pending")
                 .company(existCompany)
@@ -46,11 +51,11 @@ public class CompanyCaServiceImpl implements CompanyCaService {
                 .validityDays(subscription.getValidDays())
                 .usersCount(subscription.getUsersCount())
                 .isActive(false)
+                .signaturesCount(subscription.getSignaturesCount())
                 .build();
 
         return companyCaRepository.save(generate);
     }
-
 
 
 

@@ -10,12 +10,21 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/ca/companies")
 public class CompanyCaController {
 
     private final CompanyCaService caService;
+
+
+    @GetMapping
+    public ResponseEntity<?> list(){
+        List<CompanyCa> list = caService.companyCaList();
+      return new ResponseEntity<>(list,HttpStatus.OK);
+    }
 
     @PostMapping
     public ResponseEntity<?> requestToCreate(@Valid @RequestBody CreateCompanyCaRequestDto req){

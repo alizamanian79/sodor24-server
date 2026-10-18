@@ -67,8 +67,8 @@ public class CompanyCaController {
     }
 
     @PatchMapping("/{slug}/status")
-    public CompanyCa setStatus(@PathVariable String slug,@RequestParam String status){
-        return caService.setStatusBySlug(slug,status);
+    public CompanyCa setStatus(@PathVariable String slug,@RequestParam String msg){
+        return caService.setStatusBySlug(slug,msg);
     }
 
 

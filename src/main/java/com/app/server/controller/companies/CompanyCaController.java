@@ -48,9 +48,9 @@ public class CompanyCaController {
     }
 
 
-    @PutMapping()
-    public CompanyCa updateCompanyCa(@Valid @RequestBody CompanyCaUpdateDto req){
-        return caService.updatedCompanyCa(req);
+    @PutMapping("/{slug}")
+    public CompanyCa updateCompanyCa(@PathVariable String slug,@Valid @RequestBody CompanyCaUpdateDto req){
+        return caService.updatedCompanyCa(slug,req);
     }
 
 

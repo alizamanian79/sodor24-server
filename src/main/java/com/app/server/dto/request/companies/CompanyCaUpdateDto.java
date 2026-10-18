@@ -13,8 +13,8 @@ import lombok.*;
 @AllArgsConstructor
 public class CompanyCaUpdateDto {
 
-    @NotNull(message = "شناسه اشتراک نمیتواند خالی باشد")
-    private String slug;
+    @NotNull(message = "پلن اشتراک الزامی است")
+    private Long subscriptionPlanId;
 
     @NotNull(message = "مدت اعتبار الزامی است")
     @Min(value = 1, message = "مدت اعتبار باید حداقل 1 روز باشد")

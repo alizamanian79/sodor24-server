@@ -1,6 +1,8 @@
 package com.app.server.controller.companies;
 
+import com.app.server.dto.request.companies.CompanyCaUpdateDto;
 import com.app.server.dto.request.companies.CreateCompanyCaRequestDto;
+import com.app.server.dto.response.CustomResponseDto;
 import com.app.server.exception.AppForbiddenException;
 import com.app.server.model.companies.CompanyCa;
 import com.app.server.service.CompanyCaService;
@@ -27,7 +29,7 @@ public class CompanyCaController {
     }
 
     @PostMapping
-    public ResponseEntity<?> requestToCreate(@Valid @RequestBody CreateCompanyCaRequestDto req){
+    public ResponseEntity<?> create(@Valid @RequestBody CreateCompanyCaRequestDto req){
         try{
             CompanyCa res = caService.createCa(req);
 
@@ -38,5 +40,41 @@ public class CompanyCaController {
         }
 
     }
+
+
+    @GetMapping("/{slug}")
+    public CompanyCa getBySlug(@PathVariable String slug){
+        return caService.findCompanyCaBySlug(slug);
+    }
+
+
+    @PutMapping()
+    public CompanyCa updateCompanyCa(@Valid @RequestBody CompanyCaUpdateDto req){
+        return caService.updatedCompanyCa(req);
+    }
+
+
+
+    @DeleteMapping("/{slug}")
+    public CustomResponseDto deleteCompanyCa(@PathVariable String slug){
+        return caService.deleteCompanyCaBySlug(slug);
+    }
+
+
+    @PatchMapping("/{slug}/active")
+    public CompanyCa setActiveCompanyCa(@PathVariable String slug,@RequestParam boolean value){
+        return caService.setActiveBySlug(slug,value);
+    }
+
+    @PatchMapping("/{slug}/status")
+    public CompanyCa setStatus(@PathVariable String slug,@RequestParam String status){
+        return caService.setStatusBySlug(slug,status);
+    }
+
+
+
+
+
+
 
 }

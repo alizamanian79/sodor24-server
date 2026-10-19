@@ -35,7 +35,6 @@ public class CompanyCa {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // ---------- Relations (owning side). Never serialize the objects, only expose ids ----------
 
     @NotNull(message = "شرکت الزامی است")
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
@@ -49,7 +48,7 @@ public class CompanyCa {
     @JsonIgnore
     private CompanySubscriptionPlan subscriptionPlan;
 
-    // getId() on a Hibernate proxy does not trigger lazy loading
+
     @JsonProperty("companyId")
     public Long getCompanyId() {
         return company != null ? company.getId() : null;
@@ -60,7 +59,7 @@ public class CompanyCa {
         return subscriptionPlan != null ? subscriptionPlan.getId() : null;
     }
 
-    // ---------- Fields ----------
+
 
     @NotNull(message = "مدت اعتبار الزامی است")
     @Min(value = 1, message = "مدت اعتبار باید حداقل 1 روز باشد")
@@ -77,7 +76,6 @@ public class CompanyCa {
     @Column(name = "signatures_count", nullable = false)
     private Integer signaturesCount;
 
-    // @Builder.Default is required, otherwise the builder ignores "= true" and gives false
     @Builder.Default
     @Column(nullable = false)
     private boolean isActive = true;
@@ -99,9 +97,6 @@ public class CompanyCa {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
-    // ---------- Computed, not stored ----------
-    // The old version had an unused "expiredAt" column and a getter that threw an NPE
-    // when createdAt was still null. It is now derived from createdAt + validityDays.
 
     @Transient
     @JsonProperty("expiredAt")
@@ -112,7 +107,6 @@ public class CompanyCa {
         return createdAt.plusDays(validityDays);
     }
 
-    // ---------- Lifecycle ----------
 
     @PrePersist
     private void generateSlug() {
@@ -120,8 +114,6 @@ public class CompanyCa {
             slug = String.valueOf(100000 + RANDOM.nextInt(900000));
         }
     }
-
-    // ---------- equals / hashCode (id based, proxy safe) ----------
 
     @Override
     public boolean equals(Object o) {

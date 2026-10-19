@@ -1,6 +1,5 @@
 package com.app.server.controller.companies;
 
-import com.app.server.dto.request.companies.CompanyCaUpdateDto;
 import com.app.server.dto.request.companies.CreateCompanyCaRequestDto;
 import com.app.server.dto.response.CustomResponseDto;
 import com.app.server.exception.AppForbiddenException;
@@ -47,11 +46,6 @@ public class CompanyCaController {
         return caService.findCompanyCaBySlug(slug);
     }
 
-
-    @PutMapping("/{slug}")
-    public CompanyCa updateCompanyCa(@PathVariable String slug,@Valid @RequestBody CompanyCaUpdateDto req){
-        return caService.updatedCompanyCa(slug,req);
-    }
 
 
 

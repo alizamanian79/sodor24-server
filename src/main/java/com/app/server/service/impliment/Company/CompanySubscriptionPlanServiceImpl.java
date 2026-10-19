@@ -202,4 +202,10 @@ public class CompanySubscriptionPlanServiceImpl
                 "از اشتراک های دیگری استفاده نمایید"
         );
     }
+
+    @Override
+    public CompanySubscriptionPlan findById(Long id){
+       return repository.findById(id).orElseThrow(()->new AppNotFoundException("پلن اشتراک پیدا نشد"));
+    }
+
 }

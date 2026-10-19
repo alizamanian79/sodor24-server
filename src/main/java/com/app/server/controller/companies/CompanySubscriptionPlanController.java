@@ -136,5 +136,20 @@ public class CompanySubscriptionPlanController {
         return ResponseEntity
                 .status(res.getStatus())
                 .body(res);
+
     }
+
+
+    @GetMapping("/get-by-id/{id}")
+    public ResponseEntity<?> findById(
+            @PathVariable Long id
+    ) {
+
+        CompanySubscriptionPlan plan =
+                service.findById(id);
+
+        return ResponseEntity.ok(plan);
+    }
+
+
 }

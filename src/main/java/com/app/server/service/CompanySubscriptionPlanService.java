@@ -17,4 +17,5 @@ public interface CompanySubscriptionPlanService {
     CustomResponseDto delete(String slug);
     CompanySubscriptionPlan setActive(String slug , boolean value);
     boolean checkActivePlan(String slug) throws AppInternalException;
+    CompanySubscriptionPlan findById(Long id);
 }

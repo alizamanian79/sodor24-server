@@ -120,7 +120,7 @@ public class CompanyCaServiceImpl implements CompanyCaService {
     @Transactional
     public void deleteExpiredPendingCas() {
 
-        LocalDateTime expireTime = LocalDateTime.now().minusMinutes(1);
+        LocalDateTime expireTime = LocalDateTime.now().minusMinutes(5);
 
         int deletedCount = companyCaRepository.deleteExpiredPendingCas(
                 "pending",

@@ -15,4 +15,7 @@ public interface CompanyCaService {
     CompanyCa setActiveBySlug(String slug,boolean value);
     CompanyCa setStatusBySlug(String slug,String status);
 
+
+
+
 }

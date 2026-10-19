@@ -53,7 +53,7 @@
                     "method": "GET",
                     "header": [],
                     "url": {
-                      "raw": "{{HOST}}/api/v1/otp/verify/account/09917403979/09917403988",
+                      "raw": "{{HOST}}/api/v1/otp/verify/account/09917403979/19168",
                       "host": [
                         "{{HOST}}"
                       ],
@@ -64,7 +64,7 @@
                         "verify",
                         "account",
                         "09917403979",
-                        "09917403988"
+                        "19168"
                       ]
                     }
                   },
@@ -371,72 +371,6 @@
               ]
             },
             "method": "GET",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\r\n    \"roles\":[\"USER\",\"ADMIN\"]\r\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{HOST}}/api/v1/users/1/role",
-              "host": [
-                "{{HOST}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "users",
-                "1",
-                "role"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Set roles by user id",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "// let res = pm.response.json();\r",
-                  "// let data =res.data.access_token;\r",
-                  "// pm.environment.set(\"ACCESS_TOKEN\", data);"
-                ],
-                "type": "text/javascript",
-                "packages": {},
-                "requests": {}
-              }
-            },
-            {
-              "listen": "prerequest",
-              "script": {
-                "exec": [
-                  ""
-                ],
-                "type": "text/javascript",
-                "packages": {},
-                "requests": {}
-              }
-            }
-          ],
-          "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{ACCESS_TOKEN}}",
-                  "type": "string"
-                }
-              ]
-            },
-            "method": "PUT",
             "header": [],
             "body": {
               "mode": "raw",
@@ -843,578 +777,6 @@
       ]
     },
     {
-      "name": "Signature plan",
-      "item": [
-        {
-          "name": "Crud",
-          "item": [
-            {
-              "name": "List",
-              "protocolProfileBehavior": {
-                "disableBodyPruning": true
-              },
-              "request": {
-                "auth": {
-                  "type": "bearer",
-                  "bearer": [
-                    {
-                      "key": "token",
-                      "value": "{{ACCESS_TOKEN}}",
-                      "type": "string"
-                    }
-                  ]
-                },
-                "method": "GET",
-                "header": [],
-                "body": {
-                  "mode": "raw",
-                  "raw": "",
-                  "options": {
-                    "raw": {
-                      "language": "json"
-                    }
-                  }
-                },
-                "url": {
-                  "raw": "{{HOST}}/api/v1/signature/plan",
-                  "host": [
-                    "{{HOST}}"
-                  ],
-                  "path": [
-                    "api",
-                    "v1",
-                    "signature",
-                    "plan"
-                  ]
-                }
-              },
-              "response": []
-            },
-            {
-              "name": "Get by id",
-              "protocolProfileBehavior": {
-                "disableBodyPruning": true
-              },
-              "request": {
-                "auth": {
-                  "type": "bearer",
-                  "bearer": [
-                    {
-                      "key": "token",
-                      "value": "{{ACCESS_TOKEN}}",
-                      "type": "string"
-                    }
-                  ]
-                },
-                "method": "GET",
-                "header": [],
-                "body": {
-                  "mode": "raw",
-                  "raw": "",
-                  "options": {
-                    "raw": {
-                      "language": "json"
-                    }
-                  }
-                },
-                "url": {
-                  "raw": "{{HOST}}/api/v1/signature/plan/4",
-                  "host": [
-                    "{{HOST}}"
-                  ],
-                  "path": [
-                    "api",
-                    "v1",
-                    "signature",
-                    "plan",
-                    "4"
-                  ]
-                }
-              },
-              "response": []
-            },
-            {
-              "name": "Generate Plan",
-              "request": {
-                "auth": {
-                  "type": "bearer",
-                  "bearer": [
-                    {
-                      "key": "token",
-                      "value": "{{ACCESS_TOKEN}}",
-                      "type": "string"
-                    }
-                  ]
-                },
-                "method": "POST",
-                "header": [],
-                "body": {
-                  "mode": "raw",
-                  "raw": "{\r\n    \"title\": \"دوبار مصرف\",\r\n    \"description\": \"با صرفه ترین و بهترین امضا\",\r\n    \"price\": 120000,\r\n    \"usageCount\": 2,\r\n    \"period\": 3,\r\n    \"features\": [\r\n      \"مناسب امضای خاص\"\r\n    ],\r\n    \"tags\": [\r\n      \"بهترین\"\r\n    ]\r\n  }\r\n\r\n\r\n",
-                  "options": {
-                    "raw": {
-                      "language": "json"
-                    }
-                  }
-                },
-                "url": {
-                  "raw": "{{HOST}}/api/v1/signature/plan",
-                  "host": [
-                    "{{HOST}}"
-                  ],
-                  "path": [
-                    "api",
-                    "v1",
-                    "signature",
-                    "plan"
-                  ]
-                }
-              },
-              "response": [
-                {
-                  "name": "Basic plan",
-                  "originalRequest": {
-                    "method": "POST",
-                    "header": [],
-                    "body": {
-                      "mode": "raw",
-                      "raw": " {\r\n    \"title\": \"پلن پایه\",\r\n    \"description\": \"مناسب کاربران با نیاز محدود\",\r\n    \"price\": 249000,\r\n    \"usageCount\": 10,\r\n    \"period\": 30,\r\n    \"features\": [\r\n      \"۱۰ امضای دیجیتال\",\r\n      \"اعتبار ۳۰ روزه\"\r\n    ],\r\n    \"tags\": [\r\n      \"پایه\",\r\n      \"اقتصادی\"\r\n    ]\r\n  },",
-                      "options": {
-                        "raw": {
-                          "language": "json"
-                        }
-                      }
-                    },
-                    "url": {
-                      "raw": "{{HOST}}/api/v1/signature/plan",
-                      "host": [
-                        "{{HOST}}"
-                      ],
-                      "path": [
-                        "api",
-                        "v1",
-                        "signature",
-                        "plan"
-                      ]
-                    }
-                  },
-                  "_postman_previewlanguage": "",
-                  "header": [],
-                  "cookie": [
-                    {
-                      "expires": "Invalid Date",
-                      "domain": "",
-                      "path": ""
-                    }
-                  ],
-                  "body": ""
-                }
-              ]
-            },
-            {
-              "name": "Update",
-              "request": {
-                "auth": {
-                  "type": "bearer",
-                  "bearer": [
-                    {
-                      "key": "token",
-                      "value": "{{ACCESS_TOKEN}}",
-                      "type": "string"
-                    }
-                  ]
-                },
-                "method": "PUT",
-                "header": [],
-                "body": {
-                  "mode": "raw",
-                  "raw": "{\r\n    \"title\": \"امضای یکبار مصرف\",\r\n    \"description\": \"یبار مصرف\",\r\n    \"price\": 350000,\r\n    \"usageCount\": 1,\r\n    \"period\": 1,\r\n    \"features\": [\r\n      \"مناصب امضای تک\"\r\n    ],\r\n    \"tags\": [\r\n      \"پلاتینیوم\",\r\n      \"ویژه\",\r\n      \"پریمیوم\"\r\n    ]\r\n  }\r\n\r\n\r\n",
-                  "options": {
-                    "raw": {
-                      "language": "json"
-                    }
-                  }
-                },
-                "url": {
-                  "raw": "{{HOST}}/api/v1/signature/plan/5",
-                  "host": [
-                    "{{HOST}}"
-                  ],
-                  "path": [
-                    "api",
-                    "v1",
-                    "signature",
-                    "plan",
-                    "5"
-                  ]
-                }
-              },
-              "response": []
-            },
-            {
-              "name": "Delete by id",
-              "request": {
-                "auth": {
-                  "type": "bearer",
-                  "bearer": [
-                    {
-                      "key": "token",
-                      "value": "{{ACCESS_TOKEN}}",
-                      "type": "string"
-                    }
-                  ]
-                },
-                "method": "DELETE",
-                "header": [],
-                "body": {
-                  "mode": "raw",
-                  "raw": "",
-                  "options": {
-                    "raw": {
-                      "language": "json"
-                    }
-                  }
-                },
-                "url": {
-                  "raw": "{{HOST}}/api/v1/signature/plan/4",
-                  "host": [
-                    "{{HOST}}"
-                  ],
-                  "path": [
-                    "api",
-                    "v1",
-                    "signature",
-                    "plan",
-                    "4"
-                  ]
-                }
-              },
-              "response": []
-            }
-          ]
-        },
-        {
-          "name": "Active",
-          "item": [
-            {
-              "name": "Set plan active",
-              "request": {
-                "auth": {
-                  "type": "bearer",
-                  "bearer": [
-                    {
-                      "key": "token",
-                      "value": "{{ACCESS_TOKEN}}",
-                      "type": "string"
-                    }
-                  ]
-                },
-                "method": "PUT",
-                "header": [],
-                "body": {
-                  "mode": "raw",
-                  "raw": "{\r\n    \"title\": \"امضای یکبار مصرف\",\r\n    \"description\": \"پلن یکبار مصرف\",\r\n    \"price\": 77000,\r\n    \"usageCount\": 1,\r\n    \"period\": 1,\r\n    \"features\": [\r\n      \"مناصب امضای تک\"\r\n    ],\r\n    \"tags\": [\r\n      \"پلاتینیوم\",\r\n      \"ویژه\",\r\n      \"پریمیوم\"\r\n    ]\r\n  }\r\n\r\n\r\n"
-                },
-                "url": {
-                  "raw": "{{HOST}}/api/v1/signature/plan/active/set?id=1&active=1",
-                  "host": [
-                    "{{HOST}}"
-                  ],
-                  "path": [
-                    "api",
-                    "v1",
-                    "signature",
-                    "plan",
-                    "active",
-                    "set"
-                  ],
-                  "query": [
-                    {
-                      "key": "id",
-                      "value": "1"
-                    },
-                    {
-                      "key": "active",
-                      "value": "1"
-                    }
-                  ]
-                }
-              },
-              "response": []
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "name": "Signature request",
-      "item": [
-        {
-          "name": "Crud",
-          "item": [
-            {
-              "name": "Signature request generation",
-              "request": {
-                "auth": {
-                  "type": "bearer",
-                  "bearer": [
-                    {
-                      "key": "token",
-                      "value": "{{ACCESS_TOKEN}}",
-                      "type": "string"
-                    }
-                  ]
-                },
-                "method": "POST",
-                "header": [],
-                "body": {
-                  "mode": "raw",
-                  "raw": "{\r\n  \"signaturePlanId\":1,\r\n  \"country\": \"Iran\",\r\n  \"reason\": \"test request\",\r\n  \"location\": \"Tehran\",\r\n  \"organization\": \"Rimas.com\",\r\n  \"department\": \"Technical department\",\r\n  \"state\": \"Tehran\",\r\n  \"city\": \"Tehran\",\r\n  \"email\": \"alizamaniandev@gmail.com\",\r\n  \"title\": \"Alibaba.ir\",\r\n  \"signaturePassword\": \"12345678\"\r\n}\r\n",
-                  "options": {
-                    "raw": {
-                      "language": "json"
-                    }
-                  }
-                },
-                "url": {
-                  "raw": "{{HOST}}/api/v1/signature/service",
-                  "host": [
-                    "{{HOST}}"
-                  ],
-                  "path": [
-                    "api",
-                    "v1",
-                    "signature",
-                    "service"
-                  ]
-                }
-              },
-              "response": []
-            },
-            {
-              "name": "Signature request list",
-              "request": {
-                "auth": {
-                  "type": "bearer",
-                  "bearer": [
-                    {
-                      "key": "token",
-                      "value": "{{ACCESS_TOKEN}}",
-                      "type": "string"
-                    }
-                  ]
-                },
-                "method": "GET",
-                "header": [],
-                "url": {
-                  "raw": "{{HOST}}/api/v1/signature/service",
-                  "host": [
-                    "{{HOST}}"
-                  ],
-                  "path": [
-                    "api",
-                    "v1",
-                    "signature",
-                    "service"
-                  ]
-                }
-              },
-              "response": []
-            },
-            {
-              "name": "Get signature request by id",
-              "request": {
-                "auth": {
-                  "type": "bearer",
-                  "bearer": [
-                    {
-                      "key": "token",
-                      "value": "{{ACCESS_TOKEN}}",
-                      "type": "string"
-                    }
-                  ]
-                },
-                "method": "GET",
-                "header": [],
-                "url": {
-                  "raw": "{{HOST}}/api/v1/signature/service/2",
-                  "host": [
-                    "{{HOST}}"
-                  ],
-                  "path": [
-                    "api",
-                    "v1",
-                    "signature",
-                    "service",
-                    "2"
-                  ]
-                }
-              },
-              "response": []
-            },
-            {
-              "name": "Download signature by key",
-              "request": {
-                "auth": {
-                  "type": "bearer",
-                  "bearer": [
-                    {
-                      "key": "token",
-                      "value": "{{ACCESS_TOKEN}}",
-                      "type": "string"
-                    }
-                  ]
-                },
-                "method": "GET",
-                "header": [],
-                "url": {
-                  "raw": "{{HOST}}/api/v1/download/signature/user-e0a9cc54-a3ab-49ae-bed1-0807f682a159.p12",
-                  "host": [
-                    "{{HOST}}"
-                  ],
-                  "path": [
-                    "api",
-                    "v1",
-                    "download",
-                    "signature",
-                    "user-e0a9cc54-a3ab-49ae-bed1-0807f682a159.p12"
-                  ]
-                }
-              },
-              "response": []
-            },
-            {
-              "name": "Delete signature request",
-              "request": {
-                "auth": {
-                  "type": "bearer",
-                  "bearer": [
-                    {
-                      "key": "token",
-                      "value": "{{ACCESS_TOKEN}}",
-                      "type": "string"
-                    }
-                  ]
-                },
-                "method": "DELETE",
-                "header": [],
-                "body": {
-                  "mode": "raw",
-                  "raw": ""
-                },
-                "url": {
-                  "raw": "{{HOST}}/api/v1/signature/service/8",
-                  "host": [
-                    "{{HOST}}"
-                  ],
-                  "path": [
-                    "api",
-                    "v1",
-                    "signature",
-                    "service",
-                    "8"
-                  ]
-                }
-              },
-              "response": []
-            }
-          ]
-        },
-        {
-          "name": "Verify signature request",
-          "item": [
-            {
-              "name": "Generate otp for signature",
-              "protocolProfileBehavior": {
-                "disableBodyPruning": true
-              },
-              "request": {
-                "auth": {
-                  "type": "bearer",
-                  "bearer": [
-                    {
-                      "key": "token",
-                      "value": "{{ACCESS_TOKEN}}",
-                      "type": "string"
-                    }
-                  ]
-                },
-                "method": "GET",
-                "header": [],
-                "body": {
-                  "mode": "raw",
-                  "raw": "",
-                  "options": {
-                    "raw": {
-                      "language": "json"
-                    }
-                  }
-                },
-                "url": {
-                  "raw": "{{HOST}}/api/v1/generate/signature/35",
-                  "host": [
-                    "{{HOST}}"
-                  ],
-                  "path": [
-                    "api",
-                    "v1",
-                    "generate",
-                    "signature",
-                    "35"
-                  ]
-                }
-              },
-              "response": []
-            },
-            {
-              "name": "Verify signature otp",
-              "protocolProfileBehavior": {
-                "disableBodyPruning": true
-              },
-              "request": {
-                "auth": {
-                  "type": "bearer",
-                  "bearer": [
-                    {
-                      "key": "token",
-                      "value": "{{ACCESS_TOKEN}}",
-                      "type": "string"
-                    }
-                  ]
-                },
-                "method": "GET",
-                "header": [],
-                "body": {
-                  "mode": "raw",
-                  "raw": "",
-                  "options": {
-                    "raw": {
-                      "language": "json"
-                    }
-                  }
-                },
-                "url": {
-                  "raw": "{{HOST}}/api/v1/verify/signature/17/71014",
-                  "host": [
-                    "{{HOST}}"
-                  ],
-                  "path": [
-                    "api",
-                    "v1",
-                    "verify",
-                    "signature",
-                    "17",
-                    "71014"
-                  ]
-                }
-              },
-              "response": []
-            }
-          ]
-        }
-      ]
-    },
-    {
       "name": "Verifications",
       "item": [
         {
@@ -1460,98 +822,6 @@
                     "account",
                     "09917403979",
                     "74981"
-                  ]
-                }
-              },
-              "response": []
-            }
-          ]
-        },
-        {
-          "name": "Verify signature request",
-          "item": [
-            {
-              "name": "Generate otp for signature",
-              "protocolProfileBehavior": {
-                "disableBodyPruning": true
-              },
-              "request": {
-                "auth": {
-                  "type": "bearer",
-                  "bearer": [
-                    {
-                      "key": "token",
-                      "value": "{{ACCESS_TOKEN}}",
-                      "type": "string"
-                    }
-                  ]
-                },
-                "method": "GET",
-                "header": [],
-                "body": {
-                  "mode": "raw",
-                  "raw": "",
-                  "options": {
-                    "raw": {
-                      "language": "json"
-                    }
-                  }
-                },
-                "url": {
-                  "raw": "{{HOST}}/api/v1/generate/signature/6",
-                  "host": [
-                    "{{HOST}}"
-                  ],
-                  "path": [
-                    "api",
-                    "v1",
-                    "generate",
-                    "signature",
-                    "6"
-                  ]
-                }
-              },
-              "response": []
-            },
-            {
-              "name": "Verify signature otp",
-              "protocolProfileBehavior": {
-                "disableBodyPruning": true
-              },
-              "request": {
-                "auth": {
-                  "type": "bearer",
-                  "bearer": [
-                    {
-                      "key": "token",
-                      "value": "{{ACCESS_TOKEN}}",
-                      "type": "string"
-                    }
-                  ]
-                },
-                "method": "GET",
-                "header": [],
-                "body": {
-                  "mode": "raw",
-                  "raw": "",
-                  "options": {
-                    "raw": {
-                      "language": "json"
-                    }
-                  }
-                },
-                "url": {
-                  "raw": "{{HOST}}/api/v1/verify/signature/8/83382",
-                  "host": [
-                    "{{HOST}}"
-                  ],
-                  "path": [
-                    "api",
-                    "v1",
-                    "verify",
-                    "signature",
-                    "8",
-                    "83382"
                   ]
                 }
               },
@@ -2056,110 +1326,859 @@
       ]
     },
     {
-      "name": "Payment",
+      "name": "Company",
       "item": [
         {
-          "name": "Request",
-          "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
+          "name": "Company",
+          "item": [
+            {
+              "name": "Get Companies List",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{ACCESS_TOKEN}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{HOST}}/api/v1/companies",
+                  "host": [
+                    "{{HOST}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "companies"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Company By Slug",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{ACCESS_TOKEN}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{HOST}}/api/v1/companies/{{COMPANY_SLUG}}",
+                  "host": [
+                    "{{HOST}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "companies",
+                    "{{COMPANY_SLUG}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Is Company Ready To Use",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{ACCESS_TOKEN}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{HOST}}/api/v1/companies/{{COMPANY_SLUG}}/isvalid",
+                  "host": [
+                    "{{HOST}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "companies",
+                    "{{COMPANY_SLUG}}",
+                    "isvalid"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Delete Company By Slug",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{ACCESS_TOKEN}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{HOST}}/api/v1/companies/{{COMPANY_SLUG}}",
+                  "host": [
+                    "{{HOST}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "companies",
+                    "{{COMPANY_SLUG}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Create Company",
+              "event": [
                 {
-                  "key": "token",
-                  "value": "{{ACCESS_TOKEN}}",
-                  "type": "string"
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "let res = pm.response.json();\r",
+                      "pm.environment.set(\"COMPANY_SLUG\", res.slug);"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                },
+                {
+                  "listen": "prerequest",
+                  "script": {
+                    "exec": [],
+                    "type": "text/javascript"
+                  }
                 }
-              ]
-            },
-            "method": "POST",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\r\n    \"sub\":\"80357b02-bf3e-4d9a-aad8-276c0c685b6a\",\r\n    \"amount\":100000.0,\r\n    \"process\":\"deposit\",\r\n    \"phoneNumber\":\"09917403979\",\r\n    \"email\":\"alizamaniandev@gmail.com\",\r\n    \"description\":\"پرداختی\",\r\n    \"callbackUrl\":\"http://localhost:8181/api/v1/payment/callback?\",\r\n    \"gateway\":\"zarinpal\",\r\n    \"status\":\"\"\r\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{HOST}}/api/v1/payment/request",
-              "host": [
-                "{{HOST}}"
               ],
-              "path": [
-                "api",
-                "v1",
-                "payment",
-                "request"
-              ]
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{ACCESS_TOKEN}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"companyName\": \"شرکت فناوری صدور\",\r\n  \"location\": \"تهران\",\r\n  \"description\":\"description\",\r\n  \"completeDescriptions\":\"salaaaaaaaam\",\r\n  \"state\": \"تهران\",\r\n  \"country\": \"ایران\",\r\n  \"privateKeyPassword\": \"MySecurePassword123\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{HOST}}/api/v1/companies",
+                  "host": [
+                    "{{HOST}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "companies"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Update Company By Slug",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{ACCESS_TOKEN}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PUT",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"companyName\": \"شرکت فناوری ایران\",\r\n  \"location\": \"تهران\",\r\n  \"description\":\"description\",\r\n  \"completeDescriptions\":\"شی\",\r\n  \"state\": \"تهران\",\r\n  \"country\": \"ایران\",\r\n  \"privateKeyPassword\": \"MySecurePassword123\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{HOST}}/api/v1/companies/{{COMPANY_SLUG}}",
+                  "host": [
+                    "{{HOST}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "companies",
+                    "{{COMPANY_SLUG}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Set Active Company",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{ACCESS_TOKEN}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PATCH",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{HOST}}/api/v1/companies/active/{{COMPANY_SLUG}}?value=true",
+                  "host": [
+                    "{{HOST}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "companies",
+                    "active",
+                    "{{COMPANY_SLUG}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "value",
+                      "value": "true"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Set Valid Company",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{ACCESS_TOKEN}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PATCH",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{HOST}}/api/v1/companies/valid/{{COMPANY_SLUG}}?value=true",
+                  "host": [
+                    "{{HOST}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "companies",
+                    "valid",
+                    "{{COMPANY_SLUG}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "value",
+                      "value": "true"
+                    }
+                  ]
+                }
+              },
+              "response": []
             }
-          },
-          "response": []
+          ]
         },
         {
-          "name": "Verify callback",
-          "protocolProfileBehavior": {
-            "disableBodyPruning": true
-          },
-          "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{ACCESS_TOKEN}}",
-                  "type": "string"
+          "name": "Company - Subscription - Plan",
+          "item": [
+            {
+              "name": "List",
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              },
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{ACCESS_TOKEN}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": ""
+                },
+                "url": {
+                  "raw": "{{HOST}}/api/v1/company-subscription-plans",
+                  "host": [
+                    "{{HOST}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "company-subscription-plans"
+                  ]
                 }
-              ]
+              },
+              "response": []
             },
-            "method": "GET",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\r\n    \"sub\":\"80357b02-bf3e-4d9a-aad8-276c0c685b6a\",\r\n    \"amount\":100000.0,\r\n    \"process\":\"deposit\",\r\n    \"phoneNumber\":\"09917403979\",\r\n    \"email\":\"alizamaniandev@gmail.com\",\r\n    \"description\":\"پرداختی\",\r\n    \"callbackUrl\":\"http://google.com\",\r\n    \"gateway\":\"zarinpal\",\r\n    \"status\":\"\"\r\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
+            {
+              "name": "Add Subscription Plan",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "let res = pm.response.json();\r",
+                      "pm.environment.set(\"COMPANY_SUBSCRIPTION_SLUG\", res.slug);\r",
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                },
+                {
+                  "listen": "prerequest",
+                  "script": {
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
                 }
-              }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{ACCESS_TOKEN}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"title\": \"پلن حرفه‌ای GOLd\",\r\n    \"description\": \"مناسب برای شرکت‌های متوسط و تیم‌های در حال رشد\",\r\n    \"completedDescription\": \"با خرید این پلن، امکان استفاده از تمام امکانات حرفه‌ای سامانه را خواهید داشت.\",\r\n    \"tags\": [\r\n        \"حرفه‌ای\",\r\n        \"شرکت‌ها\",\r\n        \"تیم\",\r\n        \"پشتیبانی\"\r\n    ],\r\n    \"validDays\": 30,\r\n    \"usersCount\": 10,\r\n    \"signaturesCount\":200,\r\n    \"price\": 2500000.00\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{HOST}}/api/v1/company-subscription-plans",
+                  "host": [
+                    "{{HOST}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "company-subscription-plans"
+                  ]
+                }
+              },
+              "response": []
             },
-            "url": {
-              "raw": "{{HOST}}/api/v1/payment/callback?sub&slug&gateway&Authority&Status",
-              "host": [
-                "{{HOST}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "payment",
-                "callback"
-              ],
-              "query": [
-                {
-                  "key": "sub",
-                  "value": null
+            {
+              "name": "Find Company Subscription By Slug",
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              },
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{ACCESS_TOKEN}}",
+                      "type": "string"
+                    }
+                  ]
                 },
-                {
-                  "key": "slug",
-                  "value": null
+                "method": "GET",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": ""
                 },
-                {
-                  "key": "gateway",
-                  "value": null
-                },
-                {
-                  "key": "Authority",
-                  "value": null
-                },
-                {
-                  "key": "Status",
-                  "value": null
+                "url": {
+                  "raw": "{{HOST}}/api/v1/company-subscription-plans/{{COMPANY_SUBSCRIPTION_SLUG}}",
+                  "host": [
+                    "{{HOST}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "company-subscription-plans",
+                    "{{COMPANY_SUBSCRIPTION_SLUG}}"
+                  ]
                 }
-              ]
+              },
+              "response": []
+            },
+            {
+              "name": "Find Company Subscription By Id",
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              },
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{ACCESS_TOKEN}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": ""
+                },
+                "url": {
+                  "raw": "{{HOST}}/api/v1/company-subscription-plans/get-by-id/1",
+                  "host": [
+                    "{{HOST}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "company-subscription-plans",
+                    "get-by-id",
+                    "1"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Delete Subscription Plan By Slug",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{ACCESS_TOKEN}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "DELETE",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{HOST}}/api/v1/company-subscription-plans/{{COMPANY_SUBSCRIPTION_SLUG}}",
+                  "host": [
+                    "{{HOST}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "company-subscription-plans",
+                    "{{COMPANY_SUBSCRIPTION_SLUG}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Update Company Subscription Plan By Slug",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{ACCESS_TOKEN}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PUT",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"title\": \"پلن حرفه‌ای\",\r\n    \"description\": \"مناسب برای شرکت‌های متوسط و تیم‌های در حال رشد\",\r\n    \"completedDescription\": \"با خرید این پلن، امکان استفاده از تمام امکانات حرفه‌ای سامانه را خواهید داشت.\",\r\n    \"tags\": [\r\n        \"حرفه‌ای\",\r\n        \"شرکت‌ها\",\r\n        \"تیم\",\r\n        \"پشتیبانی\"\r\n    ],\r\n    \"validDays\": 20,\r\n    \"usersCount\": 10,\r\n    \"price\": 2660000.00\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{HOST}}/api/v1/company-subscription-plans/{{COMPANY_SUBSCRIPTION_SLUG}}",
+                  "host": [
+                    "{{HOST}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "company-subscription-plans",
+                    "{{COMPANY_SUBSCRIPTION_SLUG}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Set Active",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{ACCESS_TOKEN}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PATCH",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{HOST}}/api/v1/company-subscription-plans/{{COMPANY_SUBSCRIPTION_SLUG}}/active?value=true",
+                  "host": [
+                    "{{HOST}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "company-subscription-plans",
+                    "{{COMPANY_SUBSCRIPTION_SLUG}}",
+                    "active"
+                  ],
+                  "query": [
+                    {
+                      "key": "value",
+                      "value": "true"
+                    }
+                  ]
+                }
+              },
+              "response": []
             }
-          },
-          "response": []
+          ]
+        },
+        {
+          "name": "Ca",
+          "item": [
+            {
+              "name": "Create Company Ca",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "let res = pm.response.json();\r",
+                      "pm.environment.set(\"COMPANY_CA_SLUG\", res.slug);"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                },
+                {
+                  "listen": "prerequest",
+                  "script": {
+                    "exec": [],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{ACCESS_TOKEN}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"companySlug\": \"{{COMPANY_SLUG}}\",\r\n  \"subscriptionPlanSlug\": \"{{COMPANY_SUBSCRIPTION_SLUG}}\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{HOST}}/api/v1/ca/companies",
+                  "host": [
+                    "{{HOST}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "ca",
+                    "companies"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Company Ca List",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{ACCESS_TOKEN}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{HOST}}/api/v1/ca/companies",
+                  "host": [
+                    "{{HOST}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "ca",
+                    "companies"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Find Company Ca By Slug",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{ACCESS_TOKEN}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{HOST}}/api/v1/ca/companies/{{COMPANY_CA_SLUG}}",
+                  "host": [
+                    "{{HOST}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "ca",
+                    "companies",
+                    "{{COMPANY_CA_SLUG}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Delete Company Ca By Slug",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{ACCESS_TOKEN}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{HOST}}/api/v1/ca/companies/{{COMPANY_CA_SLUG}}",
+                  "host": [
+                    "{{HOST}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "ca",
+                    "companies",
+                    "{{COMPANY_CA_SLUG}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Set Company Ca Active",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{ACCESS_TOKEN}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PATCH",
+                "header": [],
+                "url": {
+                  "raw": "{{HOST}}/api/v1/ca/companies/{{COMPANY_CA_SLUG}}/active?value=true",
+                  "host": [
+                    "{{HOST}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "ca",
+                    "companies",
+                    "{{COMPANY_CA_SLUG}}",
+                    "active"
+                  ],
+                  "query": [
+                    {
+                      "key": "value",
+                      "value": "true"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Set Company Ca Status",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{ACCESS_TOKEN}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PATCH",
+                "header": [],
+                "url": {
+                  "raw": "{{HOST}}/api/v1/ca/companies/{{COMPANY_CA_SLUG}}/status?msg=paid",
+                  "host": [
+                    "{{HOST}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "ca",
+                    "companies",
+                    "{{COMPANY_CA_SLUG}}",
+                    "status"
+                  ],
+                  "query": [
+                    {
+                      "key": "msg",
+                      "value": "paid"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
         }
       ]
     }

@@ -43,9 +43,11 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
 
-    @Cacheable(value = CACHE_NAME,key = "#slug")
+
+
     @Override
-    public Company findCompanyBySlug(String slug) {
+    @Cacheable(value = CACHE_NAME, key = "'bySlug:' + #slug")
+    public Company findCompanyBySlug(String slug){
         return companyRepository.findCompaniesBySlug(slug)
                 .orElseThrow(() -> new AppNotFoundException("شرکت پیدا نشد"));
     }
@@ -153,7 +155,6 @@ public class CompanyServiceImpl implements CompanyService {
 
         return true;
     }
-
 
 
 

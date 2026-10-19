@@ -11,14 +11,17 @@ import com.app.server.repository.companies.CompanyCaRepository;
 import com.app.server.service.CompanyCaService;
 import com.app.server.service.CompanyService;
 import com.app.server.service.CompanySubscriptionPlanService;
+import com.app.server.util.signature_service_producer.producer.SignatureProducer;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 
@@ -31,7 +34,7 @@ public class CompanyCaServiceImpl implements CompanyCaService {
     private final CompanySubscriptionPlanService subscriptionService;
     private final CompanyCaRepository companyCaRepository;
 
-    private final String CACHE_NAME="companyCaCache";
+    public static final String  CACHE_NAME="companyCaCache";
 
 
     @Override
@@ -110,6 +113,32 @@ public class CompanyCaServiceImpl implements CompanyCaService {
         find.setStatus(status);
         return companyCaRepository.save(find);
     }
+
+
+    // Deleted after 5 minutest
+    @Scheduled(fixedDelay = 60_000)
+    @Transactional
+    public void deleteExpiredPendingCas() {
+
+        LocalDateTime expireTime = LocalDateTime.now().minusMinutes(1);
+
+        int deletedCount = companyCaRepository.deleteExpiredPendingCas(
+                "pending",
+                expireTime
+        );
+
+
+
+        if (deletedCount > 0) {
+            log.info("{} expired pending Company CA(s) deleted", deletedCount);
+        }
+    }
+
+
+
+
+
+
 
 
 }

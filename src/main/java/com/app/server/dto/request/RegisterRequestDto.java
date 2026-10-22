@@ -1,7 +1,7 @@
 package com.app.server.dto.request;
 
-import com.app.server.annotation.UniquePhoneNumber;
-import com.app.server.annotation.UniqueUserName;
+
+
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -17,7 +17,7 @@ import org.hibernate.validator.constraints.UniqueElements;
 @NoArgsConstructor
 public class RegisterRequestDto {
 
-    @UniqueUserName(message = "این نام کاربری وجود دارد")
+
     @NotBlank(message = "نام کاربری نمی‌تواند خالی باشد")
     private String username;
 
@@ -43,9 +43,6 @@ public class RegisterRequestDto {
 
     @NotBlank(message = "کد ملی نمی‌تواند خالی باشد")
     private String nationalCode;
-
-
-    private String sub;
 
 
 }

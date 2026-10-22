@@ -1,94 +1,94 @@
-package com.app.server.annotation;
-
-import com.app.server.dto.request.LoginRequestDto;
-import com.app.server.exception.AppBadRequestException;
-import com.app.server.exception.AppForbiddenException;
-import com.app.server.exception.AppNotFoundException;
-import com.app.server.model.OtpType;
-import com.app.server.model.User;
-import com.app.server.repository.UserRepository;
-import com.app.server.service.OtpService;
-import com.app.server.service.impliment.OtpFactory.OtpFactory;
-import lombok.RequiredArgsConstructor;
-import org.aspectj.lang.JoinPoint;
-import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Before;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Component;
-
-@Aspect
-@Component
-@RequiredArgsConstructor
-public class VerifiedUserAspect {
-
-    private final UserRepository userRepository;
-    private final OtpFactory otpFactory;
-
-
-
-    @Before("@annotation(com.app.server.annotation.VerifiedUser)")
-    public void checkUser(JoinPoint joinPoint) {
-
-        for (Object arg : joinPoint.getArgs()) {
-
-            if (arg instanceof LoginRequestDto loginRequest) {
-
-                String username = loginRequest.getUsername();
-
-                User user = userRepository.findUserByUsername(username)
-                        .orElseThrow(() -> new AppNotFoundException("کاربر یافت نشد."));
-
-
-
-
-                if (!user.isValid()) {
-
-                    OtpService otpService = otpFactory.getService(OtpType.USER);
-                    otpService.generateOtp(user.getPhoneNumber());
-
-                    throw new AppForbiddenException(
-                            "احراز هویت شما تایید نشده لطفا کد داده شده را وارد نمایید",
-                            "",
-                            "");
-                }
-
-                return;
-            }
-        }
-
-        throw new AppBadRequestException("شماره تماس ارسال نشده است.");
-    }
-
-
-//    @Before("@annotation(verifiedUser)")
-//    public void verifiedUserValid(VerifiedUser verifiedUser) {
+//package com.app.server.annotation;
 //
-//        String phoneNumber = verifiedUser.phoneNumber();
+//import com.app.server.dto.request.LoginRequestDto;
+//import com.app.server.exception.AppBadRequestException;
+//import com.app.server.exception.AppForbiddenException;
+//import com.app.server.exception.AppNotFoundException;
+//import com.app.server.model.OtpType;
+//import com.app.server.model.User;
+//import com.app.server.repository.UserRepository;
+//import com.app.server.service.OtpService;
+//import com.app.server.service.impliment.OtpFactory.OtpFactory;
+//import lombok.RequiredArgsConstructor;
+//import org.aspectj.lang.JoinPoint;
+//import org.aspectj.lang.annotation.Aspect;
+//import org.aspectj.lang.annotation.Before;
+//import org.springframework.security.core.Authentication;
+//import org.springframework.security.core.context.SecurityContextHolder;
+//import org.springframework.stereotype.Component;
 //
-//        User user = userRepository.findUserByPhoneNumber(phoneNumber)
-//                .orElseThrow(() -> new AppBadRequestException("کاربر یافت نشد."));
+//@Aspect
+//@Component
+//@RequiredArgsConstructor
+//public class VerifiedUserAspect {
 //
-//        if (!user.isValid()) {
-//            throw new AppBadRequestException("حساب کاربری تایید نشده است.");
-//        }
-//    }
-
-
+//    private final UserRepository userRepository;
+//    private final OtpFactory otpFactory;
+//
+//
+//
 //    @Before("@annotation(com.app.server.annotation.VerifiedUser)")
-//    public void VerifiedUserValid() {
+//    public void checkUser(JoinPoint joinPoint) {
 //
-//        Authentication authentication =
-//                SecurityContextHolder.getContext().getAuthentication();
+//        for (Object arg : joinPoint.getArgs()) {
 //
-//        User principal = (User) authentication.getPrincipal();
+//            if (arg instanceof LoginRequestDto loginRequest) {
+//
+//                String username = loginRequest.getUsername();
+//
+//                User user = userRepository.findUserByUsername(username)
+//                        .orElseThrow(() -> new AppNotFoundException("کاربر یافت نشد."));
 //
 //
-//        User user = userRepository.findUserByPhoneNumber()
-//                .orElseThrow(() -> new AppBadRequestException("کاربر یافت نشد."));
 //
-//        if (!user.isValid()) {
-//            throw new AppBadRequestException("حساب کاربری شما تایید نشده است.");
+//
+//                if (!user.isValid()) {
+//
+//                    OtpService otpService = otpFactory.getService(OtpType.USER);
+//                    otpService.generateOtp(user.getPhoneNumber());
+//
+//                    throw new AppForbiddenException(
+//                            "احراز هویت شما تایید نشده لطفا کد داده شده را وارد نمایید",
+//                            "",
+//                            "");
+//                }
+//
+//                return;
+//            }
 //        }
+//
+//        throw new AppBadRequestException("شماره تماس ارسال نشده است.");
 //    }
-}
+//
+//
+////    @Before("@annotation(verifiedUser)")
+////    public void verifiedUserValid(VerifiedUser verifiedUser) {
+////
+////        String phoneNumber = verifiedUser.phoneNumber();
+////
+////        User user = userRepository.findUserByPhoneNumber(phoneNumber)
+////                .orElseThrow(() -> new AppBadRequestException("کاربر یافت نشد."));
+////
+////        if (!user.isValid()) {
+////            throw new AppBadRequestException("حساب کاربری تایید نشده است.");
+////        }
+////    }
+//
+//
+////    @Before("@annotation(com.app.server.annotation.VerifiedUser)")
+////    public void VerifiedUserValid() {
+////
+////        Authentication authentication =
+////                SecurityContextHolder.getContext().getAuthentication();
+////
+////        User principal = (User) authentication.getPrincipal();
+////
+////
+////        User user = userRepository.findUserByPhoneNumber()
+////                .orElseThrow(() -> new AppBadRequestException("کاربر یافت نشد."));
+////
+////        if (!user.isValid()) {
+////            throw new AppBadRequestException("حساب کاربری شما تایید نشده است.");
+////        }
+////    }
+//}

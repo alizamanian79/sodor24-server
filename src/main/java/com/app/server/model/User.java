@@ -2,10 +2,8 @@ package com.app.server.model;
 import com.app.server.model.companies.Company;
 import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
 import lombok.*;
 
 import java.io.Serializable;
@@ -17,49 +15,15 @@ import java.util.*;
 )
 @Getter
 @Setter
-@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
+@Builder
 @Table(name = "users")
 public class User implements  Serializable {
-
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-
-
-    @NotBlank(message = "وارد کردن ایمیل الزامی است")
-    private String username;
-
-
-    @Column(unique = true)
-    @NotBlank(message = "وارد کردن ایمیل الزامی است")
-    @Email(message = "فرمت ایمیل صحیح نیست")
-    private String email;
-
-    @NotBlank(message = "وارد کردن نام الزامی است")
-    @Size(min = 2, max = 50, message = "نام باید بین 2 تا 50 کاراکتر باشد")
-    private String firstName;
-
-
-    @NotBlank(message = "وارد کردن نام خانوادگی الزامی است")
-    @Size(min = 2, max = 50, message = "نام خانوادگی باید بین 2 تا 50 کاراکتر باشد")
-    private String lastName;
-
-
-    @Column(unique = true)
-    @Size(min = 1, max = 15, message = "کدملی باید بین 1 تا 15 کاراکتر باشد")
-    @NotBlank(message = "کد ملی نمیتواند خالی باشد")
-    private String nationalCode;
-
-
-
-
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    private String password;
 
     @Column(unique = true)
     @NotBlank(message = "شماره تماس نمی‌تواند خالی باشد")
@@ -67,18 +31,12 @@ public class User implements  Serializable {
     private String phoneNumber;
 
 
+    private String username;
+
 
     private String sub;
-
-
-    private String otp;
-
     private boolean isValid;
-
-
     private String walletId;
-
-
 
 
     @ManyToMany(mappedBy = "owners")

@@ -14,4 +14,5 @@ import java.util.Map;
 public interface UserService {
     List<User> getAllUsers();
     User findUserBySub(String sub);
+    User createUser(RegisterRequestDto req,String sub);
 }

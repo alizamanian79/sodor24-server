@@ -5,6 +5,7 @@ import com.app.server.dto.request.users.ChangeAccountOtpRequestDto;
 import com.app.server.dto.request.users.VerifyAccountRequestDto;
 import com.app.server.repository.UserRepository;
 import com.app.server.service.AuthenticationService;
+import com.app.server.service.UserService;
 import com.app.server.util.ExternalRequest.ExternalRequest;
 import com.app.server.util.ExternalRequest.dto.ExternalRequestDto;
 import com.app.server.util.ExternalRequest.dto.Method;
@@ -17,6 +18,7 @@ import java.util.Map;
 public class AuthenticationServiceImpl implements AuthenticationService {
 
 
+    private final UserService userService;
     private final ExternalRequest externalRequest;
 
 
@@ -45,6 +47,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .param(null)
                 .build();
         Map<String,Object> res = externalRequest.sendRequest(request);
+
+        // after verified account
+//        afterAccountVerifiedDo(res);
         return res;
     }
 
@@ -66,6 +71,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
 
 
+//    public void afterAccountVerifiedDo(Map<String,Object> res){
+//      Map<String,Object> data =  res.get("data");
+//      data.get("sub");
+//    }
 
 
 }

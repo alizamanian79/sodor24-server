@@ -33,6 +33,8 @@ public class User implements  Serializable {
 
     private String username;
 
+    @Column(unique = true,nullable = false)
+    private String nationalCode;
 
     private String sub;
     private boolean isValid;

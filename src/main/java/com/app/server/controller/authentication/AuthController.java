@@ -5,6 +5,7 @@ import com.app.server.dto.request.LoginRequestDto;
 import com.app.server.dto.request.RegisterRequestDto;
 import com.app.server.dto.request.users.ChangeAccountOtpRequestDto;
 import com.app.server.dto.request.users.VerifyAccountRequestDto;
+import com.app.server.dto.response.LoginResponseDto;
 import com.app.server.model.User;
 import com.app.server.service.AuthenticationService;
 import com.app.server.service.UserService;
@@ -55,10 +56,10 @@ public class AuthController {
 
     @VerifiedUser
     @PostMapping("/login")
-    public ResponseEntity<?> loginUser(
-            @Valid @RequestBody LoginRequestDto request
+    public LoginResponseDto loginUser(
+            @Valid @RequestBody LoginRequestDto req
     ) {
-        return authenticationService.login(request);
+        return authenticationService.login(req);
     }
 
 //

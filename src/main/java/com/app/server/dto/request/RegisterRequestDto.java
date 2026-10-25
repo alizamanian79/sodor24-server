@@ -9,8 +9,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.validator.constraints.UniqueElements;
-
 @Builder
 @Data
 @AllArgsConstructor
@@ -40,6 +38,9 @@ public class RegisterRequestDto {
             message = "شماره تماس باید دقیقاً 11 رقم باشد"
     )
     private String phoneNumber;
+
+
+
 
     @NotBlank(message = "کد ملی نمی‌تواند خالی باشد")
     private String nationalCode;

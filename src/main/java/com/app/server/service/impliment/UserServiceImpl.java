@@ -38,6 +38,7 @@ public class UserServiceImpl implements UserService {
                 .phoneNumber(req.getPhoneNumber())
                 .username(req.getUsername())
                 .walletId(null)
+                .nationalCode(req.getNationalCode())
                 .build();
        return userRepository.save(createUser);
     }

@@ -67,6 +67,25 @@ public class GlobalException {
         );
     }
 
+
+
+    @ExceptionHandler(org.springframework.security.access.AccessDeniedException.class)
+    public ResponseEntity<ErrorResponse> handleAccessDenied(
+            org.springframework.security.access.AccessDeniedException e) {
+        return build(
+                HttpStatus.FORBIDDEN,
+                "دسترسی به این منبع غیرمجاز است",
+                "با ادمین تماس گرفته و درخواست تغییر نقش دهید",
+                null
+        );
+    }
+
+    @ExceptionHandler(org.springframework.security.core.AuthenticationException.class)
+    public ResponseEntity<ErrorResponse> handleAuthentication(
+            org.springframework.security.core.AuthenticationException e) {
+        return build(HttpStatus.UNAUTHORIZED, "احراز هویت ناموفق", "", null);
+    }
+
     // ---------- 500 Internal ----------
     @ExceptionHandler(AppInternalException.class)
     public ResponseEntity<ErrorResponse> handleAppInternalException(AppInternalException e) {

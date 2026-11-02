@@ -12,6 +12,9 @@ import com.app.server.service.UserService;
 import com.app.server.util.ExternalRequest.ExternalRequest;
 import com.app.server.util.ExternalRequest.dto.ExternalRequestDto;
 import com.app.server.util.ExternalRequest.dto.Method;
+import com.app.server.util.notification_service.NotificationRequest;
+import com.app.server.util.notification_service.NotificationService;
+import com.app.server.util.notification_service.NotificationType;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import lombok.RequiredArgsConstructor;
@@ -40,6 +43,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private static final String OTP_SENT_MSG = "کد تایید به شماره %s فرستاده شد";
     private static final String REGISTER_FAILED_MSG = "مشکل در ثبت نام . مجددا ثبت نام نمایید";
     private static final String LOGIN_SUCCESS_MSG = "ورود شما با موفقیت تایید شد";
+
+    private final NotificationService notificationService;
 
     private static final int WORKER_THREADS = 8;
     private static final int QUEUE_CAPACITY = 1000;
@@ -90,7 +95,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         }
 
         String phone = req.getPhoneNumber();
-        runInBackground("send-otp-sms", () -> afterRegister(phone, otp.toString()));
+        runInBackground("send-otp-sms", () -> afterRegister(req, otp.toString()));
 
         return response(OTP_SENT_MSG.formatted(phone));
     }
@@ -185,9 +190,21 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     // ---------- background tasks ----------
 
-    void afterRegister(String phoneNumber, String otpCode) {
+    void afterRegister(RegisterRequestDto req, String otpCode) {
         // TODO: call the SMS provider here. Never log the OTP itself.
-        log.info("OTP SMS dispatched to {}", mask(phoneNumber));
+//        log.info("OTP SMS dispatched to {}", mask(req.));
+
+        notificationService.notify(new NotificationRequest(
+                NotificationType.EMAIL,
+                req.getEmail(),
+                "کد تأیید یکبار مصرف",
+                "کاربر گرامی،\n\n"
+                        + "کد تأیید یکبار مصرف شما برای ورود به حساب کاربری:\n\n"
+                        + otpCode
+                        + "\n\n"
+                        + "این کد را در اختیار دیگران قرار ندهید."
+        ));
+
     }
 
     void afterVerifiedAccount(String sub) {

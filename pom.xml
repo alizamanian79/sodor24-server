@@ -54,6 +54,11 @@
 			<scope>runtime</scope>
 		</dependency>
 
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-mail</artifactId>
+		</dependency>
+
 		<!--
 			NOTE: these two dependencies look like they may point to the same
 			logical module (signature service) under two different coordinates.

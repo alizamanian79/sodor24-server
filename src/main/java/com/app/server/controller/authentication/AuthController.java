@@ -5,6 +5,7 @@ import com.app.server.dto.request.LoginRequestDto;
 import com.app.server.dto.request.RegisterRequestDto;
 import com.app.server.dto.request.users.ChangeAccountOtpRequestDto;
 import com.app.server.dto.request.users.VerifyAccountRequestDto;
+import com.app.server.dto.response.CustomResponseDto;
 import com.app.server.dto.response.LoginResponseDto;
 import com.app.server.model.User;
 import com.app.server.service.AuthenticationService;
@@ -27,16 +28,19 @@ public class AuthController {
     private final AuthenticationService authenticationService;
 
     @PostMapping("/register")
-    public ResponseEntity<?> registerUser(
+    public ResponseEntity<CustomResponseDto> registerUser(
             @Valid @RequestBody RegisterRequestDto request
     ) {
-        Map<String,Object> res = authenticationService.registerUser(request);
-    return new ResponseEntity<>(res,HttpStatus.OK);
+        CustomResponseDto res = authenticationService.registerUser(request);
+
+        return ResponseEntity
+                .status(res.getStatus())
+                .body(res);
     }
 
 
     @PostMapping("/verify/otp")
-    public ResponseEntity<?> verifyUserOtp(
+    public ResponseEntity<?> verifyAccountOtp(
             @Valid @RequestBody VerifyAccountRequestDto req
             ) {
         Map<String,Object> res = authenticationService.verifyAccountOtp(req);
@@ -45,11 +49,14 @@ public class AuthController {
     }
 
     @PostMapping("/change/otp")
-    public ResponseEntity<?> verifyUserOtp(
+    public ResponseEntity<CustomResponseDto> changeAccountOtp(
             @Valid @RequestBody ChangeAccountOtpRequestDto req
     ) {
-        Map<String,Object> res = authenticationService.changeVerifiyAccountOtp(req);
-        return new ResponseEntity<>(res,HttpStatus.OK);
+        CustomResponseDto res = authenticationService.changeVerifiyAccountOtp(req);
+
+        return ResponseEntity
+                .status(res.getStatus())
+                .body(res);
 
     }
 
@@ -61,6 +68,8 @@ public class AuthController {
     ) {
         return authenticationService.login(req);
     }
+
+
 
 //
 //

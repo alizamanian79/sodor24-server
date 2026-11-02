@@ -20,26 +20,14 @@ import java.util.*;
 @Entity
 @Builder
 @Table(name = "users")
-public class User implements  Serializable {
+public class User implements Serializable{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true)
-    @NotBlank(message = "شماره تماس نمی‌تواند خالی باشد")
-    @Pattern(regexp = "\\d{11}", message = "شماره تماس باید دقیقا 11 رقم باشد (0912xxxxxxx)")
-    private String phoneNumber;
-
-
-    private String username;
-
-    @Column(unique = true,nullable = false)
-    private String nationalCode;
-
     private String sub;
-    private boolean isValid;
-    private String walletId;
 
+    private String walletId;
 
     @ManyToMany(mappedBy = "owners")
     private Set<Company> companies = new HashSet<>();

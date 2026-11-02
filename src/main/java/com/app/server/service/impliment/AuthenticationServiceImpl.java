@@ -4,121 +4,195 @@ import com.app.server.dto.request.LoginRequestDto;
 import com.app.server.dto.request.RegisterRequestDto;
 import com.app.server.dto.request.users.ChangeAccountOtpRequestDto;
 import com.app.server.dto.request.users.VerifyAccountRequestDto;
+import com.app.server.dto.response.CustomResponseDto;
 import com.app.server.dto.response.LoginResponseDto;
 import com.app.server.exception.AppUnAuthorizedException;
-import com.app.server.model.User;
-import com.app.server.repository.UserRepository;
 import com.app.server.service.AuthenticationService;
 import com.app.server.service.UserService;
 import com.app.server.util.ExternalRequest.ExternalRequest;
 import com.app.server.util.ExternalRequest.dto.ExternalRequestDto;
 import com.app.server.util.ExternalRequest.dto.Method;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import java.util.Map;
 
+import java.time.LocalDateTime;
+import java.util.Map;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AuthenticationServiceImpl implements AuthenticationService {
 
+    private static final String REGISTER_PATH = "/api/v1/authentication/direct/register";
+    private static final String LOGIN_PATH = "/api/v1/authentication/direct/login";
+    private static final String VERIFY_OTP_PATH = "/api/v1/authentication/verify/otp";
+    private static final String CHANGE_OTP_PATH = "/api/v1/authentication/change/otp";
+
+    private static final String OTP_SENT_MSG = "کد تایید به شماره %s فرستاده شد";
+    private static final String REGISTER_FAILED_MSG = "مشکل در ثبت نام . مجددا ثبت نام نمایید";
+    private static final String LOGIN_SUCCESS_MSG = "ورود شما با موفقیت تایید شد";
+
+    private static final int WORKER_THREADS = 8;
+    private static final int QUEUE_CAPACITY = 1000;
 
     private final UserService userService;
     private final ExternalRequest externalRequest;
 
+    @Value("${auth-service.base-url:http://localhost:8081}")
+    private String baseUrl;
 
-    @Override
-    public Map<String, Object> registerUser(RegisterRequestDto req) {
-        ExternalRequestDto request = ExternalRequestDto.builder()
-                .url("http://localhost:8081/api/v1/authentication/direct/register")
-                .body(req)
-                .token(null)
-                .method(Method.POST)
-                .param(null)
-                .build();
-        Map<String,Object> res = externalRequest.sendRequest(request);
+    /** Background workers + bounded queue for work the client does not wait for. */
+    private ThreadPoolExecutor backgroundExecutor;
 
-        return res;
+    @PostConstruct
+    void initExecutor() {
+        AtomicInteger counter = new AtomicInteger();
+        backgroundExecutor = new ThreadPoolExecutor(
+                WORKER_THREADS, WORKER_THREADS,
+                60, TimeUnit.SECONDS,
+                new LinkedBlockingQueue<>(QUEUE_CAPACITY),
+                r -> new Thread(r, "auth-bg-" + counter.incrementAndGet()),
+                new ThreadPoolExecutor.CallerRunsPolicy()); // queue full -> run in caller, never drop a task
+        backgroundExecutor.allowCoreThreadTimeOut(true);
     }
 
+    @PreDestroy
+    void shutdownExecutor() {
+        backgroundExecutor.shutdown();
+        try {
+            if (!backgroundExecutor.awaitTermination(10, TimeUnit.SECONDS)) {
+                backgroundExecutor.shutdownNow();
+            }
+        } catch (InterruptedException e) {
+            backgroundExecutor.shutdownNow();
+            Thread.currentThread().interrupt();
+        }
+    }
 
-    public LoginResponseDto login(LoginRequestDto req) throws AppUnAuthorizedException{
-        try{
-            ExternalRequestDto request = ExternalRequestDto.builder()
-                    .url("http://localhost:8081/api/v1/authentication/direct/login")
-                    .body(req)
-                    .token(null)
-                    .method(Method.POST)
-                    .param(null)
-                    .build();
-            Map<String,Object> res = externalRequest.sendRequest(request);
+    // ---------- public API ----------
+
+    @Override
+    public CustomResponseDto registerUser(RegisterRequestDto req) {
+        Map<String, Object> res = post(REGISTER_PATH, req);
+        Object otp = res.get("otp");
+
+        if (otp == null) {
+            return response(REGISTER_FAILED_MSG);
+        }
+
+        String phone = req.getPhoneNumber();
+        runInBackground("send-otp-sms", () -> afterRegister(phone, otp.toString()));
+
+        return response(OTP_SENT_MSG.formatted(phone));
+    }
+
+    @Override
+    public LoginResponseDto login(LoginRequestDto req) throws AppUnAuthorizedException {
+        try {
+            Map<String, Object> res = post(LOGIN_PATH, req);
 
             return LoginResponseDto.builder()
-                    .message("ورود موفقیت شما با موفقیت تایید شد")
+                    .message(LOGIN_SUCCESS_MSG)
                     .status(HttpStatus.OK)
-                    .access_token(res.get("access_token").toString())
-                    .refresh_token(res.get("refresh_token").toString())
+                    .access_token(requireString(res, "access_token"))
+                    .refresh_token(requireString(res, "refresh_token"))
                     .build();
-
         } catch (RuntimeException e) {
-            throw new AppUnAuthorizedException("نام کاربری یا کلمه عبور اشتباه میباشد");
+            throw new AppUnAuthorizedException(e.getMessage());
         }
-
-
     }
 
-
-
     @Override
-    public Map<String,Object> verifyAccountOtp(VerifyAccountRequestDto req){
-        ExternalRequestDto request = ExternalRequestDto.builder()
-                .url("http://localhost:8081/api/v1/authentication/verify/otp")
-                .body(req)
-                .token(null)
-                .method(Method.POST)
-                .param(null)
-                .build();
-        Map<String,Object> res = externalRequest.sendRequest(request);
+    public Map<String, Object> verifyAccountOtp(VerifyAccountRequestDto req) {
+        Map<String, Object> res = post(VERIFY_OTP_PATH, req);
 
-        String sub = res.get("sub").toString();
-        if (!sub.isEmpty()){
-            accountVerifiedAndDo(sub);
+        if (res.get("data") instanceof Map<?, ?> data
+                && data.get("sub") instanceof String sub
+                && !sub.isBlank()) {
+            runInBackground("create-user", () -> afterVerifiedAccount(sub));
         }
         return res;
     }
 
-
-    public void accountVerifiedAndDo(String sub){
-
-        RegisterRequestDto.builder()
-                        .email();
-        userService.createUser();
-
-    }
-
-
-
     @Override
-    public Map<String,Object> changeVerifiyAccountOtp(ChangeAccountOtpRequestDto req){
+    public CustomResponseDto changeVerifiyAccountOtp(ChangeAccountOtpRequestDto req) {
+        Map<String, Object> res = post(CHANGE_OTP_PATH, req);
 
-        ExternalRequestDto request = ExternalRequestDto.builder()
-                .url("http://localhost:8081/api/v1/authentication/change/otp")
-                .body(req)
-                .token(null)
-                .method(Method.POST)
-                .param(null)
-                .build();
-        Map<String,Object> res = externalRequest.sendRequest(request);
-
-        return res;
+        if (res.get("data") == null) {
+            return response(REGISTER_FAILED_MSG);
+        }
+        return response(OTP_SENT_MSG.formatted(req.getPhoneNumber()));
     }
 
 
+    // ---------- helpers ----------
 
-//    public void afterAccountVerifiedDo(Map<String,Object> res){
-//      Map<String,Object> data =  res.get("data");
-//      data.get("sub");
-//    }
+    private void runInBackground(String taskName, Runnable task) {
+        backgroundExecutor.execute(() -> {
+            try {
+                task.run();
+            } catch (Exception e) {
+                log.error("Background task '{}' failed", taskName, e);
+            }
+        });
+    }
+
+    private Map<String, Object> post(String path, Object body) {
+        return externalRequest.sendRequest(
+                ExternalRequestDto.builder()
+                        .url(baseUrl + path)
+                        .body(body)
+                        .token(null)
+                        .method(Method.POST)
+                        .param(null)
+                        .build());
+    }
+
+    private static String requireString(Map<String, Object> map, String key) {
+        Object value = map.get(key);
+        if (value == null) {
+            throw new IllegalStateException("Missing field in auth response: " + key);
+        }
+        return value.toString();
+    }
+
+    private static String mask(String phone) {
+        if (phone == null || phone.length() < 4) {
+            return "****";
+        }
+        return "****" + phone.substring(phone.length() - 4);
+    }
+
+    private static CustomResponseDto response(String message) {
+        return CustomResponseDto.builder()
+                .message(message)
+                .data(null)
+                .status(HttpStatus.OK.value())
+                .timestamp(LocalDateTime.now())
+                .details(null)
+                .build();
+    }
+
+
+    // ---------- background tasks ----------
+
+    void afterRegister(String phoneNumber, String otpCode) {
+        // TODO: call the SMS provider here. Never log the OTP itself.
+        log.info("OTP SMS dispatched to {}", mask(phoneNumber));
+    }
+
+    void afterVerifiedAccount(String sub) {
+        userService.createUser(sub);
+    }
 
 
 }

@@ -20,9 +20,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<User> getAllUsers() {
+
         return userRepository.findAll();
     }
-
 
 
     @Override
@@ -31,14 +31,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User createUser(RegisterRequestDto req, String sub) {
+    public User createUser(String sub) {
         User createUser=User.builder()
                 .sub(sub)
-                .isValid(true)
-                .phoneNumber(req.getPhoneNumber())
-                .username(req.getUsername())
-                .walletId(null)
-                .nationalCode(req.getNationalCode())
+                .walletId(sub)
                 .build();
        return userRepository.save(createUser);
     }

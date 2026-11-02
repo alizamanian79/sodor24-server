@@ -10,8 +10,5 @@ import java.util.Optional;
 @Repository
 public interface UserRepository extends JpaRepository<User, Long>{
     Optional<User> findUserById(Long id);
-    Optional<User> findUserByPhoneNumber(String phoneNumber);
-    boolean existsByPhoneNumber(@NotBlank(message = "شماره تماس نمی‌تواند خالی باشد") @Pattern(regexp = "\\d{11}", message = "شماره تماس باید دقیقا 11 رقم باشد (0912xxxxxxx)") String phoneNumber);
-    boolean existsByUsername(String username);
     Optional<User> findUserBySub(String sub);
 }

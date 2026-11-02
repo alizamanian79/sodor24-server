@@ -1,0 +1,4438 @@
+{
+  "info": {
+    "_postman_id": "35ff157d-59df-4f54-917e-6aaa962722f7",
+    "name": "Authentication Service APIs",
+    "description": "# Authentication Service APIs\n\n## شروع سریع\n1. فایل **Authentication Service - Local** (Environment) را Import و انتخاب کنید. بدون Environment فعال، اسکریپت‌ها نمی‌توانند توکن و `SUB` را ذخیره کنند.\n2. مقدار `HOST` و اطلاعات کاربر تست را تنظیم کنید.\n3. به ترتیب اجرا کنید: **Register ← Verify OTP ← Login ← Get my profile**.\n4. برای درخواست‌های پوشه‌های *Users (Admin)* و *Authorization* ابتدا **Login as admin** را بزنید.\n\nاحراز هویت در سطح Collection با `Bearer {{ACCESS_TOKEN}}` انجام می‌شود. درخواست‌های عمومی (ثبت‌نام، ورود، OTP، Hello) بدون توکن هستند.\n\n## نمونه پاسخ‌ها\nهر درخواست حداقل سه Example دارد (موفق و خطاهای رایج). ساختار پاسخ‌ها نمونه است؛ فیلدها و پیام‌های واقعی را با سرویس خودتان مقایسه کنید.\n\n## متغیرها\n| متغیر | نحوه‌ی مقداردهی | توضیح |\n|---|---|---|\n| `HOST` | manual | آدرس پایه‌ی سرویس یا API Gateway |\n| `USERNAME` | manual | نام کاربری کاربر تست |\n| `PASSWORD` | manual / auto | رمز عبور فعلی کاربر تست (بعد از تغییر رمز خودکار عوض می‌شود) |\n| `NEW_PASSWORD` | manual / auto | رمز جدید برای درخواست تغییر رمز |\n| `EMAIL` | manual | ایمیل کاربر تست |\n| `FIRST_NAME` | manual | نام |\n| `LAST_NAME` | manual | نام خانوادگی |\n| `PHONE_NUMBER` | manual | شماره موبایل برای ثبت‌نام و OTP |\n| `NATIONAL_CODE` | manual | کد ملی |\n| `ADMIN_USERNAME` | manual | نام کاربری ادمین |\n| `ADMIN_PASSWORD` | manual | رمز عبور ادمین |\n| `ROLE_NAME` | manual | نقشی که اختصاص داده یا حذف می‌شود |\n| `GROUP_NAME` | manual | گروهی که اختصاص داده یا حذف می‌شود |\n| `TARGET_SUB` | manual | sub کاربر هدف برای آپدیت/حذف توسط ادمین (پیش‌فرض بی‌اثر است) |\n| `ACCESS_TOKEN` | auto | توکن دسترسی (بعد از Login) |\n| `REFRESH_TOKEN` | auto | توکن رفرش (بعد از Login) |\n| `SUB` | auto | شناسه‌ی Keycloak کاربر (بعد از Register یا Get my profile) |\n| `USER_ID` | auto | id دیتابیس کاربر (بعد از Get my profile) |\n| `OTP` | auto | کد تایید (بعد از Register یا Resend OTP، فقط در حالت dev) |\n",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "29979735"
+  },
+  "item": [
+    {
+      "name": "Public",
+      "item": [
+        {
+          "name": "Hello",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{HOST}}/api/v1/hello",
+              "host": [
+                "{{HOST}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "hello"
+              ]
+            },
+            "description": "بررسی سلامت سرویس. نیازی به توکن ندارد."
+          },
+          "response": [
+            {
+              "name": "200 - Service is up",
+              "originalRequest": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{HOST}}/api/v1/hello",
+                  "host": [
+                    "{{HOST}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "hello"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"message\": \"Hello from Authentication Service\"\n}"
+            },
+            {
+              "name": "503 - Service unavailable",
+              "originalRequest": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{HOST}}/api/v1/hello",
+                  "host": [
+                    "{{HOST}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "hello"
+                  ]
+                }
+              },
+              "status": "Service Unavailable",
+              "code": 503,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": 503,\n  \"message\": \"سرویس در دسترس نیست\",\n  \"timestamp\": \"2026-10-25T10:15:30.482913\",\n  \"details\": \"Upstream authentication-service is down\",\n  \"redirect\": \"\"\n}"
+            },
+            {
+              "name": "404 - Wrong path",
+              "originalRequest": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{HOST}}/api/v1/helo",
+                  "host": [
+                    "{{HOST}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "helo"
+                  ]
+                }
+              },
+              "status": "Not Found",
+              "code": 404,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": 404,\n  \"message\": \"مسیر درخواستی یافت نشد\",\n  \"timestamp\": \"2026-10-25T10:15:30.482913\",\n  \"details\": \"No static resource api/v1/helo\",\n  \"redirect\": \"\"\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Register",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "let json = {};",
+                  "try { json = pm.response.json(); } catch (e) { /* non-JSON response */ }",
+                  "const d = json.data || json.body || json;",
+                  "if (d.sub) pm.environment.set(\"SUB\", d.sub);",
+                  "// The OTP is only returned by the service in dev mode.",
+                  "if (d.otp) pm.environment.set(\"OTP\", d.otp);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"{{USERNAME}}\",\n  \"email\": \"{{EMAIL}}\",\n  \"password\": \"{{PASSWORD}}\",\n  \"firstName\": \"{{FIRST_NAME}}\",\n  \"lastName\": \"{{LAST_NAME}}\",\n  \"phoneNumber\": \"{{PHONE_NUMBER}}\",\n  \"nationalCode\": \"{{NATIONAL_CODE}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{HOST}}/api/v1/authentication/direct/register",
+              "host": [
+                "{{HOST}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "authentication",
+                "direct",
+                "register"
+              ]
+            },
+            "description": "ثبت‌نام کاربر جدید. حساب تا زمان تایید OTP غیرفعال می‌ماند و اگر تایید نشود خودکار حذف می‌شود.\n\nمتغیرهای `SUB` و `OTP` از پاسخ ذخیره می‌شوند."
+          },
+          "response": [
+            {
+              "name": "201 - Registered, OTP issued",
+              "originalRequest": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"username\": \"{{USERNAME}}\",\n  \"email\": \"{{EMAIL}}\",\n  \"password\": \"{{PASSWORD}}\",\n  \"firstName\": \"{{FIRST_NAME}}\",\n  \"lastName\": \"{{LAST_NAME}}\",\n  \"phoneNumber\": \"{{PHONE_NUMBER}}\",\n  \"nationalCode\": \"{{NATIONAL_CODE}}\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{HOST}}/api/v1/authentication/direct/register",
+                  "host": [
+                    "{{HOST}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "authentication",
+                    "direct",
+                    "register"
+                  ]
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": 201,\n  \"message\": \"ثبت‌نام انجام شد، کد تایید ارسال شد\",\n  \"timestamp\": \"2026-10-25T10:15:30.482913\",\n  \"data\": {\n    \"sub\": \"5e6dd83d-0f9f-484b-8e71-bf0df9c73cf8\",\n    \"otp\": \"482913\",\n    \"phoneNumber\": \"09917403980\"\n  },\n  \"details\": \"\",\n  \"redirect\": \"\"\n}"
+            },
+            {
+              "name": "409 - Username already exists",
+              "originalRequest": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"username\": \"{{USERNAME}}\",\n  \"email\": \"{{EMAIL}}\",\n  \"password\": \"{{PASSWORD}}\",\n  \"firstName\": \"{{FIRST_NAME}}\",\n  \"lastName\": \"{{LAST_NAME}}\",\n  \"phoneNumber\": \"{{PHONE_NUMBER}}\",\n  \"nationalCode\": \"{{NATIONAL_CODE}}\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{HOST}}/api/v1/authentication/direct/register",
+                  "host": [
+                    "{{HOST}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "authentication",
+                    "direct",
+                    "register"
+                  ]
+                }
+              },
+              "status": "Conflict",
+              "code": 409,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": 409,\n  \"message\": \"نام کاربری وجود دارد\",\n  \"timestamp\": \"2026-10-25T10:15:30.482913\",\n  \"details\": \"Username already exists : mahdi\",\n  \"redirect\": \"\"\n}"
+            },
+            {
+              "name": "400 - Missing required fields",
+              "originalRequest": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"username\": \"{{USERNAME}}\",\n  \"email\": \"{{EMAIL}}\",\n  \"password\": \"{{PASSWORD}}\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{HOST}}/api/v1/authentication/direct/register",
+                  "host": [
+                    "{{HOST}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "authentication",
+                    "direct",
+                    "register"
+                  ]
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": 400,\n  \"message\": \"اطلاعات ارسالی نامعتبر است\",\n  \"timestamp\": \"2026-10-25T10:15:30.482913\",\n  \"details\": \"phoneNumber and nationalCode must not be blank\",\n  \"redirect\": \"\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Verify OTP",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phoneNumber\": \"{{PHONE_NUMBER}}\",\n  \"otp\": \"{{OTP}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{HOST}}/api/v1/authentication/verify/otp",
+              "host": [
+                "{{HOST}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "authentication",
+                "verify",
+                "otp"
+              ]
+            },
+            "description": "تایید شماره موبایل با کد OTP و فعال‌سازی حساب. پس از تایید، کاربر در دیتابیس هم ذخیره می‌شود.\n\nحداکثر تعداد تلاش ناموفق قابل تنظیم است (پیش‌فرض ۵)."
+          },
+          "response": [
+            {
+              "name": "200 - Account verified",
+              "originalRequest": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"phoneNumber\": \"{{PHONE_NUMBER}}\",\n  \"otp\": \"{{OTP}}\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{HOST}}/api/v1/authentication/verify/otp",
+                  "host": [
+                    "{{HOST}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "authentication",
+                    "verify",
+                    "otp"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": 200,\n  \"message\": \"حساب کاربری با موفقیت تایید و فعال شد\",\n  \"timestamp\": \"2026-10-25T10:15:30.482913\",\n  \"data\": {\n    \"sub\": \"5e6dd83d-0f9f-484b-8e71-bf0df9c73cf8\"\n  },\n  \"details\": \"\",\n  \"redirect\": \"\"\n}"
+            },
+            {
+              "name": "400 - Wrong code",
+              "originalRequest": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"phoneNumber\": \"{{PHONE_NUMBER}}\",\n  \"otp\": \"000000\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{HOST}}/api/v1/authentication/verify/otp",
+                  "host": [
+                    "{{HOST}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "authentication",
+                    "verify",
+                    "otp"
+                  ]
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": 400,\n  \"message\": \"کد تایید صحیح نیست\",\n  \"timestamp\": \"2026-10-25T10:15:30.482913\",\n  \"data\": {\n    \"verified\": false\n  },\n  \"details\": \"\",\n  \"redirect\": \"\"\n}"
+            },
+            {
+              "name": "400 - Code expired",
+              "originalRequest": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"phoneNumber\": \"{{PHONE_NUMBER}}\",\n  \"otp\": \"{{OTP}}\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{HOST}}/api/v1/authentication/verify/otp",
+                  "host": [
+                    "{{HOST}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "authentication",
+                    "verify",
+                    "otp"
+                  ]
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": 400,\n  \"message\": \"کد تایید یافت نشد یا منقضی شده است\",\n  \"timestamp\": \"2026-10-25T10:15:30.482913\",\n  \"data\": {\n    \"verified\": false\n  },\n  \"details\": \"\",\n  \"redirect\": \"\"\n}"
+            },
+            {
+              "name": "429 - Too many failed attempts",
+              "originalRequest": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"phoneNumber\": \"{{PHONE_NUMBER}}\",\n  \"otp\": \"{{OTP}}\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{HOST}}/api/v1/authentication/verify/otp",
+                  "host": [
+                    "{{HOST}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "authentication",
+                    "verify",
+                    "otp"
+                  ]
+                }
+              },
+              "status": "Too Many Requests",
+              "code": 429,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": 429,\n  \"message\": \"تعداد تلاش‌های ناموفق زیاد است، کد جدید دریافت کنید\",\n  \"timestamp\": \"2026-10-25T10:15:30.482913\",\n  \"data\": {\n    \"verified\": false\n  },\n  \"details\": \"\",\n  \"redirect\": \"\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Resend OTP",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "let json = {};",
+                  "try { json = pm.response.json(); } catch (e) { /* non-JSON response */ }",
+                  "const d = json.data || json.body || json;",
+                  "if (d.otp) pm.environment.set(\"OTP\", d.otp);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phoneNumber\": \"{{PHONE_NUMBER}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{HOST}}/api/v1/authentication/change/otp",
+              "host": [
+                "{{HOST}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "authentication",
+                "change",
+                "otp"
+              ]
+            },
+            "description": "صدور کد تایید جدید برای حسابی که هنوز فعال نشده است. بین دو درخواست باید فاصله‌ی زمانی (cooldown) رعایت شود."
+          },
+          "response": [
+            {
+              "name": "200 - New OTP issued",
+              "originalRequest": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"phoneNumber\": \"{{PHONE_NUMBER}}\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{HOST}}/api/v1/authentication/change/otp",
+                  "host": [
+                    "{{HOST}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "authentication",
+                    "change",
+                    "otp"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": 200,\n  \"message\": \"کد تایید با موفقیت تغییر کرد\",\n  \"timestamp\": \"2026-10-25T10:15:30.482913\",\n  \"data\": {\n    \"updated\": true,\n    \"otp\": \"739104\",\n    \"phoneNumber\": \"09917403980\"\n  },\n  \"details\": \"\",\n  \"redirect\": \"\"\n}"
+            },
+            {
+              "name": "429 - Cooldown not finished",
+              "originalRequest": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"phoneNumber\": \"{{PHONE_NUMBER}}\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{HOST}}/api/v1/authentication/change/otp",
+                  "host": [
+                    "{{HOST}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "authentication",
+                    "change",
+                    "otp"
+                  ]
+                }
+              },
+              "status": "Too Many Requests",
+              "code": 429,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": 429,\n  \"message\": \"لطفاً کمی صبر کنید و دوباره تلاش کنید\",\n  \"timestamp\": \"2026-10-25T10:15:30.482913\",\n  \"data\": {\n    \"updated\": false\n  },\n  \"details\": \"\",\n  \"redirect\": \"\"\n}"
+            },
+            {
+              "name": "404 - Phone number not found",
+              "originalRequest": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"phoneNumber\": \"09000000000\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{HOST}}/api/v1/authentication/change/otp",
+                  "host": [
+                    "{{HOST}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "authentication",
+                    "change",
+                    "otp"
+                  ]
+                }
+              },
+              "status": "Not Found",
+              "code": 404,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": 404,\n  \"message\": \"کاربری با این شماره تماس یافت نشد\",\n  \"timestamp\": \"2026-10-25T10:15:30.482913\",\n  \"data\": {\n    \"updated\": false\n  },\n  \"details\": \"\",\n  \"redirect\": \"\"\n}"
+            },
+            {
+              "name": "409 - Account already active",
+              "originalRequest": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"phoneNumber\": \"{{PHONE_NUMBER}}\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{HOST}}/api/v1/authentication/change/otp",
+                  "host": [
+                    "{{HOST}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "authentication",
+                    "change",
+                    "otp"
+                  ]
+                }
+              },
+              "status": "Conflict",
+              "code": 409,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": 409,\n  \"message\": \"این حساب کاربری قبلاً فعال شده است\",\n  \"timestamp\": \"2026-10-25T10:15:30.482913\",\n  \"data\": {\n    \"updated\": false\n  },\n  \"details\": \"\",\n  \"redirect\": \"\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "OTP By Email",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "let json = {};",
+                  "try { json = pm.response.json(); } catch (e) { /* non-JSON response */ }",
+                  "const d = json.data || json.body || json;",
+                  "",
+                  "if (d.otp) pm.environment.set(\"OTP\", d.otp);",
+                  "if (d.email) pm.environment.set(\"EMAIL\", d.email);"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{EMAIL}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{HOST}}/api/v1/authentication/send/otp/email",
+              "host": [
+                "{{HOST}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "authentication",
+                "send",
+                "otp",
+                "email"
+              ]
+            },
+            "description": "صدور کد تایید جدید برای حسابی که هنوز فعال نشده است. بین دو درخواست باید فاصله‌ی زمانی (cooldown) رعایت شود."
+          },
+          "response": [
+            {
+              "name": "200 - New OTP issued",
+              "originalRequest": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"phoneNumber\": \"{{PHONE_NUMBER}}\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{HOST}}/api/v1/authentication/change/otp",
+                  "host": [
+                    "{{HOST}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "authentication",
+                    "change",
+                    "otp"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": 200,\n  \"message\": \"کد تایید با موفقیت تغییر کرد\",\n  \"timestamp\": \"2026-10-25T10:15:30.482913\",\n  \"data\": {\n    \"updated\": true,\n    \"otp\": \"739104\",\n    \"phoneNumber\": \"09917403980\"\n  },\n  \"details\": \"\",\n  \"redirect\": \"\"\n}"
+            },
+            {
+              "name": "429 - Cooldown not finished",
+              "originalRequest": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"phoneNumber\": \"{{PHONE_NUMBER}}\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{HOST}}/api/v1/authentication/change/otp",
+                  "host": [
+                    "{{HOST}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "authentication",
+                    "change",
+                    "otp"
+                  ]
+                }
+              },
+              "status": "Too Many Requests",
+              "code": 429,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": 429,\n  \"message\": \"لطفاً کمی صبر کنید و دوباره تلاش کنید\",\n  \"timestamp\": \"2026-10-25T10:15:30.482913\",\n  \"data\": {\n    \"updated\": false\n  },\n  \"details\": \"\",\n  \"redirect\": \"\"\n}"
+            },
+            {
+              "name": "404 - Phone number not found",
+              "originalRequest": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"phoneNumber\": \"09000000000\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{HOST}}/api/v1/authentication/change/otp",
+                  "host": [
+                    "{{HOST}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "authentication",
+                    "change",
+                    "otp"
+                  ]
+                }
+              },
+              "status": "Not Found",
+              "code": 404,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": 404,\n  \"message\": \"کاربری با این شماره تماس یافت نشد\",\n  \"timestamp\": \"2026-10-25T10:15:30.482913\",\n  \"data\": {\n    \"updated\": false\n  },\n  \"details\": \"\",\n  \"redirect\": \"\"\n}"
+            },
+            {
+              "name": "409 - Account already active",
+              "originalRequest": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"phoneNumber\": \"{{PHONE_NUMBER}}\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{HOST}}/api/v1/authentication/change/otp",
+                  "host": [
+                    "{{HOST}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "authentication",
+                    "change",
+                    "otp"
+                  ]
+                }
+              },
+              "status": "Conflict",
+              "code": 409,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": 409,\n  \"message\": \"این حساب کاربری قبلاً فعال شده است\",\n  \"timestamp\": \"2026-10-25T10:15:30.482913\",\n  \"data\": {\n    \"updated\": false\n  },\n  \"details\": \"\",\n  \"redirect\": \"\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Verify By Email",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "let json = {};",
+                  "try { json = pm.response.json(); } catch (e) { /* non-JSON response */ }",
+                  "const d = json.data || json.body || json;",
+                  "if (d.otp) pm.environment.set(\"OTP\", d.otp);"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{EMAIL}}\",\n  \"otp\":\"{{OTP}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{HOST}}/api/v1/authentication/verify/otp/email",
+              "host": [
+                "{{HOST}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "authentication",
+                "verify",
+                "otp",
+                "email"
+              ]
+            },
+            "description": "صدور کد تایید جدید برای حسابی که هنوز فعال نشده است. بین دو درخواست باید فاصله‌ی زمانی (cooldown) رعایت شود."
+          },
+          "response": [
+            {
+              "name": "200 - New OTP issued",
+              "originalRequest": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"phoneNumber\": \"{{PHONE_NUMBER}}\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{HOST}}/api/v1/authentication/change/otp",
+                  "host": [
+                    "{{HOST}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "authentication",
+                    "change",
+                    "otp"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": 200,\n  \"message\": \"کد تایید با موفقیت تغییر کرد\",\n  \"timestamp\": \"2026-10-25T10:15:30.482913\",\n  \"data\": {\n    \"updated\": true,\n    \"otp\": \"739104\",\n    \"phoneNumber\": \"09917403980\"\n  },\n  \"details\": \"\",\n  \"redirect\": \"\"\n}"
+            },
+            {
+              "name": "429 - Cooldown not finished",
+              "originalRequest": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"phoneNumber\": \"{{PHONE_NUMBER}}\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{HOST}}/api/v1/authentication/change/otp",
+                  "host": [
+                    "{{HOST}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "authentication",
+                    "change",
+                    "otp"
+                  ]
+                }
+              },
+              "status": "Too Many Requests",
+              "code": 429,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": 429,\n  \"message\": \"لطفاً کمی صبر کنید و دوباره تلاش کنید\",\n  \"timestamp\": \"2026-10-25T10:15:30.482913\",\n  \"data\": {\n    \"updated\": false\n  },\n  \"details\": \"\",\n  \"redirect\": \"\"\n}"
+            },
+            {
+              "name": "404 - Phone number not found",
+              "originalRequest": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"phoneNumber\": \"09000000000\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{HOST}}/api/v1/authentication/change/otp",
+                  "host": [
+                    "{{HOST}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "authentication",
+                    "change",
+                    "otp"
+                  ]
+                }
+              },
+              "status": "Not Found",
+              "code": 404,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": 404,\n  \"message\": \"کاربری با این شماره تماس یافت نشد\",\n  \"timestamp\": \"2026-10-25T10:15:30.482913\",\n  \"data\": {\n    \"updated\": false\n  },\n  \"details\": \"\",\n  \"redirect\": \"\"\n}"
+            },
+            {
+              "name": "409 - Account already active",
+              "originalRequest": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"phoneNumber\": \"{{PHONE_NUMBER}}\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{HOST}}/api/v1/authentication/change/otp",
+                  "host": [
+                    "{{HOST}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "authentication",
+                    "change",
+                    "otp"
+                  ]
+                }
+              },
+              "status": "Conflict",
+              "code": 409,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": 409,\n  \"message\": \"این حساب کاربری قبلاً فعال شده است\",\n  \"timestamp\": \"2026-10-25T10:15:30.482913\",\n  \"data\": {\n    \"updated\": false\n  },\n  \"details\": \"\",\n  \"redirect\": \"\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "let json = {};",
+                  "try { json = pm.response.json(); } catch (e) { /* non-JSON response */ }",
+                  "const d = json.data || json.body || json;",
+                  "if (d.access_token) pm.environment.set(\"ACCESS_TOKEN\", d.access_token);",
+                  "if (d.refresh_token) pm.environment.set(\"REFRESH_TOKEN\", d.refresh_token);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"{{USERNAME}}\",\n  \"password\": \"{{PASSWORD}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{HOST}}/api/v1/authentication/direct/login",
+              "host": [
+                "{{HOST}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "authentication",
+                "direct",
+                "login"
+              ]
+            },
+            "description": "ورود با نام کاربری و رمز عبور. `ACCESS_TOKEN` و `REFRESH_TOKEN` به‌صورت خودکار ذخیره می‌شوند."
+          },
+          "response": [
+            {
+              "name": "200 - Logged in",
+              "originalRequest": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"username\": \"{{USERNAME}}\",\n  \"password\": \"{{PASSWORD}}\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{HOST}}/api/v1/authentication/direct/login",
+                  "host": [
+                    "{{HOST}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "authentication",
+                    "direct",
+                    "login"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"access_token\": \"eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI1ZTZkZDgzZC0wZjlmLTQ4NGItOGU3MS1iZjBkZjljNzNjZjgifQ.access-signature\",\n  \"refresh_token\": \"eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ0eXAiOiJSZWZyZXNoIn0.refresh-signature\"\n}"
+            },
+            {
+              "name": "401 - Wrong password",
+              "originalRequest": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"username\": \"{{USERNAME}}\",\n  \"password\": \"wrong-password\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{HOST}}/api/v1/authentication/direct/login",
+                  "host": [
+                    "{{HOST}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "authentication",
+                    "direct",
+                    "login"
+                  ]
+                }
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": 401,\n  \"message\": \"نام کاربری یا رمز عبور اشتباه است\",\n  \"timestamp\": \"2026-10-25T10:15:30.482913\",\n  \"details\": \"invalid_grant\",\n  \"redirect\": \"\"\n}"
+            },
+            {
+              "name": "400 - Missing password",
+              "originalRequest": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"username\": \"{{USERNAME}}\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{HOST}}/api/v1/authentication/direct/login",
+                  "host": [
+                    "{{HOST}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "authentication",
+                    "direct",
+                    "login"
+                  ]
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": 400,\n  \"message\": \"اطلاعات ارسالی نامعتبر است\",\n  \"timestamp\": \"2026-10-25T10:15:30.482913\",\n  \"details\": \"password must not be blank\",\n  \"redirect\": \"\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Login by refresh token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "let json = {};",
+                  "try { json = pm.response.json(); } catch (e) { /* non-JSON response */ }",
+                  "const d = json.data || json.body || json;",
+                  "if (d.access_token) pm.environment.set(\"ACCESS_TOKEN\", d.access_token);",
+                  "if (d.refresh_token) pm.environment.set(\"REFRESH_TOKEN\", d.refresh_token);"
+                ]
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "refreshToken",
+                  "value": "{{REFRESH_TOKEN}}",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{HOST}}/api/v1/authentication/refresh-token/login",
+              "host": [
+                "{{HOST}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "authentication",
+                "refresh-token",
+                "login"
+              ]
+            },
+            "description": "دریافت توکن جدید با refresh token. (طبق API فعلی، توکن به‌صورت form-data داخل یک درخواست GET ارسال می‌شود.)"
+          },
+          "response": [
+            {
+              "name": "200 - New tokens issued",
+              "originalRequest": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{HOST}}/api/v1/authentication/refresh-token/login",
+                  "host": [
+                    "{{HOST}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "authentication",
+                    "refresh-token",
+                    "login"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"access_token\": \"eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI1ZTZkZDgzZC0wZjlmLTQ4NGItOGU3MS1iZjBkZjljNzNjZjgifQ.access-signature\",\n  \"refresh_token\": \"eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ0eXAiOiJSZWZyZXNoIn0.refresh-signature\"\n}"
+            },
+            {
+              "name": "401 - Refresh token expired",
+              "originalRequest": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{HOST}}/api/v1/authentication/refresh-token/login",
+                  "host": [
+                    "{{HOST}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "authentication",
+                    "refresh-token",
+                    "login"
+                  ]
+                }
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": 401,\n  \"message\": \"توکن رفرش منقضی شده است\",\n  \"timestamp\": \"2026-10-25T10:15:30.482913\",\n  \"details\": \"Token is not active\",\n  \"redirect\": \"\"\n}"
+            },
+            {
+              "name": "400 - Missing refreshToken",
+              "originalRequest": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{HOST}}/api/v1/authentication/refresh-token/login",
+                  "host": [
+                    "{{HOST}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "authentication",
+                    "refresh-token",
+                    "login"
+                  ]
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": 400,\n  \"message\": \"توکن رفرش ارسال نشده است\",\n  \"timestamp\": \"2026-10-25T10:15:30.482913\",\n  \"details\": \"refreshToken is required\",\n  \"redirect\": \"\"\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Current User (Me)",
+      "item": [
+        {
+          "name": "Me",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "let json = {};",
+                  "try { json = pm.response.json(); } catch (e) { /* non-JSON response */ }",
+                  "const d = json.data || json.body || json;",
+                  "if (json.sub) pm.environment.set(\"SUB\", json.sub);",
+                  "if (json.id) pm.environment.set(\"USER_ID\", json.id);"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{ACCESS_TOKEN}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{HOST}}/api/v1/users/me",
+              "host": [
+                "{{HOST}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "users",
+                "me"
+              ]
+            },
+            "description": "پروفایل کاربر لاگین‌شده (دیتابیس + Keycloak همراه با نقش‌ها). `SUB` و `USER_ID` ذخیره می‌شوند."
+          },
+          "response": [
+            {
+              "name": "200 - Profile",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{HOST}}/api/v1/users/me",
+                  "host": [
+                    "{{HOST}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "users",
+                    "me"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"id\": 2,\n  \"sub\": \"5e6dd83d-0f9f-484b-8e71-bf0df9c73cf8\",\n  \"username\": \"mahdi\",\n  \"firstName\": \"مهدی\",\n  \"lastName\": \"زمانیان\",\n  \"phoneNumber\": \"09917403980\",\n  \"email\": \"mahdizamanian@gmail.com\",\n  \"nationalCode\": \"0023566639\",\n  \"keycloak\": {\n    \"username\": \"mahdi\",\n    \"email\": \"mahdizamanian@gmail.com\",\n    \"firstName\": \"مهدی\",\n    \"lastName\": \"زمانیان\",\n    \"enabled\": true,\n    \"emailVerified\": false,\n    \"createdTimestamp\": 1792925474801,\n    \"realmRoles\": [\n      \"USER\",\n      \"ADMIN\",\n      \"default-roles-myrealm\"\n    ],\n    \"clientRoles\": {\n      \"account\": [\n        \"manage-account\",\n        \"view-profile\"\n      ]\n    }\n  },\n  \"inDatabase\": true,\n  \"inKeycloak\": true\n}"
+            },
+            {
+              "name": "401 - Missing token",
+              "originalRequest": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{HOST}}/api/v1/users/me",
+                  "host": [
+                    "{{HOST}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "users",
+                    "me"
+                  ]
+                }
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": 401,\n  \"message\": \"توکن نامعتبر است یا منقضی شده است\",\n  \"timestamp\": \"2026-10-25T10:15:30.482913\",\n  \"details\": \"Full authentication is required\",\n  \"redirect\": \"\"\n}"
+            },
+            {
+              "name": "404 - Profile missing in database",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{HOST}}/api/v1/users/me",
+                  "host": [
+                    "{{HOST}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "users",
+                    "me"
+                  ]
+                }
+              },
+              "status": "Not Found",
+              "code": 404,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": 404,\n  \"message\": \"کاربر پیدا نشد\",\n  \"timestamp\": \"2026-10-25T10:15:30.482913\",\n  \"details\": \"User not found with sub : 5e6dd83d-0f9f-484b-8e71-bf0df9c73cf8\",\n  \"redirect\": \"\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "My Profile Image",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "let json = {};",
+                  "try { json = pm.response.json(); } catch (e) { /* non-JSON response */ }",
+                  "const d = json.data || json.body || json;",
+                  "if (json.sub) pm.environment.set(\"SUB\", json.sub);",
+                  "if (json.id) pm.environment.set(\"USER_ID\", json.id);"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{ACCESS_TOKEN}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{HOST}}/api/v1/users/me/profile-image",
+              "host": [
+                "{{HOST}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "users",
+                "me",
+                "profile-image"
+              ]
+            },
+            "description": "پروفایل کاربر لاگین‌شده (دیتابیس + Keycloak همراه با نقش‌ها). `SUB` و `USER_ID` ذخیره می‌شوند."
+          },
+          "response": [
+            {
+              "name": "200 - Profile",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{HOST}}/api/v1/users/me",
+                  "host": [
+                    "{{HOST}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "users",
+                    "me"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"id\": 2,\n  \"sub\": \"5e6dd83d-0f9f-484b-8e71-bf0df9c73cf8\",\n  \"username\": \"mahdi\",\n  \"firstName\": \"مهدی\",\n  \"lastName\": \"زمانیان\",\n  \"phoneNumber\": \"09917403980\",\n  \"email\": \"mahdizamanian@gmail.com\",\n  \"nationalCode\": \"0023566639\",\n  \"keycloak\": {\n    \"username\": \"mahdi\",\n    \"email\": \"mahdizamanian@gmail.com\",\n    \"firstName\": \"مهدی\",\n    \"lastName\": \"زمانیان\",\n    \"enabled\": true,\n    \"emailVerified\": false,\n    \"createdTimestamp\": 1792925474801,\n    \"realmRoles\": [\n      \"USER\",\n      \"ADMIN\",\n      \"default-roles-myrealm\"\n    ],\n    \"clientRoles\": {\n      \"account\": [\n        \"manage-account\",\n        \"view-profile\"\n      ]\n    }\n  },\n  \"inDatabase\": true,\n  \"inKeycloak\": true\n}"
+            },
+            {
+              "name": "401 - Missing token",
+              "originalRequest": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{HOST}}/api/v1/users/me",
+                  "host": [
+                    "{{HOST}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "users",
+                    "me"
+                  ]
+                }
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": 401,\n  \"message\": \"توکن نامعتبر است یا منقضی شده است\",\n  \"timestamp\": \"2026-10-25T10:15:30.482913\",\n  \"details\": \"Full authentication is required\",\n  \"redirect\": \"\"\n}"
+            },
+            {
+              "name": "404 - Profile missing in database",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{HOST}}/api/v1/users/me",
+                  "host": [
+                    "{{HOST}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "users",
+                    "me"
+                  ]
+                }
+              },
+              "status": "Not Found",
+              "code": 404,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": 404,\n  \"message\": \"کاربر پیدا نشد\",\n  \"timestamp\": \"2026-10-25T10:15:30.482913\",\n  \"details\": \"User not found with sub : 5e6dd83d-0f9f-484b-8e71-bf0df9c73cf8\",\n  \"redirect\": \"\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Update my profile",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"{{USERNAME}}\",\n  \"email\": \"{{EMAIL}}\",\n  \"firstName\": \"{{FIRST_NAME}}\",\n  \"lastName\": \"{{LAST_NAME}}\",\n  \"phoneNumber\": \"{{PHONE_NUMBER}}\",\n  \"nationalCode\": \"{{NATIONAL_CODE}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{HOST}}/api/v1/users/me",
+              "host": [
+                "{{HOST}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "users",
+                "me"
+              ]
+            },
+            "description": "آپدیت پروفایل. `sub` از توکن گرفته می‌شود و فیلد `password` نادیده گرفته می‌شود (برای تغییر رمز از درخواست بعدی استفاده کنید). فقط فیلدهای ارسال‌شده تغییر می‌کنند."
+          },
+          "response": [
+            {
+              "name": "200 - Profile updated",
+              "originalRequest": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"username\": \"{{USERNAME}}\",\n  \"email\": \"{{EMAIL}}\",\n  \"firstName\": \"{{FIRST_NAME}}\",\n  \"lastName\": \"{{LAST_NAME}}\",\n  \"phoneNumber\": \"{{PHONE_NUMBER}}\",\n  \"nationalCode\": \"{{NATIONAL_CODE}}\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{HOST}}/api/v1/users/me",
+                  "host": [
+                    "{{HOST}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "users",
+                    "me"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"message\": \"اطلاعات شما با موفقیت به روزرسانی شد\",\n  \"timestamp\": \"2026-10-25T10:15:30.482913\",\n  \"access_token\": null,\n  \"refresh_token\": null\n}"
+            },
+            {
+              "name": "409 - Email already used",
+              "originalRequest": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"username\": \"{{USERNAME}}\",\n  \"email\": \"mahdi@gmail.com\",\n  \"firstName\": \"{{FIRST_NAME}}\",\n  \"lastName\": \"{{LAST_NAME}}\",\n  \"phoneNumber\": \"{{PHONE_NUMBER}}\",\n  \"nationalCode\": \"{{NATIONAL_CODE}}\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{HOST}}/api/v1/users/me",
+                  "host": [
+                    "{{HOST}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "users",
+                    "me"
+                  ]
+                }
+              },
+              "status": "Conflict",
+              "code": 409,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": 409,\n  \"message\": \"ایمیل وجود دارد\",\n  \"timestamp\": \"2026-10-25T10:15:30.482913\",\n  \"details\": \"Email already exists : mahdi@gmail.com\",\n  \"redirect\": \"\"\n}"
+            },
+            {
+              "name": "409 - Username already used",
+              "originalRequest": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"username\": \"admin\",\n  \"email\": \"{{EMAIL}}\",\n  \"firstName\": \"{{FIRST_NAME}}\",\n  \"lastName\": \"{{LAST_NAME}}\",\n  \"phoneNumber\": \"{{PHONE_NUMBER}}\",\n  \"nationalCode\": \"{{NATIONAL_CODE}}\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{HOST}}/api/v1/users/me",
+                  "host": [
+                    "{{HOST}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "users",
+                    "me"
+                  ]
+                }
+              },
+              "status": "Conflict",
+              "code": 409,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": 409,\n  \"message\": \"نام کاربری وجود دارد\",\n  \"timestamp\": \"2026-10-25T10:15:30.482913\",\n  \"details\": \"Username already exists : admin\",\n  \"redirect\": \"\"\n}"
+            },
+            {
+              "name": "401 - Missing token",
+              "originalRequest": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"username\": \"{{USERNAME}}\",\n  \"email\": \"{{EMAIL}}\",\n  \"firstName\": \"{{FIRST_NAME}}\",\n  \"lastName\": \"{{LAST_NAME}}\",\n  \"phoneNumber\": \"{{PHONE_NUMBER}}\",\n  \"nationalCode\": \"{{NATIONAL_CODE}}\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{HOST}}/api/v1/users/me",
+                  "host": [
+                    "{{HOST}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "users",
+                    "me"
+                  ]
+                }
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": 401,\n  \"message\": \"توکن نامعتبر است یا منقضی شده است\",\n  \"timestamp\": \"2026-10-25T10:15:30.482913\",\n  \"details\": \"Full authentication is required\",\n  \"redirect\": \"\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Change my password",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "let json = {};",
+                  "try { json = pm.response.json(); } catch (e) { /* non-JSON response */ }",
+                  "const d = json.data || json.body || json;",
+                  "if (d.access_token) pm.environment.set(\"ACCESS_TOKEN\", d.access_token);",
+                  "if (d.refresh_token) pm.environment.set(\"REFRESH_TOKEN\", d.refresh_token);",
+                  "// Swap the two passwords so the next login (and a re-run of this request) keeps working.",
+                  "if (d.changed === true) {",
+                  "  const previous = pm.environment.get(\"PASSWORD\");",
+                  "  pm.environment.set(\"PASSWORD\", pm.environment.get(\"NEW_PASSWORD\"));",
+                  "  pm.environment.set(\"NEW_PASSWORD\", previous);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"currentPassword\": \"{{PASSWORD}}\",\n  \"newPassword\": \"{{NEW_PASSWORD}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{HOST}}/api/v1/users/me/password",
+              "host": [
+                "{{HOST}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "users",
+                "me",
+                "password"
+              ]
+            },
+            "description": "تغییر رمز عبور با تایید رمز فعلی. همه‌ی sessionهای قبلی باطل می‌شوند و توکن جدید برگردانده می‌شود.\n\nپس از موفقیت، مقدار `PASSWORD` و `NEW_PASSWORD` در Environment جابه‌جا می‌شود."
+          },
+          "response": [
+            {
+              "name": "200 - Password changed",
+              "originalRequest": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"currentPassword\": \"{{PASSWORD}}\",\n  \"newPassword\": \"{{NEW_PASSWORD}}\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{HOST}}/api/v1/users/me/password",
+                  "host": [
+                    "{{HOST}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "users",
+                    "me",
+                    "password"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": 200,\n  \"message\": \"رمز عبور با موفقیت تغییر کرد\",\n  \"timestamp\": \"2026-10-25T10:15:30.482913\",\n  \"data\": {\n    \"access_token\": \"eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI1ZTZkZDgzZC0wZjlmLTQ4NGItOGU3MS1iZjBkZjljNzNjZjgifQ.access-signature\",\n    \"refresh_token\": \"eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ0eXAiOiJSZWZyZXNoIn0.refresh-signature\",\n    \"changed\": true\n  },\n  \"details\": \"\",\n  \"redirect\": \"\"\n}"
+            },
+            {
+              "name": "400 - Current password is wrong",
+              "originalRequest": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"currentPassword\": \"wrong-password\",\n  \"newPassword\": \"{{NEW_PASSWORD}}\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{HOST}}/api/v1/users/me/password",
+                  "host": [
+                    "{{HOST}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "users",
+                    "me",
+                    "password"
+                  ]
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": 400,\n  \"message\": \"رمز عبور فعلی صحیح نیست\",\n  \"timestamp\": \"2026-10-25T10:15:30.482913\",\n  \"data\": {\n    \"changed\": false\n  },\n  \"details\": \"\",\n  \"redirect\": \"\"\n}"
+            },
+            {
+              "name": "400 - New password equals current",
+              "originalRequest": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"currentPassword\": \"{{PASSWORD}}\",\n  \"newPassword\": \"{{PASSWORD}}\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{HOST}}/api/v1/users/me/password",
+                  "host": [
+                    "{{HOST}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "users",
+                    "me",
+                    "password"
+                  ]
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": 400,\n  \"message\": \"رمز عبور جدید باید با رمز فعلی متفاوت باشد\",\n  \"timestamp\": \"2026-10-25T10:15:30.482913\",\n  \"data\": {\n    \"changed\": false\n  },\n  \"details\": \"\",\n  \"redirect\": \"\"\n}"
+            },
+            {
+              "name": "400 - Empty fields",
+              "originalRequest": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"currentPassword\": \"\",\n  \"newPassword\": \"\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{HOST}}/api/v1/users/me/password",
+                  "host": [
+                    "{{HOST}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "users",
+                    "me",
+                    "password"
+                  ]
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": 400,\n  \"message\": \"رمز عبور فعلی و جدید الزامی است\",\n  \"timestamp\": \"2026-10-25T10:15:30.482913\",\n  \"data\": {\n    \"changed\": false\n  },\n  \"details\": \"\",\n  \"redirect\": \"\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Delete my account",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{HOST}}/api/v1/users/me",
+              "host": [
+                "{{HOST}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "users",
+                "me"
+              ]
+            },
+            "description": "حذف حساب کاربر لاگین‌شده از دیتابیس و Keycloak. این عملیات برگشت‌ناپذیر است."
+          },
+          "response": [
+            {
+              "name": "200 - Account deleted",
+              "originalRequest": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{HOST}}/api/v1/users/me",
+                  "host": [
+                    "{{HOST}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "users",
+                    "me"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": 200,\n  \"message\": \"کاربر با موفقیت حذف شد\",\n  \"timestamp\": \"2026-10-25T10:15:30.482913\",\n  \"details\": \"\",\n  \"redirect\": \"\"\n}"
+            },
+            {
+              "name": "401 - Missing token",
+              "originalRequest": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{HOST}}/api/v1/users/me",
+                  "host": [
+                    "{{HOST}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "users",
+                    "me"
+                  ]
+                }
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": 401,\n  \"message\": \"توکن نامعتبر است یا منقضی شده است\",\n  \"timestamp\": \"2026-10-25T10:15:30.482913\",\n  \"details\": \"Full authentication is required\",\n  \"redirect\": \"\"\n}"
+            },
+            {
+              "name": "500 - Keycloak failed (DB rolled back)",
+              "originalRequest": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{HOST}}/api/v1/users/me",
+                  "host": [
+                    "{{HOST}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "users",
+                    "me"
+                  ]
+                }
+              },
+              "status": "Internal Server Error",
+              "code": 500,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": 500,\n  \"message\": \"خطا در حذف کاربر\",\n  \"timestamp\": \"2026-10-25T10:15:30.482913\",\n  \"details\": \"Keycloak responded with status 500\",\n  \"redirect\": \"\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Upload Profile",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{ACCESS_TOKEN}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "uuid": "79860123-d79c-423b-95fe-ce83f52d73bb",
+                  "src": "/C:/Users/MEHR GOSTAR/Pictures/test.jpg"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{HOST}}/api/v1/users/{{SUB}}/profile-image",
+              "host": [
+                "{{HOST}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "users",
+                "{{SUB}}",
+                "profile-image"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Profile Image By Sub",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{ACCESS_TOKEN}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{HOST}}/api/v1/users/{{SUB}}/profile-image",
+              "host": [
+                "{{HOST}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "users",
+                "{{SUB}}",
+                "profile-image"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Users (Admin)",
+      "item": [
+        {
+          "name": "List users",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{HOST}}/api/v1/users",
+              "host": [
+                "{{HOST}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "users"
+              ]
+            },
+            "description": "لیست همه‌ی کاربران: اتحاد دیتابیس و Keycloak. هر ردیف دو فلگ `inDatabase` و `inKeycloak` دارد (در صورت در دسترس نبودن Keycloak مقدار `inKeycloak` برابر null می‌شود). نقش‌ها فقط در دریافت تک‌کاربر برگردانده می‌شوند.\n\nنیازمند نقش ADMIN."
+          },
+          "response": [
+            {
+              "name": "200 - Merged list (DB + Keycloak)",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{HOST}}/api/v1/users",
+                  "host": [
+                    "{{HOST}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "users"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "[\n  {\n    \"id\": 2,\n    \"sub\": \"5e6dd83d-0f9f-484b-8e71-bf0df9c73cf8\",\n    \"username\": \"mahdi\",\n    \"firstName\": \"مهدی\",\n    \"lastName\": \"زمانیان\",\n    \"phoneNumber\": \"09917403980\",\n    \"email\": \"mahdizamanian@gmail.com\",\n    \"nationalCode\": \"0023566639\",\n    \"keycloak\": {\n      \"username\": \"mahdi\",\n      \"email\": \"mahdizamanian@gmail.com\",\n      \"firstName\": \"مهدی\",\n      \"lastName\": \"زمانیان\",\n      \"enabled\": true,\n      \"emailVerified\": false,\n      \"createdTimestamp\": 1792925474801,\n      \"realmRoles\": null,\n      \"clientRoles\": null\n    },\n    \"inDatabase\": true,\n    \"inKeycloak\": true\n  },\n  {\n    \"id\": 1,\n    \"sub\": \"014d3ca9-c084-40ee-8845-8cce863eba76\",\n    \"username\": \"ali\",\n    \"firstName\": \"علی\",\n    \"lastName\": \"احمدی\",\n    \"phoneNumber\": \"09120000000\",\n    \"email\": \"ali@example.com\",\n    \"nationalCode\": \"0012345678\",\n    \"keycloak\": null,\n    \"inDatabase\": true,\n    \"inKeycloak\": false\n  },\n  {\n    \"id\": null,\n    \"sub\": \"a3f1c2d4-7b6e-4c8a-9d21-0e5f7a8b9c10\",\n    \"username\": \"sara\",\n    \"firstName\": \"سارا\",\n    \"lastName\": \"کریمی\",\n    \"phoneNumber\": \"09351112233\",\n    \"email\": \"sara@example.com\",\n    \"nationalCode\": \"0098765432\",\n    \"keycloak\": {\n      \"username\": \"sara\",\n      \"email\": \"sara@example.com\",\n      \"firstName\": \"سارا\",\n      \"lastName\": \"کریمی\",\n      \"enabled\": true,\n      \"emailVerified\": true,\n      \"createdTimestamp\": 1792930000000,\n      \"realmRoles\": null,\n      \"clientRoles\": null\n    },\n    \"inDatabase\": false,\n    \"inKeycloak\": true\n  }\n]"
+            },
+            {
+              "name": "200 - Keycloak unreachable",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{HOST}}/api/v1/users",
+                  "host": [
+                    "{{HOST}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "users"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "[\n  {\n    \"id\": 2,\n    \"sub\": \"5e6dd83d-0f9f-484b-8e71-bf0df9c73cf8\",\n    \"username\": \"mahdi\",\n    \"firstName\": \"مهدی\",\n    \"lastName\": \"زمانیان\",\n    \"phoneNumber\": \"09917403980\",\n    \"email\": \"mahdizamanian@gmail.com\",\n    \"nationalCode\": \"0023566639\",\n    \"keycloak\": null,\n    \"inDatabase\": true,\n    \"inKeycloak\": null\n  },\n  {\n    \"id\": 1,\n    \"sub\": \"014d3ca9-c084-40ee-8845-8cce863eba76\",\n    \"username\": \"ali\",\n    \"firstName\": \"علی\",\n    \"lastName\": \"احمدی\",\n    \"phoneNumber\": \"09120000000\",\n    \"email\": \"ali@example.com\",\n    \"nationalCode\": \"0012345678\",\n    \"keycloak\": null,\n    \"inDatabase\": true,\n    \"inKeycloak\": null\n  }\n]"
+            },
+            {
+              "name": "403 - Not an admin",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{HOST}}/api/v1/users",
+                  "host": [
+                    "{{HOST}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "users"
+                  ]
+                }
+              },
+              "status": "Forbidden",
+              "code": 403,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": 403,\n  \"message\": \"شما دسترسی لازم برای این عملیات را ندارید\",\n  \"timestamp\": \"2026-10-25T10:15:30.482913\",\n  \"details\": \"Requires role ADMIN\",\n  \"redirect\": \"\"\n}"
+            },
+            {
+              "name": "401 - Missing token",
+              "originalRequest": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{HOST}}/api/v1/users",
+                  "host": [
+                    "{{HOST}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "users"
+                  ]
+                }
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": 401,\n  \"message\": \"توکن نامعتبر است یا منقضی شده است\",\n  \"timestamp\": \"2026-10-25T10:15:30.482913\",\n  \"details\": \"Full authentication is required\",\n  \"redirect\": \"\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get user by id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{HOST}}/api/v1/users/{{USER_ID}}",
+              "host": [
+                "{{HOST}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "users",
+                "{{USER_ID}}"
+              ]
+            },
+            "description": "دریافت کاربر با id دیتابیس. نیازمند نقش ADMIN."
+          },
+          "response": [
+            {
+              "name": "200 - User found",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{HOST}}/api/v1/users/{{USER_ID}}",
+                  "host": [
+                    "{{HOST}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "users",
+                    "{{USER_ID}}"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"id\": 2,\n  \"sub\": \"5e6dd83d-0f9f-484b-8e71-bf0df9c73cf8\",\n  \"username\": \"mahdi\",\n  \"firstName\": \"مهدی\",\n  \"lastName\": \"زمانیان\",\n  \"phoneNumber\": \"09917403980\",\n  \"email\": \"mahdizamanian@gmail.com\",\n  \"nationalCode\": \"0023566639\",\n  \"keycloak\": {\n    \"username\": \"mahdi\",\n    \"email\": \"mahdizamanian@gmail.com\",\n    \"firstName\": \"مهدی\",\n    \"lastName\": \"زمانیان\",\n    \"enabled\": true,\n    \"emailVerified\": false,\n    \"createdTimestamp\": 1792925474801,\n    \"realmRoles\": [\n      \"USER\",\n      \"ADMIN\",\n      \"default-roles-myrealm\"\n    ],\n    \"clientRoles\": {\n      \"account\": [\n        \"manage-account\",\n        \"view-profile\"\n      ]\n    }\n  },\n  \"inDatabase\": true,\n  \"inKeycloak\": true\n}"
+            },
+            {
+              "name": "404 - Unknown id",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{HOST}}/api/v1/users/99999",
+                  "host": [
+                    "{{HOST}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "users",
+                    "99999"
+                  ]
+                }
+              },
+              "status": "Not Found",
+              "code": 404,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": 404,\n  \"message\": \"کاربر پیدا نشد\",\n  \"timestamp\": \"2026-10-25T10:15:30.482913\",\n  \"details\": \"\",\n  \"redirect\": \"\"\n}"
+            },
+            {
+              "name": "403 - Not an admin",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{HOST}}/api/v1/users/{{USER_ID}}",
+                  "host": [
+                    "{{HOST}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "users",
+                    "{{USER_ID}}"
+                  ]
+                }
+              },
+              "status": "Forbidden",
+              "code": 403,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": 403,\n  \"message\": \"شما دسترسی لازم برای این عملیات را ندارید\",\n  \"timestamp\": \"2026-10-25T10:15:30.482913\",\n  \"details\": \"Requires role ADMIN\",\n  \"redirect\": \"\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get user by sub",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{HOST}}/api/v1/users/sub/{{SUB}}",
+              "host": [
+                "{{HOST}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "users",
+                "sub",
+                "{{SUB}}"
+              ]
+            },
+            "description": "دریافت کاربر با `sub` (شناسه‌ی Keycloak). نیازمند نقش ADMIN."
+          },
+          "response": [
+            {
+              "name": "200 - User found",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{HOST}}/api/v1/users/sub/{{SUB}}",
+                  "host": [
+                    "{{HOST}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "users",
+                    "sub",
+                    "{{SUB}}"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"id\": 2,\n  \"sub\": \"5e6dd83d-0f9f-484b-8e71-bf0df9c73cf8\",\n  \"username\": \"mahdi\",\n  \"firstName\": \"مهدی\",\n  \"lastName\": \"زمانیان\",\n  \"phoneNumber\": \"09917403980\",\n  \"email\": \"mahdizamanian@gmail.com\",\n  \"nationalCode\": \"0023566639\",\n  \"keycloak\": {\n    \"username\": \"mahdi\",\n    \"email\": \"mahdizamanian@gmail.com\",\n    \"firstName\": \"مهدی\",\n    \"lastName\": \"زمانیان\",\n    \"enabled\": true,\n    \"emailVerified\": false,\n    \"createdTimestamp\": 1792925474801,\n    \"realmRoles\": [\n      \"USER\",\n      \"ADMIN\",\n      \"default-roles-myrealm\"\n    ],\n    \"clientRoles\": {\n      \"account\": [\n        \"manage-account\",\n        \"view-profile\"\n      ]\n    }\n  },\n  \"inDatabase\": true,\n  \"inKeycloak\": true\n}"
+            },
+            {
+              "name": "404 - Unknown sub",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{HOST}}/api/v1/users/sub/00000000-0000-0000-0000-000000000000",
+                  "host": [
+                    "{{HOST}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "users",
+                    "sub",
+                    "00000000-0000-0000-0000-000000000000"
+                  ]
+                }
+              },
+              "status": "Not Found",
+              "code": 404,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": 404,\n  \"message\": \"کاربر پیدا نشد\",\n  \"timestamp\": \"2026-10-25T10:15:30.482913\",\n  \"details\": \"\",\n  \"redirect\": \"\"\n}"
+            },
+            {
+              "name": "403 - Not an admin",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{HOST}}/api/v1/users/sub/{{SUB}}",
+                  "host": [
+                    "{{HOST}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "users",
+                    "sub",
+                    "{{SUB}}"
+                  ]
+                }
+              },
+              "status": "Forbidden",
+              "code": 403,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": 403,\n  \"message\": \"شما دسترسی لازم برای این عملیات را ندارید\",\n  \"timestamp\": \"2026-10-25T10:15:30.482913\",\n  \"details\": \"Requires role ADMIN\",\n  \"redirect\": \"\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Update user by sub",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"{{USERNAME}}\",\n  \"email\": \"{{EMAIL}}\",\n  \"firstName\": \"{{FIRST_NAME}}\",\n  \"lastName\": \"{{LAST_NAME}}\",\n  \"phoneNumber\": \"{{PHONE_NUMBER}}\",\n  \"nationalCode\": \"{{NATIONAL_CODE}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{HOST}}/api/v1/users/sub/{{TARGET_SUB}}",
+              "host": [
+                "{{HOST}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "users",
+                "sub",
+                "{{TARGET_SUB}}"
+              ]
+            },
+            "description": "آپدیت کاربر دیگر (دیتابیس + Keycloak). فیلد `password` نادیده گرفته می‌شود.\n\nقبل از اجرا متغیر `TARGET_SUB` را مقداردهی کنید.\n\nنیازمند نقش ADMIN."
+          },
+          "response": [
+            {
+              "name": "200 - User updated",
+              "originalRequest": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"username\": \"{{USERNAME}}\",\n  \"email\": \"{{EMAIL}}\",\n  \"firstName\": \"{{FIRST_NAME}}\",\n  \"lastName\": \"{{LAST_NAME}}\",\n  \"phoneNumber\": \"{{PHONE_NUMBER}}\",\n  \"nationalCode\": \"{{NATIONAL_CODE}}\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{HOST}}/api/v1/users/sub/{{TARGET_SUB}}",
+                  "host": [
+                    "{{HOST}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "users",
+                    "sub",
+                    "{{TARGET_SUB}}"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"message\": \"اطلاعات شما با موفقیت به روزرسانی شد\",\n  \"timestamp\": \"2026-10-25T10:15:30.482913\",\n  \"access_token\": null,\n  \"refresh_token\": null\n}"
+            },
+            {
+              "name": "409 - Email already used",
+              "originalRequest": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"username\": \"{{USERNAME}}\",\n  \"email\": \"sara@example.com\",\n  \"firstName\": \"{{FIRST_NAME}}\",\n  \"lastName\": \"{{LAST_NAME}}\",\n  \"phoneNumber\": \"{{PHONE_NUMBER}}\",\n  \"nationalCode\": \"{{NATIONAL_CODE}}\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{HOST}}/api/v1/users/sub/{{TARGET_SUB}}",
+                  "host": [
+                    "{{HOST}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "users",
+                    "sub",
+                    "{{TARGET_SUB}}"
+                  ]
+                }
+              },
+              "status": "Conflict",
+              "code": 409,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": 409,\n  \"message\": \"ایمیل وجود دارد\",\n  \"timestamp\": \"2026-10-25T10:15:30.482913\",\n  \"details\": \"Email already exists : sara@example.com\",\n  \"redirect\": \"\"\n}"
+            },
+            {
+              "name": "404 - Unknown sub",
+              "originalRequest": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"username\": \"{{USERNAME}}\",\n  \"email\": \"{{EMAIL}}\",\n  \"firstName\": \"{{FIRST_NAME}}\",\n  \"lastName\": \"{{LAST_NAME}}\",\n  \"phoneNumber\": \"{{PHONE_NUMBER}}\",\n  \"nationalCode\": \"{{NATIONAL_CODE}}\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{HOST}}/api/v1/users/sub/00000000-0000-0000-0000-000000000000",
+                  "host": [
+                    "{{HOST}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "users",
+                    "sub",
+                    "00000000-0000-0000-0000-000000000000"
+                  ]
+                }
+              },
+              "status": "Not Found",
+              "code": 404,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": 404,\n  \"message\": \"کاربر پیدا نشد\",\n  \"timestamp\": \"2026-10-25T10:15:30.482913\",\n  \"details\": \"User not found with sub : 0000\",\n  \"redirect\": \"\"\n}"
+            },
+            {
+              "name": "403 - Not an admin",
+              "originalRequest": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"username\": \"{{USERNAME}}\",\n  \"email\": \"{{EMAIL}}\",\n  \"firstName\": \"{{FIRST_NAME}}\",\n  \"lastName\": \"{{LAST_NAME}}\",\n  \"phoneNumber\": \"{{PHONE_NUMBER}}\",\n  \"nationalCode\": \"{{NATIONAL_CODE}}\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{HOST}}/api/v1/users/sub/{{TARGET_SUB}}",
+                  "host": [
+                    "{{HOST}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "users",
+                    "sub",
+                    "{{TARGET_SUB}}"
+                  ]
+                }
+              },
+              "status": "Forbidden",
+              "code": 403,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": 403,\n  \"message\": \"شما دسترسی لازم برای این عملیات را ندارید\",\n  \"timestamp\": \"2026-10-25T10:15:30.482913\",\n  \"details\": \"Requires role ADMIN\",\n  \"redirect\": \"\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Delete user by sub",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{HOST}}/api/v1/users/sub/{{TARGET_SUB}}",
+              "host": [
+                "{{HOST}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "users",
+                "sub",
+                "{{TARGET_SUB}}"
+              ]
+            },
+            "description": "حذف کاربر دیگر از دیتابیس و Keycloak. اگر کاربر قبلاً از Keycloak حذف شده باشد، فقط ردیف دیتابیس پاک می‌شود.\n\nقبل از اجرا متغیر `TARGET_SUB` را مقداردهی کنید (پیش‌فرض آن یک UUID صفر است تا به‌اشتباه کسی حذف نشود).\n\nنیازمند نقش ADMIN."
+          },
+          "response": [
+            {
+              "name": "200 - User deleted",
+              "originalRequest": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{HOST}}/api/v1/users/sub/{{TARGET_SUB}}",
+                  "host": [
+                    "{{HOST}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "users",
+                    "sub",
+                    "{{TARGET_SUB}}"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": 200,\n  \"message\": \"کاربر با موفقیت حذف شد\",\n  \"timestamp\": \"2026-10-25T10:15:30.482913\",\n  \"details\": \"\",\n  \"redirect\": \"\"\n}"
+            },
+            {
+              "name": "200 - Already missing in Keycloak",
+              "originalRequest": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{HOST}}/api/v1/users/sub/{{TARGET_SUB}}",
+                  "host": [
+                    "{{HOST}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "users",
+                    "sub",
+                    "{{TARGET_SUB}}"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": 200,\n  \"message\": \"کاربر با موفقیت حذف شد\",\n  \"timestamp\": \"2026-10-25T10:15:30.482913\",\n  \"details\": \"\",\n  \"redirect\": \"\"\n}"
+            },
+            {
+              "name": "403 - Not an admin",
+              "originalRequest": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{HOST}}/api/v1/users/sub/{{TARGET_SUB}}",
+                  "host": [
+                    "{{HOST}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "users",
+                    "sub",
+                    "{{TARGET_SUB}}"
+                  ]
+                }
+              },
+              "status": "Forbidden",
+              "code": 403,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": 403,\n  \"message\": \"شما دسترسی لازم برای این عملیات را ندارید\",\n  \"timestamp\": \"2026-10-25T10:15:30.482913\",\n  \"details\": \"Requires role ADMIN\",\n  \"redirect\": \"\"\n}"
+            },
+            {
+              "name": "500 - Keycloak failed (DB rolled back)",
+              "originalRequest": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{HOST}}/api/v1/users/sub/{{TARGET_SUB}}",
+                  "host": [
+                    "{{HOST}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "users",
+                    "sub",
+                    "{{TARGET_SUB}}"
+                  ]
+                }
+              },
+              "status": "Internal Server Error",
+              "code": 500,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": 500,\n  \"message\": \"خطا در حذف کاربر\",\n  \"timestamp\": \"2026-10-25T10:15:30.482913\",\n  \"details\": \"Keycloak responded with status 500\",\n  \"redirect\": \"\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Check account is active",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{HOST}}/api/v1/user/{{SUB}}/is-active",
+              "host": [
+                "{{HOST}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "user",
+                "{{SUB}}",
+                "is-active"
+              ]
+            },
+            "description": "بررسی فعال بودن حساب با `sub`."
+          },
+          "response": [
+            {
+              "name": "200 - Active",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{HOST}}/api/v1/user/{{SUB}}/is-active",
+                  "host": [
+                    "{{HOST}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "user",
+                    "{{SUB}}",
+                    "is-active"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": 200,\n  \"message\": \"حساب شما فعال میباشد\",\n  \"timestamp\": \"2026-10-25T10:15:30.482913\",\n  \"data\": \"5e6dd83d-0f9f-484b-8e71-bf0df9c73cf8\",\n  \"details\": \"\",\n  \"redirect\": \"\"\n}"
+            },
+            {
+              "name": "403 - Not active or removed",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{HOST}}/api/v1/user/{{SUB}}/is-active",
+                  "host": [
+                    "{{HOST}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "user",
+                    "{{SUB}}",
+                    "is-active"
+                  ]
+                }
+              },
+              "status": "Forbidden",
+              "code": 403,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": 403,\n  \"message\": \"حساب فعال نمیباشد یا حذف شده است\",\n  \"timestamp\": \"2026-10-25T10:15:30.482913\",\n  \"data\": \"5e6dd83d-0f9f-484b-8e71-bf0df9c73cf8\",\n  \"details\": \"\",\n  \"redirect\": \"\"\n}"
+            },
+            {
+              "name": "404 - Unknown sub",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{HOST}}/api/v1/user/00000000-0000-0000-0000-000000000000/is-active",
+                  "host": [
+                    "{{HOST}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "user",
+                    "00000000-0000-0000-0000-000000000000",
+                    "is-active"
+                  ]
+                }
+              },
+              "status": "Not Found",
+              "code": 404,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": 404,\n  \"message\": \"کاربر پیدا نشد\",\n  \"timestamp\": \"2026-10-25T10:15:30.482913\",\n  \"data\": {\n    \"active\": false\n  },\n  \"details\": \"\",\n  \"redirect\": \"\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Verify email",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sub\": \"{{SUB}}\",\n  \"status\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{HOST}}/api/v1/user/email-verification",
+              "host": [
+                "{{HOST}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "user",
+                "email-verification"
+              ]
+            },
+            "description": "تغییر وضعیت تایید ایمیل کاربر. `status` برابر `true` یعنی تایید‌شده."
+          },
+          "response": [
+            {
+              "name": "200 - Email marked verified",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"sub\": \"{{SUB}}\",\n  \"status\": true\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{HOST}}/api/v1/user/email-verification",
+                  "host": [
+                    "{{HOST}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "user",
+                    "email-verification"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": 200,\n  \"message\": \"وضعیت تایید ایمیل بروزرسانی شد\",\n  \"timestamp\": \"2026-10-25T10:15:30.482913\",\n  \"data\": {\n    \"sub\": \"5e6dd83d-0f9f-484b-8e71-bf0df9c73cf8\",\n    \"emailVerified\": true\n  },\n  \"details\": \"\",\n  \"redirect\": \"\"\n}"
+            },
+            {
+              "name": "404 - Unknown sub",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"sub\": \"00000000-0000-0000-0000-000000000000\",\n  \"status\": true\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{HOST}}/api/v1/user/email-verification",
+                  "host": [
+                    "{{HOST}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "user",
+                    "email-verification"
+                  ]
+                }
+              },
+              "status": "Not Found",
+              "code": 404,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": 404,\n  \"message\": \"کاربر پیدا نشد\",\n  \"timestamp\": \"2026-10-25T10:15:30.482913\",\n  \"details\": \"\",\n  \"redirect\": \"\"\n}"
+            },
+            {
+              "name": "403 - Not an admin",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"sub\": \"{{SUB}}\",\n  \"status\": true\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{HOST}}/api/v1/user/email-verification",
+                  "host": [
+                    "{{HOST}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "user",
+                    "email-verification"
+                  ]
+                }
+              },
+              "status": "Forbidden",
+              "code": 403,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": 403,\n  \"message\": \"شما دسترسی لازم برای این عملیات را ندارید\",\n  \"timestamp\": \"2026-10-25T10:15:30.482913\",\n  \"details\": \"Requires role ADMIN\",\n  \"redirect\": \"\"\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Authorization",
+      "item": [
+        {
+          "name": "Roles",
+          "item": [
+            {
+              "name": "Assign roles",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"sub\": \"{{SUB}}\",\n  \"roles\": [\n    \"{{ROLE_NAME}}\"\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{HOST}}/api/v1/authorization/roles/assign",
+                  "host": [
+                    "{{HOST}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "authorization",
+                    "roles",
+                    "assign"
+                  ]
+                },
+                "description": "اختصاص نقش (realm role) به کاربر. نیازمند نقش ADMIN."
+              },
+              "response": [
+                {
+                  "name": "200 - Roles assigned",
+                  "originalRequest": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"sub\": \"{{SUB}}\",\n  \"roles\": [\n    \"{{ROLE_NAME}}\"\n  ]\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{HOST}}/api/v1/authorization/roles/assign",
+                      "host": [
+                        "{{HOST}}"
+                      ],
+                      "path": [
+                        "api",
+                        "v1",
+                        "authorization",
+                        "roles",
+                        "assign"
+                      ]
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n  \"status\": 200,\n  \"message\": \"نقش‌ها با موفقیت اختصاص داده شد\",\n  \"timestamp\": \"2026-10-25T10:15:30.482913\",\n  \"data\": {\n    \"sub\": \"5e6dd83d-0f9f-484b-8e71-bf0df9c73cf8\",\n    \"roles\": [\n      \"USER\"\n    ]\n  },\n  \"details\": \"\",\n  \"redirect\": \"\"\n}"
+                },
+                {
+                  "name": "404 - Role not found",
+                  "originalRequest": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"sub\": \"{{SUB}}\",\n  \"roles\": [\n    \"SUPERHERO\"\n  ]\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{HOST}}/api/v1/authorization/roles/assign",
+                      "host": [
+                        "{{HOST}}"
+                      ],
+                      "path": [
+                        "api",
+                        "v1",
+                        "authorization",
+                        "roles",
+                        "assign"
+                      ]
+                    }
+                  },
+                  "status": "Not Found",
+                  "code": 404,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n  \"status\": 404,\n  \"message\": \"نقش پیدا نشد\",\n  \"timestamp\": \"2026-10-25T10:15:30.482913\",\n  \"details\": \"Role not found : SUPERHERO\",\n  \"redirect\": \"\"\n}"
+                },
+                {
+                  "name": "403 - Not an admin",
+                  "originalRequest": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"sub\": \"{{SUB}}\",\n  \"roles\": [\n    \"{{ROLE_NAME}}\"\n  ]\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{HOST}}/api/v1/authorization/roles/assign",
+                      "host": [
+                        "{{HOST}}"
+                      ],
+                      "path": [
+                        "api",
+                        "v1",
+                        "authorization",
+                        "roles",
+                        "assign"
+                      ]
+                    }
+                  },
+                  "status": "Forbidden",
+                  "code": 403,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n  \"status\": 403,\n  \"message\": \"شما دسترسی لازم برای این عملیات را ندارید\",\n  \"timestamp\": \"2026-10-25T10:15:30.482913\",\n  \"details\": \"Requires role ADMIN\",\n  \"redirect\": \"\"\n}"
+                }
+              ]
+            },
+            {
+              "name": "Unassign roles",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"sub\": \"{{SUB}}\",\n  \"roles\": [\n    \"{{ROLE_NAME}}\"\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{HOST}}/api/v1/authorization/roles/unassign",
+                  "host": [
+                    "{{HOST}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "authorization",
+                    "roles",
+                    "unassign"
+                  ]
+                },
+                "description": "حذف نقش از کاربر. نیازمند نقش ADMIN."
+              },
+              "response": [
+                {
+                  "name": "200 - Roles removed",
+                  "originalRequest": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"sub\": \"{{SUB}}\",\n  \"roles\": [\n    \"{{ROLE_NAME}}\"\n  ]\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{HOST}}/api/v1/authorization/roles/unassign",
+                      "host": [
+                        "{{HOST}}"
+                      ],
+                      "path": [
+                        "api",
+                        "v1",
+                        "authorization",
+                        "roles",
+                        "unassign"
+                      ]
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n  \"status\": 200,\n  \"message\": \"نقش‌ها با موفقیت حذف شد\",\n  \"timestamp\": \"2026-10-25T10:15:30.482913\",\n  \"data\": {\n    \"sub\": \"5e6dd83d-0f9f-484b-8e71-bf0df9c73cf8\",\n    \"roles\": []\n  },\n  \"details\": \"\",\n  \"redirect\": \"\"\n}"
+                },
+                {
+                  "name": "404 - User not found",
+                  "originalRequest": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"sub\": \"00000000-0000-0000-0000-000000000000\",\n  \"roles\": [\n    \"{{ROLE_NAME}}\"\n  ]\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{HOST}}/api/v1/authorization/roles/unassign",
+                      "host": [
+                        "{{HOST}}"
+                      ],
+                      "path": [
+                        "api",
+                        "v1",
+                        "authorization",
+                        "roles",
+                        "unassign"
+                      ]
+                    }
+                  },
+                  "status": "Not Found",
+                  "code": 404,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n  \"status\": 404,\n  \"message\": \"کاربر پیدا نشد\",\n  \"timestamp\": \"2026-10-25T10:15:30.482913\",\n  \"details\": \"\",\n  \"redirect\": \"\"\n}"
+                },
+                {
+                  "name": "403 - Not an admin",
+                  "originalRequest": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"sub\": \"{{SUB}}\",\n  \"roles\": [\n    \"{{ROLE_NAME}}\"\n  ]\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{HOST}}/api/v1/authorization/roles/unassign",
+                      "host": [
+                        "{{HOST}}"
+                      ],
+                      "path": [
+                        "api",
+                        "v1",
+                        "authorization",
+                        "roles",
+                        "unassign"
+                      ]
+                    }
+                  },
+                  "status": "Forbidden",
+                  "code": 403,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n  \"status\": 403,\n  \"message\": \"شما دسترسی لازم برای این عملیات را ندارید\",\n  \"timestamp\": \"2026-10-25T10:15:30.482913\",\n  \"details\": \"Requires role ADMIN\",\n  \"redirect\": \"\"\n}"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Groups",
+          "item": [
+            {
+              "name": "Assign groups",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"sub\": \"{{SUB}}\",\n  \"groups\": [\n    \"{{GROUP_NAME}}\"\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{HOST}}/api/v1/authorization/groups/assign",
+                  "host": [
+                    "{{HOST}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "authorization",
+                    "groups",
+                    "assign"
+                  ]
+                },
+                "description": "عضو کردن کاربر در گروه (نقش‌های گروه به کاربر می‌رسد). نیازمند نقش ADMIN."
+              },
+              "response": [
+                {
+                  "name": "200 - Added to group",
+                  "originalRequest": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"sub\": \"{{SUB}}\",\n  \"groups\": [\n    \"{{GROUP_NAME}}\"\n  ]\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{HOST}}/api/v1/authorization/groups/assign",
+                      "host": [
+                        "{{HOST}}"
+                      ],
+                      "path": [
+                        "api",
+                        "v1",
+                        "authorization",
+                        "groups",
+                        "assign"
+                      ]
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n  \"status\": 200,\n  \"message\": \"کاربر به گروه اضافه شد\",\n  \"timestamp\": \"2026-10-25T10:15:30.482913\",\n  \"data\": {\n    \"sub\": \"5e6dd83d-0f9f-484b-8e71-bf0df9c73cf8\",\n    \"groups\": [\n      \"DEVELOPER\"\n    ]\n  },\n  \"details\": \"\",\n  \"redirect\": \"\"\n}"
+                },
+                {
+                  "name": "404 - Group not found",
+                  "originalRequest": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"sub\": \"{{SUB}}\",\n  \"groups\": [\n    \"GHOSTS\"\n  ]\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{HOST}}/api/v1/authorization/groups/assign",
+                      "host": [
+                        "{{HOST}}"
+                      ],
+                      "path": [
+                        "api",
+                        "v1",
+                        "authorization",
+                        "groups",
+                        "assign"
+                      ]
+                    }
+                  },
+                  "status": "Not Found",
+                  "code": 404,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n  \"status\": 404,\n  \"message\": \"گروه پیدا نشد\",\n  \"timestamp\": \"2026-10-25T10:15:30.482913\",\n  \"details\": \"Group not found : GHOSTS\",\n  \"redirect\": \"\"\n}"
+                },
+                {
+                  "name": "403 - Not an admin",
+                  "originalRequest": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"sub\": \"{{SUB}}\",\n  \"groups\": [\n    \"{{GROUP_NAME}}\"\n  ]\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{HOST}}/api/v1/authorization/groups/assign",
+                      "host": [
+                        "{{HOST}}"
+                      ],
+                      "path": [
+                        "api",
+                        "v1",
+                        "authorization",
+                        "groups",
+                        "assign"
+                      ]
+                    }
+                  },
+                  "status": "Forbidden",
+                  "code": 403,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n  \"status\": 403,\n  \"message\": \"شما دسترسی لازم برای این عملیات را ندارید\",\n  \"timestamp\": \"2026-10-25T10:15:30.482913\",\n  \"details\": \"Requires role ADMIN\",\n  \"redirect\": \"\"\n}"
+                }
+              ]
+            },
+            {
+              "name": "Unassign groups",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"sub\": \"{{SUB}}\",\n  \"groups\": [\n    \"{{GROUP_NAME}}\"\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{HOST}}/api/v1/authorization/groups/unassign",
+                  "host": [
+                    "{{HOST}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "authorization",
+                    "groups",
+                    "unassign"
+                  ]
+                },
+                "description": "خارج کردن کاربر از گروه. نیازمند نقش ADMIN."
+              },
+              "response": [
+                {
+                  "name": "200 - Removed from group",
+                  "originalRequest": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"sub\": \"{{SUB}}\",\n  \"groups\": [\n    \"{{GROUP_NAME}}\"\n  ]\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{HOST}}/api/v1/authorization/groups/unassign",
+                      "host": [
+                        "{{HOST}}"
+                      ],
+                      "path": [
+                        "api",
+                        "v1",
+                        "authorization",
+                        "groups",
+                        "unassign"
+                      ]
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n  \"status\": 200,\n  \"message\": \"کاربر از گروه حذف شد\",\n  \"timestamp\": \"2026-10-25T10:15:30.482913\",\n  \"data\": {\n    \"sub\": \"5e6dd83d-0f9f-484b-8e71-bf0df9c73cf8\",\n    \"groups\": []\n  },\n  \"details\": \"\",\n  \"redirect\": \"\"\n}"
+                },
+                {
+                  "name": "404 - User not found",
+                  "originalRequest": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"sub\": \"00000000-0000-0000-0000-000000000000\",\n  \"groups\": [\n    \"{{GROUP_NAME}}\"\n  ]\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{HOST}}/api/v1/authorization/groups/unassign",
+                      "host": [
+                        "{{HOST}}"
+                      ],
+                      "path": [
+                        "api",
+                        "v1",
+                        "authorization",
+                        "groups",
+                        "unassign"
+                      ]
+                    }
+                  },
+                  "status": "Not Found",
+                  "code": 404,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n  \"status\": 404,\n  \"message\": \"کاربر پیدا نشد\",\n  \"timestamp\": \"2026-10-25T10:15:30.482913\",\n  \"details\": \"\",\n  \"redirect\": \"\"\n}"
+                },
+                {
+                  "name": "403 - Not an admin",
+                  "originalRequest": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"sub\": \"{{SUB}}\",\n  \"groups\": [\n    \"{{GROUP_NAME}}\"\n  ]\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{HOST}}/api/v1/authorization/groups/unassign",
+                      "host": [
+                        "{{HOST}}"
+                      ],
+                      "path": [
+                        "api",
+                        "v1",
+                        "authorization",
+                        "groups",
+                        "unassign"
+                      ]
+                    }
+                  },
+                  "status": "Forbidden",
+                  "code": 403,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n  \"status\": 403,\n  \"message\": \"شما دسترسی لازم برای این عملیات را ندارید\",\n  \"timestamp\": \"2026-10-25T10:15:30.482913\",\n  \"details\": \"Requires role ADMIN\",\n  \"redirect\": \"\"\n}"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{ACCESS_TOKEN}}",
+        "type": "string"
+      }
+    ]
+  }
+}

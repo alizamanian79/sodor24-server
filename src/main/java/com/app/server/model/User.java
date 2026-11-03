@@ -11,7 +11,7 @@ import java.util.*;
 
 @JsonIdentityInfo(
         generator = ObjectIdGenerators.PropertyGenerator.class,
-        property = "username"
+        property = "sub"
 )
 @Getter
 @Setter

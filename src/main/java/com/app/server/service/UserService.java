@@ -4,6 +4,7 @@ import com.app.server.dto.request.RegisterRequestDto;
 import com.app.server.dto.request.UpdateUserRequestDto;
 import com.app.server.dto.request.users.ChangeAccountOtpRequestDto;
 import com.app.server.dto.request.users.VerifyAccountRequestDto;
+import com.app.server.dto.response.MeResponseDto;
 import com.app.server.dto.response.RegisterResponseDto;
 import com.app.server.model.User;
 import org.springframework.security.core.Authentication;
@@ -15,4 +16,5 @@ public interface UserService {
     List<User> getAllUsers();
     User findUserBySub(String sub);
     User createUser(String sub);
+    MeResponseDto me(String accessToken);
 }

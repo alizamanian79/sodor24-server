@@ -5,7 +5,11 @@ import com.app.server.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
@@ -24,6 +28,14 @@ public class UserController {
     public ResponseEntity<?> getAllUsers() {
             List<User> users = userService.getAllUsers();
             return new ResponseEntity<>(users, HttpStatus.OK);
+    }
+
+
+
+    @GetMapping("/me")
+    public Object me(@AuthenticationPrincipal Jwt auth){
+
+        return userService.me(auth.getTokenValue());
     }
 
 //

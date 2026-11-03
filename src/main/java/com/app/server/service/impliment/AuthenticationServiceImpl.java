@@ -15,6 +15,10 @@ import com.app.server.util.ExternalRequest.dto.Method;
 import com.app.server.util.notification_service.NotificationRequest;
 import com.app.server.util.notification_service.NotificationService;
 import com.app.server.util.notification_service.NotificationType;
+import com.app.server.util.wallet_service_producer.WalletRMQProducer;
+import com.app.server.util.wallet_service_producer.dto.request.ActivityRequestDto;
+import com.app.server.util.wallet_service_producer.dto.request.CreateWalletRequestDto;
+import com.app.server.util.wallet_service_producer.dto.response.WalletResponseDto;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +27,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -57,6 +62,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     /** Background workers + bounded queue for work the client does not wait for. */
     private ThreadPoolExecutor backgroundExecutor;
+
+    private final WalletRMQProducer walletRMQProducer;
+
 
     @PostConstruct
     void initExecutor() {
@@ -194,6 +202,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         // TODO: call the SMS provider here. Never log the OTP itself.
 //        log.info("OTP SMS dispatched to {}", mask(req.));
 
+
         notificationService.notify(new NotificationRequest(
                 NotificationType.EMAIL,
                 req.getEmail(),
@@ -209,9 +218,24 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     void afterVerifiedAccount(String sub) {
         userService.createUser(sub);
+        createWallet(sub);
     }
 
 
 
+    public WalletResponseDto createWallet(String sub){
+        CreateWalletRequestDto req = CreateWalletRequestDto.builder()
+                .sub(sub)
+                .currency("IRT")
+                .balance(BigDecimal.ZERO)
+                .build();
+        WalletResponseDto res = walletRMQProducer.createWallet(req);
+        ActivityRequestDto activeReq = ActivityRequestDto.builder()
+                .sub(sub).value(true).build();
+        walletRMQProducer.setActive(activeReq);
+
+        return res;
+
+    }
 
 }

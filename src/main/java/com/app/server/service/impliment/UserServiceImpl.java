@@ -11,6 +11,8 @@ import com.app.server.service.UserService;
 import com.app.server.util.ExternalRequest.ExternalRequest;
 import com.app.server.util.ExternalRequest.dto.ExternalRequestDto;
 import com.app.server.util.ExternalRequest.dto.Method;
+import com.app.server.util.wallet_service_producer.WalletRMQProducer;
+import com.app.server.util.wallet_service_producer.dto.response.WalletResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -25,6 +27,7 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
 
+    private final WalletRMQProducer walletRMQProducer;
     private final ExternalRequest externalRequest;
 
     @Value("${auth-service.base-url:http://localhost:8081}")
@@ -67,6 +70,7 @@ public class UserServiceImpl implements UserService {
                 .build();
 
         accountData = externalRequest.sendRequest(req);
+        WalletResponseDto walletData = walletRMQProducer.getWalletBySub(accountData.get("sub").toString());
 
         User serviceData =
                 findUserBySub(accountData.get("sub").toString());
@@ -74,6 +78,7 @@ public class UserServiceImpl implements UserService {
         return MeResponseDto.builder()
                 .sub(accountData.get("sub").toString())
                 .accountData(accountData)
+                .walletData(walletData.equals(null)? "سرویس در دسترس نیست و یا خاموش میباشد" :walletData.getData())
                 .serviceData(serviceData)
                 .build();
     }

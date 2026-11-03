@@ -67,11 +67,7 @@
 			exists in your local .m2 / reactor, delete the other one - keeping both
 			when only one resolves will break the build.
 		-->
-		<dependency>
-			<groupId>app.signature</groupId>
-			<artifactId>service</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
-		</dependency>
+
 
 		<dependency>
 			<groupId>com.app</groupId>

@@ -11,7 +11,6 @@ import com.app.server.service.UserService;
 import com.app.server.util.ExternalRequest.ExternalRequest;
 import com.app.server.util.ExternalRequest.dto.ExternalRequestDto;
 import com.app.server.util.ExternalRequest.dto.Method;
-import com.app.server.util.signature_service_producer.producer.SignatureProducer;
 import com.app.server.util.wallet_service_producer.WalletRMQProducer;
 import com.app.server.util.wallet_service_producer.dto.response.WalletResponseDto;
 import lombok.RequiredArgsConstructor;
@@ -29,7 +28,6 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
 
     private final WalletRMQProducer walletRMQProducer;
-    private final SignatureProducer signatureProducer;
 
     private final ExternalRequest externalRequest;
 

@@ -1,6 +1,8 @@
 package com.app.server.util.signature_service_producer;
 
 
+import com.app.server.util.signature_service_producer.dto.request.ca.CreateCompanyCaRequestDto;
+import com.app.server.util.signature_service_producer.dto.request.ca.CreatePersonCertificateRequestDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;

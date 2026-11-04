@@ -5,6 +5,7 @@ import com.app.server.dto.request.RegisterRequestDto;
 import com.app.server.dto.request.users.ChangeAccountOtpRequestDto;
 import com.app.server.dto.request.users.ChangeEmailOtpRequestDto;
 import com.app.server.dto.request.users.VerifyAccountRequestDto;
+import com.app.server.dto.request.users.VerifyEmailRequestDto;
 import com.app.server.dto.response.CustomResponseDto;
 import com.app.server.dto.response.LoginResponseDto;
 import com.app.server.exception.AppUnAuthorizedException;
@@ -250,10 +251,34 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
 
         return CustomResponseDto.builder()
-                .message("کد به ایمیل شما فرستاده شد" + otp)
+                .message("کد به ایمیل شما فرستاده شد")
                 .status(200)
                 .build();
     }
+
+    @Override
+    public CustomResponseDto verifyEmail(VerifyEmailRequestDto req) {
+        ExternalRequestDto request = ExternalRequestDto
+                .builder()
+                .url(baseUrl + "/api/v1/authentication/verify/otp/email")
+                .body(req)
+                .method(Method.POST)
+                .build();
+        Map<String,Object> res =externalRequest.sendRequest(request);
+        Map<String,Object> data = (Map<String, Object>) res.get("data");
+
+        return CustomResponseDto.builder()
+                .message(res.get("message").toString())
+                .status(200)
+                .build();
+    }
+
+
+
+
+
+
+
 
     public WalletResponseDto createWallet(String sub){
         CreateWalletRequestDto req = CreateWalletRequestDto.builder()

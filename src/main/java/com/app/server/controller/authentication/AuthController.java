@@ -4,7 +4,9 @@ import com.app.server.annotation.VerifiedUser;
 import com.app.server.dto.request.LoginRequestDto;
 import com.app.server.dto.request.RegisterRequestDto;
 import com.app.server.dto.request.users.ChangeAccountOtpRequestDto;
+import com.app.server.dto.request.users.ChangeEmailOtpRequestDto;
 import com.app.server.dto.request.users.VerifyAccountRequestDto;
+import com.app.server.dto.request.users.VerifyEmailRequestDto;
 import com.app.server.dto.response.CustomResponseDto;
 import com.app.server.dto.response.LoginResponseDto;
 import com.app.server.model.User;
@@ -41,16 +43,28 @@ public class AuthController {
     }
 
 
-    @PostMapping("/verify/otp")
+    @VerifiedUser
+    @PostMapping("/login")
+    public LoginResponseDto loginUser(
+            @Valid @RequestBody LoginRequestDto req
+    ) {
+        return authenticationService.login(req);
+    }
+
+
+
+    @PostMapping("/account/verify/otp")
     public ResponseEntity<?> verifyAccountOtp(
             @Valid @RequestBody VerifyAccountRequestDto req
             ) {
         Map<String,Object> res = authenticationService.verifyAccountOtp(req);
-        return new ResponseEntity<>(res,HttpStatus.OK);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(res);
 
     }
 
-    @PostMapping("/change/otp")
+    @PostMapping("/change/account/verify/otp")
     public ResponseEntity<CustomResponseDto> changeAccountOtp(
             @Valid @RequestBody ChangeAccountOtpRequestDto req
     ) {
@@ -63,12 +77,28 @@ public class AuthController {
     }
 
 
-    @VerifiedUser
-    @PostMapping("/login")
-    public LoginResponseDto loginUser(
-            @Valid @RequestBody LoginRequestDto req
+
+    @PostMapping("/send/email/verify/otp")
+    public ResponseEntity<?> sendEmailVerify(
+            @Valid @RequestBody ChangeEmailOtpRequestDto req
     ) {
-        return authenticationService.login(req);
+        CustomResponseDto res = authenticationService.sendOtpForEmail(req);
+        return ResponseEntity
+                .status(res.getStatus())
+                .body(res);
+
+    }
+
+
+    @PostMapping("/email/verify/otp")
+    public ResponseEntity<?> verifyEmailCode(
+            @Valid @RequestBody VerifyEmailRequestDto req
+    ) {
+        CustomResponseDto res = authenticationService.verifyEmail(req);
+        return ResponseEntity
+                .status(res.getStatus())
+                .body(res);
+
     }
 
 

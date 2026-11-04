@@ -3,6 +3,7 @@ package com.app.server.service.impliment;
 import com.app.server.dto.request.LoginRequestDto;
 import com.app.server.dto.request.RegisterRequestDto;
 import com.app.server.dto.request.users.ChangeAccountOtpRequestDto;
+import com.app.server.dto.request.users.ChangeEmailOtpRequestDto;
 import com.app.server.dto.request.users.VerifyAccountRequestDto;
 import com.app.server.dto.response.CustomResponseDto;
 import com.app.server.dto.response.LoginResponseDto;
@@ -222,6 +223,37 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
 
+    public CustomResponseDto sendOtpForEmail(ChangeEmailOtpRequestDto req){
+
+        ExternalRequestDto request = ExternalRequestDto
+                .builder()
+                .url(baseUrl + "/api/v1/authentication/send/otp/email")
+                .body(req)
+                .method(Method.POST)
+                .build();
+        Map<String,Object> res =externalRequest.sendRequest(request);
+        Map<String,Object> data = (Map<String, Object>) res.get("data");
+        String otp = data.get("otp").toString();
+
+
+        notificationService.notify(new NotificationRequest(
+                NotificationType.EMAIL,
+                req.getEmail(),
+                "کد تأیید یکبار مصرف",
+                "کاربر گرامی،\n\n"
+                        + "کد تأیید یکبار مصرف شما برای ورود به حساب کاربری:\n\n"
+                        + otp
+                        + "\n\n"
+                        + "این کد را در اختیار دیگران قرار ندهید."
+        ));
+
+
+
+        return CustomResponseDto.builder()
+                .message("کد به ایمیل شما فرستاده شد" + otp)
+                .status(200)
+                .build();
+    }
 
     public WalletResponseDto createWallet(String sub){
         CreateWalletRequestDto req = CreateWalletRequestDto.builder()

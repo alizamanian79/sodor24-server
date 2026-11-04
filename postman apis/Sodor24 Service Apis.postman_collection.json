@@ -66,7 +66,60 @@
               "response": []
             },
             {
-              "name": "2. Register Mahdi",
+              "name": "2. Register Admin(Ali)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                },
+                {
+                  "listen": "prerequest",
+                  "script": {
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"username\": \"{{USERNAME}}\",\r\n    \"email\": \"{{EMAIL}}\",\r\n    \"password\": \"{{PASSWORD}}\",\r\n    \"firstName\": \"{{FIRSTNAME}}\",\r\n    \"lastName\": \"{{LASTNAME}}\",\r\n    \"phoneNumber\": \"{{PHONE_NUMBER}}\",\r\n    \"nationalCode\":\"{{NATIONALCODE}}\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{HOST}}/api/v1/auth/register",
+                  "host": [
+                    "{{HOST}}"
+                  ],
+                  "path": [
+                    "api",
+                    "v1",
+                    "auth",
+                    "register"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "2. Register Mahdi Copy",
               "event": [
                 {
                   "listen": "test",
@@ -124,6 +177,77 @@
           "name": "Verify Account",
           "item": [
             {
+              "name": "verify email",
+              "item": [
+                {
+                  "name": "1. Send Otp To Email Or Resend",
+                  "request": {
+                    "auth": {
+                      "type": "noauth"
+                    },
+                    "method": "POST",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    \"email\": \"{{EMAIL}}\"\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{HOST}}/api/v1/auth/send/email/verify/otp",
+                      "host": [
+                        "{{HOST}}"
+                      ],
+                      "path": [
+                        "api",
+                        "v1",
+                        "auth",
+                        "send",
+                        "email",
+                        "verify",
+                        "otp"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "2. Verify Email Otp",
+                  "request": {
+                    "method": "POST",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    \"email\": \"{{EMAIL}}\",\r\n    \"otp\": \"{{OTP}}\"\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{HOST}}/api/v1/auth/email/verify/otp",
+                      "host": [
+                        "{{HOST}}"
+                      ],
+                      "path": [
+                        "api",
+                        "v1",
+                        "auth",
+                        "email",
+                        "verify",
+                        "otp"
+                      ]
+                    }
+                  },
+                  "response": []
+                }
+              ]
+            },
+            {
               "name": "1. Verify Account Otp",
               "request": {
                 "method": "POST",
@@ -138,7 +262,7 @@
                   }
                 },
                 "url": {
-                  "raw": "{{HOST}}/api/v1/auth/verify/otp",
+                  "raw": "{{HOST}}/api/v1/auth/account/verify/otp",
                   "host": [
                     "{{HOST}}"
                   ],
@@ -146,6 +270,7 @@
                     "api",
                     "v1",
                     "auth",
+                    "account",
                     "verify",
                     "otp"
                   ]
@@ -168,7 +293,7 @@
                   }
                 },
                 "url": {
-                  "raw": "{{HOST}}/api/v1/auth/change/otp",
+                  "raw": "{{HOST}}/api/v1/auth/change/account/verify/otp",
                   "host": [
                     "{{HOST}}"
                   ],
@@ -177,6 +302,8 @@
                     "v1",
                     "auth",
                     "change",
+                    "account",
+                    "verify",
                     "otp"
                   ]
                 }
@@ -368,14 +495,14 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{HOST}}/api/v1/auth/me",
+              "raw": "{{HOST}}/api/v1/users/me",
               "host": [
                 "{{HOST}}"
               ],
               "path": [
                 "api",
                 "v1",
-                "auth",
+                "users",
                 "me"
               ]
             }
@@ -2244,6 +2371,47 @@
               "key": "msg",
               "value": "hello from client"
             }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "New Request Copy",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{HOST}}/api/v1/public/test/zilan",
+          "host": [
+            "{{HOST}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "public",
+            "test",
+            "zilan"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "create",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{HOST}}/api/v1/public/test",
+          "host": [
+            "{{HOST}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "public",
+            "test"
           ]
         }
       },

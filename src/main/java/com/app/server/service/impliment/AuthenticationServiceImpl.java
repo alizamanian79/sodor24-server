@@ -242,7 +242,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 req.getEmail(),
                 "کد تأیید یکبار مصرف",
                 "کاربر گرامی،\n\n"
-                        + "کد تأیید یکبار مصرف شما برای ورود به حساب کاربری:\n\n"
+                        + "کد تأیید یکبار مصرف شما برای تایید ایمیل شما:\n\n"
                         + otp
                         + "\n\n"
                         + "این کد را در اختیار دیگران قرار ندهید."

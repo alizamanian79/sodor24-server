@@ -59,8 +59,6 @@ public class PublicController {
         Map<String,String> req = new HashMap<>();
         req.put("companyId",id);
         return    certificateProducer.getCompany(req);
-
-        certificateProducer.compa
     }
 
 }

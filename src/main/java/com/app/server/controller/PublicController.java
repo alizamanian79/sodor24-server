@@ -35,30 +35,30 @@ public class PublicController {
     }
 
 
-    @GetMapping("/test")
-    public Map<String, Object> test(){
-
-        CreateCompanyCaRequestDto req = CreateCompanyCaRequestDto.builder()
-                        .companyId("zilan")
-                        .country("iran")
-                        .companyName("zilan")
-                        .privateKeyPassword("88770022$sasl")
-                        .location("iran")
-                        .state("tehran")
-                        .validityDays(60)
-                        .build();
-
-     return    certificateProducer.createCompanyCa(req);
-
-    }
-
-
-    @GetMapping("/test/{id}")
-    public Map<String, Object> test(@PathVariable String id){
-
-        Map<String,String> req = new HashMap<>();
-        req.put("companyId",id);
-        return    certificateProducer.getCompany(req);
-    }
+//    @GetMapping("/test")
+//    public Map<String, Object> test(){
+//
+//        CreateCompanyCaRequestDto req = CreateCompanyCaRequestDto.builder()
+//                        .companyId("zilan")
+//                        .country("iran")
+//                        .companyName("zilan")
+//                        .privateKeyPassword("88770022$sasl")
+//                        .location("iran")
+//                        .state("tehran")
+//                        .validityDays(60)
+//                        .build();
+//
+//     return    certificateProducer.createCompanyCa(req);
+//
+//    }
+//
+//
+//    @GetMapping("/test/{id}")
+//    public Map<String, Object> test(@PathVariable String id){
+//
+//        Map<String,String> req = new HashMap<>();
+//        req.put("companyId",id);
+//        return    certificateProducer.getCompany(req);
+//    }
 
 }

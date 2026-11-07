@@ -20,6 +20,7 @@ public class EmailNotificationSender implements NotificationSender {
     @Value("${notification.mail.from}")
     private String from;
 
+
     @Override
     public NotificationType getType() {
         return NotificationType.EMAIL;

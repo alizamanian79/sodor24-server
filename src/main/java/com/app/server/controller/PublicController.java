@@ -18,7 +18,6 @@ import java.util.Map;
 public class PublicController {
 
     private final NotificationService notificationService;
-    private final CertificateProducer certificateProducer;
 
     @PostMapping("/notification")
     public ResponseEntity<String> sendNotification(
@@ -35,6 +34,24 @@ public class PublicController {
 
         return ResponseEntity.accepted()
                 .body("Email notification request submitted for: " + email);
+    }
+
+
+    @PostMapping("/notification/sms")
+    public ResponseEntity<String> sendNotificationSms(
+            @RequestParam String phone,
+            @RequestParam String subject,
+            @RequestParam String msg
+    ) {
+        notificationService.notify(new NotificationRequest(
+                NotificationType.SMS,
+                phone,
+                subject,
+                msg
+        ));
+
+        return ResponseEntity.accepted()
+                .body("Email notification request submitted for: " + phone);
     }
 
 

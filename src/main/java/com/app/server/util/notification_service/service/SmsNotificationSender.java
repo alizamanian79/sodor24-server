@@ -1,5 +1,8 @@
-package com.app.server.util.notification_service;
+package com.app.server.util.notification_service.service;
 
+import com.app.server.util.notification_service.NotificationRequest;
+import com.app.server.util.notification_service.NotificationSender;
+import com.app.server.util.notification_service.NotificationType;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 

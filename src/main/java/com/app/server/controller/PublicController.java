@@ -6,6 +6,7 @@ import com.app.server.util.notification_service.NotificationType;
 import com.app.server.util.signature_service_producer.CertificateProducer;
 import com.app.server.util.signature_service_producer.dto.request.ca.CreateCompanyCaRequestDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -19,10 +20,12 @@ public class PublicController {
     private final NotificationService notificationService;
     private final CertificateProducer certificateProducer;
 
-    @GetMapping("/notification")
-    public String sendNotification(@RequestParam String email,
-                                   @RequestParam String subject ,
-                                   @RequestParam String msg){
+    @PostMapping("/notification")
+    public ResponseEntity<String> sendNotification(
+            @RequestParam String email,
+            @RequestParam String subject,
+            @RequestParam String msg
+    ) {
         notificationService.notify(new NotificationRequest(
                 NotificationType.EMAIL,
                 email,
@@ -30,8 +33,8 @@ public class PublicController {
                 msg
         ));
 
-        return "sent email to \s" + email;
-
+        return ResponseEntity.accepted()
+                .body("Email notification request submitted for: " + email);
     }
 
 

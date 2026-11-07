@@ -5,5 +5,5 @@ public interface NotificationSender {
 
     NotificationType getType();
 
-    void send(NotificationRequest request);
+    void send(NotificationRequestDto request);
 }

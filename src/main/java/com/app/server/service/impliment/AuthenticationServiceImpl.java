@@ -14,7 +14,7 @@ import com.app.server.service.UserService;
 import com.app.server.util.ExternalRequest.ExternalRequest;
 import com.app.server.util.ExternalRequest.dto.ExternalRequestDto;
 import com.app.server.util.ExternalRequest.dto.Method;
-import com.app.server.util.notification_service.NotificationRequest;
+import com.app.server.util.notification_service.NotificationRequestDto;
 import com.app.server.util.notification_service.NotificationService;
 import com.app.server.util.notification_service.NotificationType;
 import com.app.server.util.wallet_service_producer.WalletRMQProducer;
@@ -205,7 +205,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 //        log.info("OTP SMS dispatched to {}", mask(req.));
 
 
-        notificationService.notify(new NotificationRequest(
+        notificationService.notify(new NotificationRequestDto(
                 NotificationType.EMAIL,
                 req.getEmail(),
                 "کد تأیید یکبار مصرف",
@@ -237,7 +237,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         String otp = data.get("otp").toString();
 
 
-        notificationService.notify(new NotificationRequest(
+        notificationService.notify(new NotificationRequestDto(
                 NotificationType.EMAIL,
                 req.getEmail(),
                 "کد تأیید یکبار مصرف",

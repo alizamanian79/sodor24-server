@@ -10,7 +10,7 @@ public class NotificationService {
 
     private final NotificationSenderFactory factory;
 
-    public void notify(NotificationRequest request) {
-        factory.getSender(request.type()).send(request);
+    public void notify(NotificationRequestDto request) {
+        factory.getSender(request.getType()).send(request);
     }
 }

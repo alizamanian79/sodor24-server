@@ -1,16 +1,13 @@
 package com.app.server.controller;
 
-import com.app.server.util.notification_service.NotificationRequest;
+
+import com.app.server.util.notification_service.NotificationRequestDto;
 import com.app.server.util.notification_service.NotificationService;
 import com.app.server.util.notification_service.NotificationType;
-import com.app.server.util.signature_service_producer.CertificateProducer;
-import com.app.server.util.signature_service_producer.dto.request.ca.CreateCompanyCaRequestDto;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.HashMap;
-import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -19,13 +16,14 @@ public class PublicController {
 
     private final NotificationService notificationService;
 
-    @PostMapping("/notification")
+    @PostMapping("/notification/email")
     public ResponseEntity<String> sendNotification(
+            @Valid
             @RequestParam String email,
             @RequestParam String subject,
             @RequestParam String msg
     ) {
-        notificationService.notify(new NotificationRequest(
+        notificationService.notify(new NotificationRequestDto(
                 NotificationType.EMAIL,
                 email,
                 subject,
@@ -39,11 +37,12 @@ public class PublicController {
 
     @PostMapping("/notification/sms")
     public ResponseEntity<String> sendNotificationSms(
+            @Valid
             @RequestParam String phone,
             @RequestParam String subject,
             @RequestParam String msg
     ) {
-        notificationService.notify(new NotificationRequest(
+        notificationService.notify(new NotificationRequestDto(
                 NotificationType.SMS,
                 phone,
                 subject,

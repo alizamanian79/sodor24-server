@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class NotificationRequestDto {
-    @NotNull(message = "type is required")
+
     private NotificationType type;
 
     @NotBlank(message = "recipient is required")

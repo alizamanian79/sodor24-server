@@ -14,44 +14,6 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1/public")
 public class PublicController {
 
-    private final NotificationService notificationService;
-
-    @PostMapping("/notification/email")
-    public ResponseEntity<String> sendNotification(
-            @Valid
-            @RequestParam String email,
-            @RequestParam String subject,
-            @RequestParam String msg
-    ) {
-        notificationService.notify(new NotificationRequestDto(
-                NotificationType.EMAIL,
-                email,
-                subject,
-                msg
-        ));
-
-        return ResponseEntity.accepted()
-                .body("Email notification request submitted for: " + email);
-    }
-
-
-    @PostMapping("/notification/sms")
-    public ResponseEntity<String> sendNotificationSms(
-            @Valid
-            @RequestParam String phone,
-            @RequestParam String subject,
-            @RequestParam String msg
-    ) {
-        notificationService.notify(new NotificationRequestDto(
-                NotificationType.SMS,
-                phone,
-                subject,
-                msg
-        ));
-
-        return ResponseEntity.accepted()
-                .body("Email notification request submitted for: " + phone);
-    }
 
 
 //    @GetMapping("/test")

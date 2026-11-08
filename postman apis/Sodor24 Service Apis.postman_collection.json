@@ -174,10 +174,10 @@
           ]
         },
         {
-          "name": "Verify Account",
+          "name": "Verify",
           "item": [
             {
-              "name": "verify email",
+              "name": "Verify email",
               "item": [
                 {
                   "name": "1. Send Otp To Email Or Resend",
@@ -248,67 +248,72 @@
               ]
             },
             {
-              "name": "1. Verify Account Otp",
-              "request": {
-                "method": "POST",
-                "header": [],
-                "body": {
-                  "mode": "raw",
-                  "raw": "{\r\n    \"phoneNumber\": \"{{PHONE_NUMBER}}\",\r\n    \"otp\": \"{{OTP}}\"\r\n}",
-                  "options": {
-                    "raw": {
-                      "language": "json"
+              "name": "Verify Account",
+              "item": [
+                {
+                  "name": "1. Verify Account Otp",
+                  "request": {
+                    "method": "POST",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    \"phoneNumber\": \"{{PHONE_NUMBER}}\",\r\n    \"otp\": \"{{OTP}}\"\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{HOST}}/api/v1/auth/account/verify/otp",
+                      "host": [
+                        "{{HOST}}"
+                      ],
+                      "path": [
+                        "api",
+                        "v1",
+                        "auth",
+                        "account",
+                        "verify",
+                        "otp"
+                      ]
                     }
-                  }
+                  },
+                  "response": []
                 },
-                "url": {
-                  "raw": "{{HOST}}/api/v1/auth/account/verify/otp",
-                  "host": [
-                    "{{HOST}}"
-                  ],
-                  "path": [
-                    "api",
-                    "v1",
-                    "auth",
-                    "account",
-                    "verify",
-                    "otp"
-                  ]
-                }
-              },
-              "response": []
-            },
-            {
-              "name": "2. Change Account Otp",
-              "request": {
-                "method": "POST",
-                "header": [],
-                "body": {
-                  "mode": "raw",
-                  "raw": "{\r\n    \"phoneNumber\": \"{{PHONE_NUMBER}}\"\r\n}",
-                  "options": {
-                    "raw": {
-                      "language": "json"
+                {
+                  "name": "2. Change Account Otp",
+                  "request": {
+                    "method": "POST",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    \"phoneNumber\": \"{{PHONE_NUMBER}}\"\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{HOST}}/api/v1/auth/change/account/verify/otp",
+                      "host": [
+                        "{{HOST}}"
+                      ],
+                      "path": [
+                        "api",
+                        "v1",
+                        "auth",
+                        "change",
+                        "account",
+                        "verify",
+                        "otp"
+                      ]
                     }
-                  }
-                },
-                "url": {
-                  "raw": "{{HOST}}/api/v1/auth/change/account/verify/otp",
-                  "host": [
-                    "{{HOST}}"
-                  ],
-                  "path": [
-                    "api",
-                    "v1",
-                    "auth",
-                    "change",
-                    "account",
-                    "verify",
-                    "otp"
-                  ]
+                  },
+                  "response": []
                 }
-              },
-              "response": []
+              ]
             }
           ]
         },
@@ -2343,79 +2348,87 @@
       ]
     },
     {
-      "name": "New Request",
-      "request": {
-        "method": "GET",
-        "header": [],
-        "url": {
-          "raw": "{{HOST}}/api/v1/public/notification?email=alizamanian2000@gmail.com&subject=hello&msg=hello from client",
-          "host": [
-            "{{HOST}}"
-          ],
-          "path": [
-            "api",
-            "v1",
-            "public",
-            "notification"
-          ],
-          "query": [
-            {
-              "key": "email",
-              "value": "alizamanian2000@gmail.com"
+      "name": "Notification",
+      "item": [
+        {
+          "name": "Send Notification To User Email",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{ACCESS_TOKEN}}",
+                  "type": "string"
+                }
+              ]
             },
-            {
-              "key": "subject",
-              "value": "hello"
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"recipient\":\"{{EMAIL}}\",\r\n    \"subject\":\"موضوع ایمیل من\",\r\n    \"message\":\"لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ و با استفاده از طراحان گرافیک است چاپگرها و متون بلکه روزنامه و مجله در ستون و سطرآنچنان که لازم است\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
             },
-            {
-              "key": "msg",
-              "value": "hello from client"
+            "url": {
+              "raw": "{{HOST}}/api/v1/notifications/email",
+              "host": [
+                "{{HOST}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "notifications",
+                "email"
+              ]
             }
-          ]
+          },
+          "response": []
+        },
+        {
+          "name": "Send Notification To User Phone",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{ACCESS_TOKEN}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"recipient\":\"{{PHONE_NUMBER}}\",\r\n    \"subject\":\"موضوع ایمیل من\",\r\n    \"message\":\"لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ و با استفاده از طراحان گرافیک است چاپگرها و متون بلکه روزنامه و مجله در ستون و سطرآنچنان که لازم است\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{HOST}}/api/v1/notifications/sms",
+              "host": [
+                "{{HOST}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "notifications",
+                "sms"
+              ]
+            }
+          },
+          "response": []
         }
-      },
-      "response": []
-    },
-    {
-      "name": "New Request Copy",
-      "request": {
-        "method": "GET",
-        "header": [],
-        "url": {
-          "raw": "{{HOST}}/api/v1/public/test/zilan",
-          "host": [
-            "{{HOST}}"
-          ],
-          "path": [
-            "api",
-            "v1",
-            "public",
-            "test",
-            "zilan"
-          ]
-        }
-      },
-      "response": []
-    },
-    {
-      "name": "create",
-      "request": {
-        "method": "GET",
-        "header": [],
-        "url": {
-          "raw": "{{HOST}}/api/v1/public/test",
-          "host": [
-            "{{HOST}}"
-          ],
-          "path": [
-            "api",
-            "v1",
-            "public",
-            "test"
-          ]
-        }
-      },
-      "response": []
+      ]
     }
   ]
 }

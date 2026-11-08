@@ -206,7 +206,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
 
         notificationService.notify(new NotificationRequestDto(
-                NotificationType.EMAIL,
+                NotificationType.SMS,
                 req.getEmail(),
                 "کد تأیید یکبار مصرف",
                 "کاربر گرامی،\n\n"

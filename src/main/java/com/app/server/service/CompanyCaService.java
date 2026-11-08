@@ -5,6 +5,7 @@ import com.app.server.dto.response.CustomResponseDto;
 import com.app.server.model.companies.CompanyCa;
 
 import java.util.List;
+import java.util.Map;
 
 public interface CompanyCaService {
 
@@ -16,6 +17,6 @@ public interface CompanyCaService {
     CompanyCa setStatusBySlug(String slug,String status);
 
 
-
+    Map<String, Object> callBackCompanyCa(String slug , boolean value);
 
 }

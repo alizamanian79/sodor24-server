@@ -2,6 +2,7 @@ package com.app.server.service.impliment.Company;
 
 import com.app.server.dto.request.companies.CreateCompanyCaRequestDto;
 import com.app.server.dto.response.CustomResponseDto;
+import com.app.server.exception.AppBadRequestException;
 import com.app.server.exception.AppForbiddenException;
 import com.app.server.exception.AppNotFoundException;
 import com.app.server.model.companies.CompanyCa;
@@ -11,6 +12,7 @@ import com.app.server.repository.companies.CompanyCaRepository;
 import com.app.server.service.CompanyCaService;
 import com.app.server.service.CompanyService;
 import com.app.server.service.CompanySubscriptionPlanService;
+import com.app.server.util.signature_service_producer.CertificateProducer;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,10 +20,12 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 
 @RequiredArgsConstructor
@@ -32,8 +36,11 @@ public class CompanyCaServiceImpl implements CompanyCaService {
     private final CompanyService companyService;
     private final CompanySubscriptionPlanService subscriptionService;
     private final CompanyCaRepository companyCaRepository;
-
     public static final String  CACHE_NAME="companyCaCache";
+    private final PasswordEncoder passwordEncoder;
+    private final CertificateProducer certificateProducer;
+
+
 
 
     @Override
@@ -65,10 +72,14 @@ public class CompanyCaServiceImpl implements CompanyCaService {
                 .usersCount(subscription.getUsersCount())
                 .signaturesCount(subscription.getSignaturesCount())
                 .isActive(false)
+                .privateKeyPassword(passwordEncoder.encode(req.getPassword()))
                 .build();
 
         return companyCaRepository.save(companyCa);
     }
+
+
+
 
 
     @Cacheable(value = CACHE_NAME,key = "#slug")
@@ -135,6 +146,35 @@ public class CompanyCaServiceImpl implements CompanyCaService {
 
 
 
+
+
+    @Override
+    public  Map<String, Object> callBackCompanyCa(String slug , boolean value){
+
+        if (!value){
+            throw new AppBadRequestException("مقدار خالی میباشد");
+        }
+
+        CompanyCa companyCa = findCompanyCaBySlug(slug);
+
+        //
+
+        com.app.server.util.signature_service_producer.dto.request.ca.CreateCompanyCaRequestDto
+                request = com.app.server.util.signature_service_producer.dto.request.ca.CreateCompanyCaRequestDto.
+                builder()
+                .companyId(companyCa.getCaId())
+                .companyName(companyCa.getCompany().getCompanyName())
+                .state(companyCa.getCompany().getState())
+                .location(companyCa.getCompany().getLocation())
+                .country(companyCa.getCompany().getCountry())
+                .validityDays(companyCa.getValidityDays())
+                .privateKeyPassword(companyCa.getPrivateKeyPassword())
+                .build();
+
+        Map<String, Object> data = certificateProducer.createCompanyCa(request);
+        companyCa.setCaId(data.get("companyId").toString());
+        return data;
+    }
 
 
 

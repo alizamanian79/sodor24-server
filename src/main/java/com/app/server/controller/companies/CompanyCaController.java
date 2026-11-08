@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -68,6 +69,11 @@ public class CompanyCaController {
 
 
 
+
+    @PatchMapping("/{slug}/callback")
+    public Map<String,Object> callback(@PathVariable String slug){
+        return caService.callBackCompanyCa(slug,true);
+    }
 
 
 

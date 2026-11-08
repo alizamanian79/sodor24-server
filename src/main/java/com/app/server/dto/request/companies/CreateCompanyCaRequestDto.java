@@ -16,4 +16,7 @@ public class CreateCompanyCaRequestDto {
         @NotBlank(message = "شناسه پلن اشتراک الزامی است")
         private String subscriptionPlanSlug;
 
+        @NotBlank(message = "مز عبور نمیتواند خالی باشد ")
+        private String password;
+
 }

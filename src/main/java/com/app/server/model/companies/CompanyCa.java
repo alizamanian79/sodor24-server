@@ -71,6 +71,12 @@ public class CompanyCa {
     @Column(nullable = false)
     private Integer usersCount;
 
+
+    private String country;
+
+    private String location;
+
+
     @NotNull(message = "تعداد امضاها الزامی است")
     @Min(value = 1, message = "تعداد امضاها باید حداقل 1 باشد")
     @Column(name = "signatures_count", nullable = false)
@@ -96,6 +102,14 @@ public class CompanyCa {
 
     @UpdateTimestamp
     private LocalDateTime updatedAt;
+
+
+
+    private String caId;
+
+
+    @NotNull(message = "password نمیتواند خالی باشد")
+    private String privateKeyPassword;
 
 
     @Transient

@@ -48,7 +48,7 @@ public class SecurityConfig {
                             "/api/v1/public/**",
                             "/api/v1/otp/**",
                             "/api/v1/demo/**",
-                            "/api/v1/payment/callback/**",
+                            "/api/v1/ca/companies/*/callback/**",
                             "/h2-console/**"
                     ).permitAll();
                     auth.anyRequest().authenticated();

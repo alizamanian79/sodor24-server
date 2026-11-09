@@ -82,9 +82,16 @@ public class CompanyCa {
     @Column(name = "signatures_count", nullable = false)
     private Integer signaturesCount;
 
+
     @Builder.Default
     @Column(nullable = false)
-    private boolean isActive = true;
+    private boolean isActive = false;
+
+
+    @Builder.Default
+    @Column(nullable = false)
+    private boolean isValid = false;
+
 
     @NotBlank(message = "وضعیت الزامی است")
     @Size(max = 50, message = "وضعیت نمی‌تواند بیشتر از 50 کاراکتر باشد")
@@ -108,7 +115,8 @@ public class CompanyCa {
     private String caId;
 
 
-    @NotNull(message = "password نمیتواند خالی باشد")
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @NotNull(message = "رمز عبور نمیتواند خالی باشد")
     private String privateKeyPassword;
 
 

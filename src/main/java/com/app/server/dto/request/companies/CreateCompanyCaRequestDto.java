@@ -16,7 +16,12 @@ public class CreateCompanyCaRequestDto {
         @NotBlank(message = "شناسه پلن اشتراک الزامی است")
         private String subscriptionPlanSlug;
 
-        @NotBlank(message = "مز عبور نمیتواند خالی باشد ")
-        private String password;
+        @NotBlank(message = "رمز عبور نمی‌تواند خالی باشد")
+        @Size(min = 8, message = "رمز عبور باید حداقل ۸ کاراکتر باشد")
+        @Pattern(
+                regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@#$%^&+=!]).+$",
+                message = "رمز عبور باید شامل حروف کوچک و بزرگ انگلیسی، حداقل یک عدد و یک کاراکتر خاص باشد"
+        )
+        private String privateKeyPassword;
 
 }

@@ -5,10 +5,13 @@ import com.app.server.dto.response.CustomResponseDto;
 import com.app.server.exception.AppForbiddenException;
 import com.app.server.model.companies.CompanyCa;
 import com.app.server.service.CompanyCaService;
+import com.app.server.util.wallet_service_producer.dto.response.WalletResponseDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -70,9 +73,29 @@ public class CompanyCaController {
 
 
 
-    @PatchMapping("/{slug}/callback")
-    public Map<String,Object> callback(@PathVariable String slug){
-        return caService.callBackCompanyCa(slug,true);
+    @PostMapping("/{slug}/payment")
+    public WalletResponseDto payment(@PathVariable String slug, @AuthenticationPrincipal Jwt auth){
+     return caService.payment(slug,auth.getTokenValue());
+    }
+
+
+
+
+
+    @GetMapping("/{caSlug}/callback")
+    public Object callback(@PathVariable String caSlug , @RequestParam String sub,
+                                       @RequestParam Integer slug , @RequestParam String gateway ,
+                                       @RequestParam String Authority , @RequestParam String Status ){
+
+        System.out.println("Companies Ca Slug is -> \s " + caSlug);
+        System.out.println("User sub Sub is -> \s " + sub);
+        System.out.println("Transaction Slug is -> \s " + slug);
+        System.out.println("Gateway Payment  is -> \s " + gateway);
+        System.out.println("Authority  is -> \s " + Authority);
+        System.out.println("Payment Status  is -> \s " + Status);
+
+
+        return Status;
     }
 
 

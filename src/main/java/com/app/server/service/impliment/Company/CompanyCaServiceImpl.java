@@ -110,6 +110,7 @@ public class CompanyCaServiceImpl implements CompanyCaService {
     @Override
     public CustomResponseDto deleteCompanyCaBySlug(String slug) {
         CompanyCa find = findCompanyCaBySlug(slug);
+
         companyCaRepository.delete(find);
 
         CustomResponseDto<Object> res = CustomResponseDto.builder()
@@ -229,12 +230,17 @@ public class CompanyCaServiceImpl implements CompanyCaService {
 
     @Transactional
     @Override
-    public  Map<String, Object> callBackCompanyCa(String caSub,
+    public  CompanyCa callBackCompanyCa(String caSub,
                                                   String walletSub ,
                                                   boolean value ,
                                                   Integer transactionSlug,
                                                   String Authority
                                                   ){
+
+        CompanyCa exist = findCompanyCaBySlug(caSub);
+        if (exist.getStatus().equals("paid")){
+            throw new AppConflicException("تراکنش قبلا انجام شده");
+        }
 
         if (!value){
             throw new AppBadRequestException("مقدار خالی میباشد");
@@ -259,10 +265,27 @@ public class CompanyCaServiceImpl implements CompanyCaService {
 
         //
 
+
+
+        // After Ca created for company in signature service
+        CompanyCa savedCa = createCaSignatureService(companyCa);
+
+
+
+        return savedCa;
+    }
+
+
+
+
+
+
+    @Transactional
+    public CompanyCa createCaSignatureService(CompanyCa companyCa){
         com.app.server.util.signature_service_producer.dto.request.ca.CreateCompanyCaRequestDto
                 request = com.app.server.util.signature_service_producer.dto.request.ca.CreateCompanyCaRequestDto.
                 builder()
-                .companyId(companyCa.getCompany().getCompanyName().toLowerCase())
+                .companyId(companyCa.getCompany().getWebsite().toLowerCase())
                 .companyName(companyCa.getCompany().getCompanyName().toLowerCase())
                 .state(companyCa.getCompany().getState())
                 .location(companyCa.getCompany().getLocation())
@@ -270,18 +293,14 @@ public class CompanyCaServiceImpl implements CompanyCaService {
                 .validityDays(companyCa.getValidityDays())
                 .privateKeyPassword(companyCa.getPrivateKeyPassword())
                 .build();
-
-        // After Ca created for company in signature service
         Map<String, Object> data = certificateProducer.createCompanyCa(request);
         companyCa.setCaId(data.get("companyId").toString());
         companyCa.setActive(true);
         companyCa.setValid(true);
-
-
-        return data;
+        companyCa.setStatus("paid");
+        companyCaRepository.save(companyCa);
+        return companyCa;
     }
-
-
 
 
 

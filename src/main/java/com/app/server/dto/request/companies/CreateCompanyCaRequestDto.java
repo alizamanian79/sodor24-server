@@ -13,6 +13,8 @@ public class CreateCompanyCaRequestDto {
         @NotBlank(message = "شناسه شرکت الزامی است")
         private String companySlug;
 
+
+
         @NotBlank(message = "شناسه پلن اشتراک الزامی است")
         private String subscriptionPlanSlug;
 

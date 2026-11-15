@@ -44,6 +44,10 @@ public class Company {
     @Column(nullable = false, length = 6, updatable = false)
     private String slug;
 
+
+    @NotBlank(message = "لینک سایت نمیتواند خالی باشد")
+    private String website;
+
     @NotBlank(message = "اسم شرکت درخواست کننده گواهی نمیتواند خالی باشد")
     @Size(max = 150, message = "اسم شرکت نمیتواند بیشتر از ۱۵۰ کاراکتر باشد")
     @Column(name = "company_name", nullable = false, length = 150)

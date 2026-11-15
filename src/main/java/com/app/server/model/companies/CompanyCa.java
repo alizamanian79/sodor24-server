@@ -36,6 +36,8 @@ public class CompanyCa {
     private Long id;
 
 
+
+
     @NotNull(message = "شرکت الزامی است")
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "company_id", nullable = false)

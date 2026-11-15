@@ -84,23 +84,33 @@ public class CompanyCaController {
 
 
     @GetMapping("/{caSlug}/callback")
-    public Object callback(@PathVariable String caSlug , @RequestParam String sub,
+    public ResponseEntity callback(@PathVariable String caSlug , @RequestParam String sub,
                                        @RequestParam Integer slug , @RequestParam String gateway ,
                                        @RequestParam String Authority , @RequestParam String Status ){
 
-        System.out.println("Companies Ca Slug is -> \s " + caSlug);
-        System.out.println("User sub Sub is -> \s " + sub);
-        System.out.println("Transaction Slug is -> \s " + slug);
-        System.out.println("Gateway Payment  is -> \s " + gateway);
-        System.out.println("Authority  is -> \s " + Authority);
-        System.out.println("Payment Status  is -> \s " + Status);
 
-      return   caService.callBackCompanyCa(
+
+//        System.out.println("Companies Ca Slug is -> \s " + caSlug);
+//        System.out.println("User sub Sub is -> \s " + sub);
+//        System.out.println("Transaction Slug is -> \s " + slug);
+//        System.out.println("Gateway Payment  is -> \s " + gateway);
+//        System.out.println("Authority  is -> \s " + Authority);
+//        System.out.println("Payment Status  is -> \s " + Status);
+
+      CompanyCa result =   caService.callBackCompanyCa(
                 caSlug,
                 sub,
                 Status.equals("OK")?true:false,
                 slug,
                 Authority);
+
+      CustomResponseDto responseDto = CustomResponseDto.builder()
+              .message(result.getCaId().equals(null)?"خطا در ساخت گواهی":"گواهی اختصاصی شرکت شما با موفقیت ساخته شد")
+              .data(result)
+              .status(result.getCaId().equals(null)?HttpStatus.BAD_REQUEST.value() : HttpStatus.OK.value())
+              .build();
+      return ResponseEntity.status(responseDto.getStatus()).body(responseDto);
+
     }
 
 

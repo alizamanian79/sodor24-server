@@ -55,10 +55,13 @@ public class CreateCompanyRequestDto {
     private String privateKeyPassword;
 
 
+    @NotBlank(message = "وب سایت شرکت درخواست کننده گواهی نمیتواند خالی باشد")
+    private String website;
 
     private String description;
 
     private String completeDescriptions;
+
 
 
     private String userSub;

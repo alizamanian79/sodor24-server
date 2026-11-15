@@ -76,6 +76,7 @@ public class CompanyServiceImpl implements CompanyService {
                 .completeDescriptions(req.getCompleteDescriptions())
                 .isActive(false)
                 .isValid(false)
+                .website(req.getWebsite())
                 .owners(Set.of(user))
                 .privateKeyPassword(passwordEncoder.encode(req.getPrivateKeyPassword()))
                 .build();
@@ -109,6 +110,7 @@ public class CompanyServiceImpl implements CompanyService {
         exist.setCompanyName(req.getCompanyName());
         exist.setCountry(req.getCountry());
         exist.setState(req.getState());
+        exist.setWebsite(req.getWebsite());
         exist.setDescription(req.getDescription());
         exist.setCompleteDescriptions(req.getCompleteDescriptions());
 

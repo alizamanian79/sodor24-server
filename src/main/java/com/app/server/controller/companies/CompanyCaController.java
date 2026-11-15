@@ -74,7 +74,8 @@ public class CompanyCaController {
 
 
     @PostMapping("/{slug}/payment")
-    public WalletResponseDto payment(@PathVariable String slug, @AuthenticationPrincipal Jwt auth){
+    public WalletResponseDto payment(@PathVariable String slug,
+                                     @AuthenticationPrincipal Jwt auth){
      return caService.payment(slug,auth.getTokenValue());
     }
 
@@ -94,8 +95,12 @@ public class CompanyCaController {
         System.out.println("Authority  is -> \s " + Authority);
         System.out.println("Payment Status  is -> \s " + Status);
 
-
-        return Status;
+      return   caService.callBackCompanyCa(
+                caSlug,
+                sub,
+                Status.equals("OK")?true:false,
+                slug,
+                Authority);
     }
 
 

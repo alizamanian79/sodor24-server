@@ -20,8 +20,10 @@ public interface CompanyCaService {
 
     WalletResponseDto payment(String slug,String accessToken);
 
-    Map<String, Object> callBackCompanyCa(String caSub,String walletSub ,
+    Map<String, Object> callBackCompanyCa(String caSub,
+                                          String walletSub ,
                                           boolean value ,
-                                          Integer transactionSlug);
+                                          Integer transactionSlug,
+                                          String Authority);
 
 }

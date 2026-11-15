@@ -33,6 +33,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -163,43 +164,62 @@ public class CompanyCaServiceImpl implements CompanyCaService {
 
 
 
+
     @Override
     public WalletResponseDto payment(String slug, String token) {
 
+        // Retrieve user information
+        MeResponseDto me = userService.me(token);
 
+        Map<String, Object> accountData = (Map<String, Object>) me.getAccountData();
 
-        Map<String, Object> user =
-                (Map<String, Object>) userService.me(token).getAccountData();
+        Map<String, Object> keycloakData =
+                (Map<String, Object>) accountData.get("keycloak");
 
+        // Validate email
+        String keycloakEmail = Objects.toString(keycloakData.get("email"), null);
 
-        if (user.get("email").equals(null)){
-            throw new AppConflicException("ایمیل خود را وارد نمایید و ان را تایید کنید");
+        boolean emailVerified = Boolean.TRUE.equals(keycloakData.get("emailVerified"));
+
+        if (keycloakEmail == null || keycloakEmail.isBlank() || !emailVerified) {
+            throw new AppConflicException(
+                    "قبل از پرداخت باید ایمیل خود را وارد کرده و آن را تایید نمایید"
+            );
         }
 
-
-
+        // Retrieve company CA
         CompanyCa ca = findCompanyCaBySlug(slug);
 
-        String email = Objects.toString(user.get("email"), "sodor24.ir@gmail.com");
-        String phoneNumber = Objects.toString(user.get("phoneNumber"), null);
+        // Extract user information
+        String email = Objects.toString(
+                accountData.get("email"),
+                "sodor24.ir@gmail.com"
+        );
+
+        String phoneNumber = Objects.toString(
+                accountData.get("phoneNumber"),
+                null
+        );
+
+        String sub = Objects.toString(accountData.get("sub"), null);
 
         if (phoneNumber == null || phoneNumber.isBlank()) {
             throw new AppConflicException("شماره تلفن کاربر ثبت نشده است");
         }
 
+        // Build payment request
         PaymentRequestDto request = PaymentRequestDto.builder()
                 .process("withdraw")
                 .gateway("zarinpal")
-                .sub(user.get("sub").toString())
+                .sub(sub)
                 .amount(ca.getSubscriptionPlan().getPrice())
                 .email(email)
-                .description(
-                        "خرید سرویس  "+
-                                "\s" + ca.getSubscriptionPlan().getTitle() + "\s"
-
-                )
+                .description("خرید سرویس " + ca.getSubscriptionPlan().getTitle())
                 .phoneNumber(phoneNumber)
-                .callbackUrl("http://localhost:8181/api/v1/ca/companies/"+slug+"/callback?")
+                .callbackUrl(
+                        "http://localhost:8181/api/v1/ca/companies/"
+                                + slug + "/callback?"
+                )
                 .build();
 
         return walletRMQProducer.paymentRequest(request);
@@ -209,15 +229,23 @@ public class CompanyCaServiceImpl implements CompanyCaService {
 
     @Transactional
     @Override
-    public  Map<String, Object> callBackCompanyCa(String caSub,String walletSub ,
+    public  Map<String, Object> callBackCompanyCa(String caSub,
+                                                  String walletSub ,
                                                   boolean value ,
-                                                  Integer transactionSlug){
+                                                  Integer transactionSlug,
+                                                  String Authority
+                                                  ){
 
         if (!value){
             throw new AppBadRequestException("مقدار خالی میباشد");
         }
 
+        WalletResponseDto res = transactionRMQProducer.getTransactionBySlug(transactionSlug);
+        res.getData();
         CompanyCa companyCa = findCompanyCaBySlug(caSub);
+
+        Map<String,Object>dataAuth = new HashMap<>();
+        dataAuth.put("authority",Authority);
 
 
         PaymentVerifierRequestDto paymentVerifierRequestDto = PaymentVerifierRequestDto.builder()
@@ -225,6 +253,7 @@ public class CompanyCaServiceImpl implements CompanyCaService {
                 .slug(transactionSlug)
                 .callbackUrl("https://google.com")
                 .gateway("zarinpal")
+                .data(dataAuth)
                 .build();
         walletRMQProducer.paymentVerifier(paymentVerifierRequestDto);
 
@@ -251,6 +280,8 @@ public class CompanyCaServiceImpl implements CompanyCaService {
 
         return data;
     }
+
+
 
 
 

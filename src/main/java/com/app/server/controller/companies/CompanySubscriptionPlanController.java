@@ -7,6 +7,7 @@ import com.app.server.service.CompanySubscriptionPlanService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
@@ -18,6 +19,7 @@ public class CompanySubscriptionPlanController {
 
     private final CompanySubscriptionPlanService service;
 
+    @PreAuthorize("hasAnyRole('ADMIN')")
     @PostMapping
     public ResponseEntity<?> create(
             @Valid @RequestBody CreateCompanySubscriptionPlanRequestDto request,
@@ -42,6 +44,7 @@ public class CompanySubscriptionPlanController {
     }
 
 
+    @PreAuthorize("hasAnyRole('ADMIN')")
     @PutMapping("/{slug}")
     public ResponseEntity<?> update(
             @PathVariable String slug,
@@ -77,6 +80,7 @@ public class CompanySubscriptionPlanController {
     }
 
 
+    @PreAuthorize("hasAnyRole('ADMIN')")
     @GetMapping
     public ResponseEntity<?> findAll() {
         List<CompanySubscriptionPlan> plans =
@@ -99,6 +103,7 @@ public class CompanySubscriptionPlanController {
     }
 
 
+    @PreAuthorize("hasAnyRole('ADMIN')")
     @PatchMapping("/{slug}/active")
     public ResponseEntity<?> setActive(
             @PathVariable String slug,
@@ -120,6 +125,7 @@ public class CompanySubscriptionPlanController {
     }
 
 
+    @PreAuthorize("hasAnyRole('ADMIN')")
     @DeleteMapping("/{slug}")
     public ResponseEntity<?> delete(
             @PathVariable String slug

@@ -122,7 +122,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                     .refresh_token(requireString(res, "refresh_token"))
                     .build();
         } catch (RuntimeException e) {
-            throw new AppUnAuthorizedException(e.getMessage());
+            throw new AppUnAuthorizedException("نام کاربری یا رمز عبور اشتباه است");
         }
     }
 

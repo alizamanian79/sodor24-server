@@ -9,6 +9,7 @@ import com.app.server.dto.request.users.VerifyAccountRequestDto;
 import com.app.server.dto.request.users.VerifyEmailRequestDto;
 import com.app.server.dto.response.CustomResponseDto;
 import com.app.server.dto.response.LoginResponseDto;
+import com.app.server.exception.AppNotFoundException;
 import com.app.server.model.User;
 import com.app.server.service.AuthenticationService;
 import com.app.server.service.UserService;
@@ -48,7 +49,12 @@ public class AuthController {
     public LoginResponseDto loginUser(
             @Valid @RequestBody LoginRequestDto req
     ) {
-        return authenticationService.login(req);
+        try{
+            return authenticationService.login(req);
+        } catch (RuntimeException e) {
+            throw new AppNotFoundException("حساب کاربری وجود ندارد. ثبت نام کنید");
+        }
+
     }
 
 

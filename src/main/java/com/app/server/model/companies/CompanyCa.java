@@ -119,7 +119,12 @@ public class CompanyCa {
 
     private String caId;
 
-    @ManyToMany(mappedBy = "companyCas")
+    @OneToMany(
+            mappedBy = "companyCa",
+            fetch = FetchType.LAZY,
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
     @Builder.Default
     private Set<UserCa> userCas = new HashSet<>();
 

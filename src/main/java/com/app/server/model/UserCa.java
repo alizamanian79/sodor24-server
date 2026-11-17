@@ -9,8 +9,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
+
 
 
 @Entity
@@ -20,6 +19,10 @@ import java.util.Set;
                 @UniqueConstraint(
                         name = "uk_users_ca_slug",
                         columnNames = "user_ca_slug"
+                ),
+                @UniqueConstraint(
+                        name = "uk_user_company_ca",
+                        columnNames = {"user_id", "company_ca_id"}
                 )
         }
 )
@@ -34,31 +37,21 @@ public class UserCa {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-
-    @ManyToMany
-    @JoinTable(
-            name = "companies_ca_user_ca",
-            joinColumns = @JoinColumn(name = "user_ca_id"),
-            inverseJoinColumns = @JoinColumn(name = "company_ca_id")
+    // هر UserCa متعلق به یک کاربر است
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(
+            name = "user_id",
+            nullable = false
     )
-    @Builder.Default
-    private Set<CompanyCa> companyCas = new HashSet<>();
+    private User user;
 
-
-    @ManyToMany
-    @JoinTable(
-            name = "users_user_ca",
-            joinColumns = @JoinColumn(name = "user_ca_id"),
-            inverseJoinColumns = @JoinColumn(name = "user_id")
+    // هر UserCa متعلق به یک CompanyCa است
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(
+            name = "company_ca_id",
+            nullable = false
     )
-    @Builder.Default
-    private Set<User> users = new HashSet<>();
-
-
-
-
-
-
+    private CompanyCa companyCa;
 
     @Column(
             name = "user_ca_slug",

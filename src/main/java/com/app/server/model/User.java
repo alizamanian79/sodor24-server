@@ -34,7 +34,12 @@ public class User implements Serializable{
 
 
 
-    @ManyToMany(mappedBy = "users")
+    @OneToMany(
+            mappedBy = "user",
+            fetch = FetchType.LAZY,
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
     @Builder.Default
     private Set<UserCa> userCas = new HashSet<>();
 

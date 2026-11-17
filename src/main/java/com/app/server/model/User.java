@@ -33,4 +33,9 @@ public class User implements Serializable{
     private Set<Company> companies = new HashSet<>();
 
 
+
+    @ManyToMany(mappedBy = "users")
+    @Builder.Default
+    private Set<UserCa> userCas = new HashSet<>();
+
 }

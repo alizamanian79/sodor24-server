@@ -1,5 +1,6 @@
 package com.app.server.model.companies;
 
+import com.app.server.model.UserCa;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -12,7 +13,9 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 @Builder
 @Setter
@@ -115,6 +118,10 @@ public class CompanyCa {
 
 
     private String caId;
+
+    @ManyToMany(mappedBy = "companyCas")
+    @Builder.Default
+    private Set<UserCa> userCas = new HashSet<>();
 
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)

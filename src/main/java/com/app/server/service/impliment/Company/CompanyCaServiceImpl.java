@@ -16,6 +16,9 @@ import com.app.server.service.CompanyCaService;
 import com.app.server.service.CompanyService;
 import com.app.server.service.CompanySubscriptionPlanService;
 import com.app.server.service.UserService;
+import com.app.server.util.notification_service.NotificationRequestDto;
+import com.app.server.util.notification_service.NotificationService;
+import com.app.server.util.notification_service.NotificationType;
 import com.app.server.util.signature_service_producer.CertificateProducer;
 import com.app.server.util.wallet_service_producer.TransactionRMQProducer;
 import com.app.server.util.wallet_service_producer.WalletRMQProducer;
@@ -53,7 +56,8 @@ public class CompanyCaServiceImpl implements CompanyCaService {
     private final WalletRMQProducer walletRMQProducer;
     private final TransactionRMQProducer transactionRMQProducer;
     private final UserService userService;
-
+    private final NotificationService notificationService;
+    private static final String BY_SERVICE_SUCCESS = "سرویس فلانی با تعداد فلان امضا خریداری شد";
 
 
     @Override
@@ -193,8 +197,7 @@ public class CompanyCaServiceImpl implements CompanyCaService {
 
         // Extract user information
         String email = Objects.toString(
-                accountData.get("email"),
-                "sodor24.ir@gmail.com"
+                accountData.get("email")
         );
 
         String phoneNumber = Objects.toString(
@@ -299,6 +302,16 @@ public class CompanyCaServiceImpl implements CompanyCaService {
         companyCa.setValid(true);
         companyCa.setStatus("paid");
         companyCaRepository.save(companyCa);
+
+        // notification after buy service should be
+//        notificationService.notify(new NotificationRequestDto(
+//                NotificationType.EMAIL,
+//                companyCa.getEmail,
+//                "خرید سرویس",
+//                "کاربر گرامی،\n\n"
+//                      +"سرویس ما با موفقیت خریداری شد"
+//                       ));
+
         return companyCa;
     }
 

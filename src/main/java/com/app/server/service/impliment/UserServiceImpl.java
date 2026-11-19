@@ -84,4 +84,10 @@ public class UserServiceImpl implements UserService {
                 .build();
     }
 
+    @Override
+    public User getUserBySlug(String slug) {
+        return userRepository.getUserBySlug(slug).orElseThrow(()->new AppNotFoundException("کاربر با این شناسه پیدا نشد"));
+
+    }
+
 }

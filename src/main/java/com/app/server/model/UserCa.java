@@ -2,12 +2,14 @@
 package com.app.server.model;
 
 import com.app.server.model.companies.CompanyCa;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-
 import java.math.BigDecimal;
+import java.security.SecureRandom;
 import java.time.LocalDateTime;
 
 
@@ -33,11 +35,16 @@ import java.time.LocalDateTime;
 @Builder
 public class UserCa {
 
+
+    private static final int SLUG_LENGTH = 8;
+    private static final SecureRandom RANDOM = new SecureRandom();
+
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // هر UserCa متعلق به یک کاربر است
+    @JsonBackReference
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(
             name = "user_id",
@@ -45,7 +52,7 @@ public class UserCa {
     )
     private User user;
 
-    // هر UserCa متعلق به یک CompanyCa است
+    @JsonBackReference
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(
             name = "company_ca_id",
@@ -53,14 +60,35 @@ public class UserCa {
     )
     private CompanyCa companyCa;
 
+
+
+
     @Column(
             name = "user_ca_slug",
             nullable = false,
             unique = true,
-            length = 6,
+            length = SLUG_LENGTH,
             updatable = false
     )
-    private String userCaSlug;
+    private String slug;
+
+    @PrePersist
+    private void generateSlug() {
+        if (this.slug == null || this.slug.isBlank()) {
+            this.slug = randomSlug();
+        }
+    }
+
+    public static String randomSlug() {
+        StringBuilder sb = new StringBuilder(SLUG_LENGTH);
+        // رقم اول صفر نباشه (اختیاری)
+        sb.append(1 + RANDOM.nextInt(9));
+        for (int i = 1; i < SLUG_LENGTH; i++) {
+            sb.append(RANDOM.nextInt(10));
+        }
+        return sb.toString();
+    }
+
 
     @Column(nullable = false)
     private boolean isValid;
@@ -75,12 +103,13 @@ public class UserCa {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
-    @Column(unique = true, nullable = false)
+
     private String caId;
 
     private BigDecimal amount;
 
     private String status;
 
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String privateKeyPassword;
 }

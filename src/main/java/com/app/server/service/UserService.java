@@ -17,4 +17,6 @@ public interface UserService {
     User findUserBySub(String sub);
     User createUser(String sub);
     MeResponseDto me(String accessToken);
+    User getUserBySlug(String slug);
+
 }

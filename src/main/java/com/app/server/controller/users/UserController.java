@@ -38,6 +38,12 @@ public class UserController {
         return userService.me(auth.getTokenValue());
     }
 
+
+    @GetMapping("/slug/{slug}")
+    public Object userSlug(@PathVariable String slug){
+        return userService.getUserBySlug(slug);
+    }
+
 //
 //    @PreAuthorize("hasRole('ADMIN')")
 //    @GetMapping("/{id}")

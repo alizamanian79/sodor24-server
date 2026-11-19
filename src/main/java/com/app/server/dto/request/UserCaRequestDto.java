@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Builder
 public class UserCaRequestDto {
 
-    private String userSub;
+    private String userSlug;
 
     private String companyCaSlug;
 

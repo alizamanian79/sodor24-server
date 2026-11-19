@@ -1,9 +1,7 @@
 package com.app.server.model.companies;
 
 import com.app.server.model.UserCa;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.*;
@@ -119,6 +117,7 @@ public class CompanyCa {
 
     private String caId;
 
+    @JsonManagedReference
     @OneToMany(
             mappedBy = "companyCa",
             fetch = FetchType.LAZY,

@@ -205,9 +205,11 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 //        log.info("OTP SMS dispatched to {}", mask(req.));
 
 
+        NotificationType type = req.getPhoneNumber().equals(null)?NotificationType.EMAIL:NotificationType.SMS;
+
         notificationService.notify(new NotificationRequestDto(
-                NotificationType.SMS,
-                req.getEmail(),
+                type,
+                req.getPhoneNumber().equals(null)?req.getEmail():req.getPhoneNumber(),
                 "کد تأیید یکبار مصرف",
                 "کاربر گرامی،\n\n"
                         + "کد تأیید یکبار مصرف شما برای ورود به حساب کاربری:\n\n"

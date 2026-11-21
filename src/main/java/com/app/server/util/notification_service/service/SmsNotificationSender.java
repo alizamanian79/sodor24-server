@@ -32,6 +32,7 @@ public class SmsNotificationSender implements NotificationSender {
     public void send(NotificationRequestDto request) {
         // TODO: call your SMS provider API here
 
+        System.out.println(request);
 
         NiazpardazSmsClient client = NiazpardazSmsClientBuilder
                 .create(apiKey)

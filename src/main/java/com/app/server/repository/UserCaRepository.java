@@ -11,4 +11,6 @@ import java.util.Optional;
 public interface UserCaRepository extends JpaRepository<UserCa, Long> {
     Optional<UserCa> getUserCaBySlug(String slug);
     List<UserCa> getUserCaByUser_Sub(String userSub);
+
+    Optional<UserCa> findUserCaBySlug(String slug);
 }

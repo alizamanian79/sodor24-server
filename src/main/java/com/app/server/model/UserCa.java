@@ -16,17 +16,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(
-        name = "users_ca",
-        uniqueConstraints = {
-                @UniqueConstraint(
-                        name = "uk_users_ca_slug",
-                        columnNames = "user_ca_slug"
-                ),
-                @UniqueConstraint(
-                        name = "uk_user_company_ca",
-                        columnNames = {"user_id", "company_ca_id"}
-                )
-        }
+        name = "users_ca"
 )
 @Getter
 @Setter
@@ -112,4 +102,15 @@ public class UserCa {
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String privateKeyPassword;
+
+
+
+    private int validityDays;
+
+
+    private int signatureAmount;
+    private int totalSignatureAmount;
+
+
+
 }

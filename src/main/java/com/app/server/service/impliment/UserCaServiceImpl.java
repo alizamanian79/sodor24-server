@@ -9,11 +9,17 @@ import com.app.server.repository.UserCaRepository;
 import com.app.server.service.CompanyCaService;
 import com.app.server.service.UserCaService;
 import com.app.server.service.UserService;
+import com.app.server.util.signature_service_producer.CertificateProducer;
+import com.app.server.util.signature_service_producer.dto.request.ca.CreatePersonCertificateRequestDto;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Service
@@ -23,6 +29,7 @@ public class UserCaServiceImpl implements UserCaService {
     private final UserCaRepository userCaRepository;
     private final PasswordEncoder passwordEncoder;
 
+    private final CertificateProducer certificateProducer;
     private final UserService userService;
     private final CompanyCaService companyCaService;
 
@@ -57,12 +64,63 @@ public class UserCaServiceImpl implements UserCaService {
         UserCa createUserCa = UserCa.builder()
                 .companyCa(companyCa)
                 .user(user)
-                .caId("die")
+                .amount(BigDecimal.ZERO)
+                .isActive(false)
+                .isValid(false)
+                .caId("")
                 .privateKeyPassword(passwordEncoder.encode(req.getPrivateKeyPassword()))
                 .build();
       return   userCaRepository.save(createUserCa);
 
     }
+
+
+
+    public UserCa findUserCaBySlug(String slug){
+       return userCaRepository.findUserCaBySlug(slug)
+                .orElseThrow(()->new AppNotFoundException("شناسه امضای کاربر یافت نشد."));
+    }
+
+
+    @Transactional
+    public UserCa callBackUserCa(String slug){
+        UserCa userca = findUserCaBySlug(slug);
+        userca.setActive(true);
+        userca.setValid(true);
+        userca.setCaId();
+
+        userca.getCompanyCa().getPrivateKeyPassword();
+    }
+
+
+
+    public Map<String,Object> sendRequestToService(UserCa ca){
+
+        // Company ca id in signature service
+        String companyId = ca.getCompanyCa().getCaId();
+        String companyPassword = ca.getCompanyCa().getPrivateKeyPassword();
+
+        // create a method for finding user
+        userService.findUserBySub()
+
+
+        CreatePersonCertificateRequestDto request = CreatePersonCertificateRequestDto.builder()
+                .companyId(companyId)
+                .userId(ca.getUser().getSub())
+                .username("username")
+                .department("")
+                .country("")
+                .state("")
+                .location("")
+                .email("")
+                .validityDays(ca.getValidityDays())
+                .privateKeyPassword(ca.getPrivateKeyPassword())
+                .caPrivateKeyPassword(companyPassword)
+                .build();
+     return    certificateProducer.createPersonCertificate(request);
+    }
+
+
 
     @Override
     public UserCa updateUserCaBySlug(String slug) {

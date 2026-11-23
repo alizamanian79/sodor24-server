@@ -1,7 +1,10 @@
 package com.app.server.util.signature_service_producer.dto.request.ca;
 
+import lombok.Builder;
 import lombok.Data;
 
+
+@Builder
 @Data
 public class CreatePersonCertificateRequestDto {
 

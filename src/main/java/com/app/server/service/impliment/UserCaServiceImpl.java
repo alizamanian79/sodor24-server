@@ -87,9 +87,10 @@ public class UserCaServiceImpl implements UserCaService {
         UserCa userca = findUserCaBySlug(slug);
         userca.setActive(true);
         userca.setValid(true);
-        userca.setCaId();
+
 
         userca.getCompanyCa().getPrivateKeyPassword();
+        return userca;
     }
 
 
@@ -101,7 +102,6 @@ public class UserCaServiceImpl implements UserCaService {
         String companyPassword = ca.getCompanyCa().getPrivateKeyPassword();
 
         // create a method for finding user
-        userService.findUserBySub()
 
 
         CreatePersonCertificateRequestDto request = CreatePersonCertificateRequestDto.builder()

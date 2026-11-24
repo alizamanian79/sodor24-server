@@ -40,4 +40,11 @@ public class UserCaController {
         return userCaService.createUserCa(req);
     }
 
+
+
+    @GetMapping("/{slug}/callback")
+    public UserCa callback(@PathVariable String slug){
+        return userCaService.callBackUserCa(slug);
+    }
+
 }

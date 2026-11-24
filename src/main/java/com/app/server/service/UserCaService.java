@@ -12,4 +12,6 @@ public interface UserCaService {
     UserCa createUserCa(UserCaRequestDto req);
     UserCa updateUserCaBySlug(String slug);
     List<UserCa> myCas(String sub);
+    UserCa callBackUserCa(String slug);
+
 }

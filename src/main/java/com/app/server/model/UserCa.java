@@ -86,9 +86,7 @@ public class UserCa {
     @Column(nullable = false)
     private boolean isActive;
 
-    @CreationTimestamp
-    @Column(nullable = false, updatable = false)
-    private LocalDateTime createdAt;
+
 
     @UpdateTimestamp
     private LocalDateTime updatedAt;
@@ -108,9 +106,17 @@ public class UserCa {
     private int validityDays;
 
 
-    private int signatureAmount;
-    private int totalSignatureAmount;
+    private int signatureCount;
+    private int totalSignatureCount;
 
 
+
+
+    @CreationTimestamp
+    @Column(nullable = false, updatable = false)
+    private LocalDateTime createdAt;
+
+
+    private LocalDateTime expiredAt;
 
 }

@@ -1,6 +1,7 @@
 package com.app.server.service.impliment;
 
 import com.app.server.dto.request.UserCaRequestDto;
+import com.app.server.exception.AppBadRequestException;
 import com.app.server.exception.AppNotFoundException;
 import com.app.server.model.User;
 import com.app.server.model.UserCa;
@@ -18,6 +19,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -61,6 +63,10 @@ public class UserCaServiceImpl implements UserCaService {
         User user = userService.getUserBySlug(req.getUserSlug());
         CompanyCa companyCa = companyCaService.findCompanyCaBySlug(req.getCompanyCaSlug());
 
+        if (companyCa.getSignaturesCount()< req.getSignatureCount()){
+            throw new AppBadRequestException("تعداد امضای اختصاص داده شده شما بیش از حد مجاز شرکت میباشد");
+        }
+
         UserCa createUserCa = UserCa.builder()
                 .companyCa(companyCa)
                 .user(user)
@@ -68,11 +74,20 @@ public class UserCaServiceImpl implements UserCaService {
                 .isActive(false)
                 .isValid(false)
                 .caId("")
+                .validityDays(req.getValidityDays())
+                .signatureCount(req.getSignatureCount())
+                .totalSignatureCount(req.getSignatureCount())
+                .status("pending")
                 .privateKeyPassword(passwordEncoder.encode(req.getPrivateKeyPassword()))
                 .build();
       return   userCaRepository.save(createUserCa);
 
     }
+
+
+
+
+
 
 
 
@@ -84,12 +99,19 @@ public class UserCaServiceImpl implements UserCaService {
 
     @Transactional
     public UserCa callBackUserCa(String slug){
+
+
         UserCa userca = findUserCaBySlug(slug);
         userca.setActive(true);
         userca.setValid(true);
+        userca.setCaId("");
+        userca.setStatus("paid");
+        userca.setExpiredAt(LocalDateTime.now().plusDays(userca.getValidityDays()));
 
 
-        userca.getCompanyCa().getPrivateKeyPassword();
+        CompanyCa companyCa = userca.getCompanyCa();
+        companyCa.setSignaturesCount(companyCa.getSignaturesCount() - userca.getSignatureCount());
+
         return userca;
     }
 
